@@ -39,7 +39,7 @@ void shiro::io::buffer::write_short(int16_t value) {
 	this->allocate(2);
 	uint8_t* data = reinterpret_cast<uint8_t*>(&value);
 
-	for (int i = 0; i < sizeof(int16_t); i++) {
+	for (size_t i = 0; i < sizeof(int16_t); i++) {
 		this->bytes.at(this->written_size++) = data[i];
 	}
 }
@@ -55,7 +55,7 @@ void shiro::io::buffer::write_ushort(uint16_t value) {
 	this->allocate(2);
 	uint8_t* data = reinterpret_cast<uint8_t*>(&value);
 
-	for (int i = 0; i < sizeof(uint16_t); i++) {
+	for (size_t i = 0; i < sizeof(uint16_t); i++) {
 		this->bytes.at(this->written_size++) = data[i];
 	}
 }
@@ -71,7 +71,7 @@ void shiro::io::buffer::write_int(int32_t value) {
 	this->allocate(4);
 	uint8_t* data = reinterpret_cast<uint8_t*>(&value);
 
-	for (int i = 0; i < sizeof(int32_t); i++) {
+	for (size_t i = 0; i < sizeof(int32_t); i++) {
 		this->bytes.at(this->written_size++) = data[i];
 	}
 }
@@ -87,7 +87,7 @@ void shiro::io::buffer::write_uint(uint32_t value) {
 	this->allocate(4);
 	uint8_t* data = reinterpret_cast<uint8_t*>(&value);
 
-	for (int i = 0; i < sizeof(uint32_t); i++) {
+	for (size_t i = 0; i < sizeof(uint32_t); i++) {
 		this->bytes.at(this->written_size++) = data[i];
 	}
 }
@@ -103,7 +103,7 @@ void shiro::io::buffer::write_long(int64_t value) {
 	this->allocate(8);
 	uint8_t* data = reinterpret_cast<uint8_t*>(&value);
 
-	for (int i = 0; i < sizeof(int64_t); i++) {
+	for (size_t i = 0; i < sizeof(int64_t); i++) {
 		this->bytes.at(this->written_size++) = data[i];
 	}
 }
@@ -119,7 +119,7 @@ void shiro::io::buffer::write_ulong(uint64_t value) {
 	this->allocate(8);
 	uint8_t* data = reinterpret_cast<uint8_t*>(&value);
 
-	for (int i = 0; i < sizeof(uint64_t); i++) {
+	for (size_t i = 0; i < sizeof(uint64_t); i++) {
 		this->bytes.at(this->written_size++) = data[i];
 	}
 }
@@ -135,7 +135,7 @@ void shiro::io::buffer::write_float(float value) {
 	this->allocate(4);
 	uint8_t* data = reinterpret_cast<uint8_t*>(&value);
 
-	for (int i = 0; i < sizeof(float); i++) {
+	for (size_t i = 0; i < sizeof(float); i++) {
 		this->bytes.at(this->written_size++) = data[i];
 	}
 }
@@ -151,7 +151,7 @@ void shiro::io::buffer::write_double(double value) {
 	this->allocate(8);
 	uint8_t* data = reinterpret_cast<uint8_t*>(&value);
 
-	for (int i = 0; i < sizeof(double); i++) {
+	for (size_t i = 0; i < sizeof(double); i++) {
 		this->bytes.at(this->written_size++) = data[i];
 	}
 }
