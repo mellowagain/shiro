@@ -26,12 +26,15 @@ endif()
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${CMAKE_CXX_FLAGS} -Og -g3 -ggdb")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${CMAKE_CXX_FLAGS} -O3")
 
+# Enable logging with streams in Loguru
+add_definitions(-DLOGURU_WITH_STREAMS=1)
+
 if (WIN32)
     set(CMAKE_LINK_LIBS)
 elseif (APPLE)
-    set(CMAKE_LINK_LIBS ${CMAKE_LINK_LIBS} c stdc++)
+    set(CMAKE_LINK_LIBS ${CMAKE_LINK_LIBS} c stdc++ mysqlpp)
 elseif (UNIX) # Linux
-    set(CMAKE_LINK_LIBS ${CMAKE_LINK_LIBS} c stdc++ stdc++fs pthread)
+    set(CMAKE_LINK_LIBS ${CMAKE_LINK_LIBS} c stdc++ stdc++fs pthread dl mysqlpp)
 endif()
 
 add_executable(shiro ${SRC})
