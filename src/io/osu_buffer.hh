@@ -9,7 +9,14 @@ namespace shiro::io {
 
     class buffer {
     private:
+		std::vector<uint8_t> bytes;
+
+		int written_size = 0;
         int position = 0;
+
+		void allocate(int size);
+		void seek(int position);
+		void advance(int size);
 
     public:
         buffer(const std::string &data);
@@ -24,7 +31,7 @@ namespace shiro::io {
         void write_ushort(uint16_t value);
 
         int32_t read_int();
-        void write_int(uint32_t value);
+        void write_int(int32_t value);
 
         uint32_t read_uint();
         void write_uint(uint32_t value);

@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="F:\bancho i osu\shiro\src\io\osu_buffer.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\bancho i osu\shiro\src\main.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\bancho i osu\shiro\src\shiro.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="F:\bancho i osu\shiro\src\io\osu_buffer.hh">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\bancho i osu\shiro\src\shiro.hh">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\bancho i osu\shiro\src\thirdparty\httplib.hh">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="F:\bancho i osu\shiro\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{9F1C0FCD-2198-3663-AE8A-507A961FB27A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{873240F1-987E-3408-8B60-71A3ECBBF578}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
