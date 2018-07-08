@@ -1,0 +1,24 @@
+version: 2
+jobs:
+  build:
+    working_directory: ~/shiro
+    docker:
+      - image: ubuntu:rolling
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: |
+            apt-get update -qq
+            apt-get install -y g++ cmake git wget ssh
+      - run:
+          name: Generate CMake file
+          command: |
+            cmake .
+      - run:
+          name: Build
+          command: |
+            make -j2
+      - store_artifacts:
+          path: ~/shiro/bin/shiro
+          destination: shiro
