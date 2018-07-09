@@ -59,10 +59,16 @@ void shiro::database::setup() {
 }
 
 void shiro::database::update(const std::string &query_str) {
+    if (!this->is_connected())
+        return;
+
     mysql_query(&this->connection, query_str.c_str());
 }
 
 std::vector<MYSQL_ROW> shiro::database::query(const std::string &query_str) {
+    if (!this->is_connected())
+        return {};
+
     std::vector<MYSQL_ROW> result;
     MYSQL_RES *query_id;
     MYSQL_ROW row;
