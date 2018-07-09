@@ -44,7 +44,9 @@ void shiro::utils::leb128::write_leb128(shiro::io::buffer &buffer, uint64_t valu
                 byte |= 0x80;
             }
 
-            buffer.write_byte(byte);
+            output += byte;
         } while (value > 0);
+
+        buffer.write_string(output);
     }
 }

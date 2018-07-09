@@ -1,4 +1,5 @@
 #include "layout.hh"
+#include "../../utils/leb128.hh"
 
 shiro::io::layout::layout(uint8_t data) {
     this->type = data_type::byte;
@@ -77,6 +78,8 @@ size_t shiro::io::layout::get_size() {
         case data_type::array:
             return this->data_array.size();
     }
+
+    return 0;
 }
 
 std::string &shiro::io::layout::marshal() {
@@ -84,36 +87,48 @@ std::string &shiro::io::layout::marshal() {
 
     switch (this->type) {
         case data_type::byte:
+            buf.write_int(this->get_size());
             buf.write_byte(this->data_byte);
             break;
         case data_type::int16:
+            buf.write_int(this->get_size());
             buf.write_short(this->data_short);
             break;
         case data_type::uint16:
+            buf.write_int(this->get_size());
             buf.write_ushort(this->data_ushort);
             break;
         case data_type::int32:
+            buf.write_int(this->get_size());
             buf.write_int(this->data_int);
             break;
         case data_type::uint32:
+            buf.write_int(this->get_size());
             buf.write_uint(this->data_uint);
             break;
         case data_type::int64:
+            buf.write_int(this->get_size());
             buf.write_long(this->data_long);
             break;
         case data_type::uint64:
+            buf.write_int(this->get_size());
             buf.write_ulong(this->data_ulong);
             break;
         case data_type::flt:
+            buf.write_int(this->get_size());
             buf.write_float(this->data_float);
             break;
         case data_type::dble:
+            buf.write_int(this->get_size());
             buf.write_double(this->data_double);
             break;
         case data_type::string:
+            buf.write_byte(11);
+            utils::leb128::write_leb128(buf, this->data_string.size());
             buf.write_string(this->data_string);
             break;
         case data_type::array:
+            buf.write_int(this->get_size());
             buf.write_array(this->data_array);
             break;
     }
