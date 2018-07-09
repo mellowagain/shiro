@@ -50,7 +50,7 @@ namespace shiro::io {
         layout(std::vector<int32_t> data);
 
         virtual size_t get_size();
-        virtual std::string &marshal();
+        virtual std::string marshal();
         virtual void unmarshal(shiro::io::buffer &buffer);
 
     };
