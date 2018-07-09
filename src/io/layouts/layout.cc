@@ -128,7 +128,7 @@ std::string shiro::io::layout::marshal() {
             buf.write_string(this->data_string);
             break;
         case data_type::array:
-            buf.write_int(this->get_size());
+            buf.write_int(this->data_array.size());
             buf.write_array(this->data_array);
             break;
     }

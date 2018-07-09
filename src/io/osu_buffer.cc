@@ -1,3 +1,5 @@
+#include <sstream>
+
 #include "osu_buffer.hh"
 #include "../utils/leb128.hh"
 
@@ -195,7 +197,7 @@ void shiro::io::buffer::write_array(std::vector<int32_t> value) {
         this->write_int(data);
     }
 }
-#include <sstream>
+
 std::string shiro::io::buffer::serialize() {
     std::stringstream stream;
 

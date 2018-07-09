@@ -4,7 +4,6 @@
 shiro::io::buffer& shiro::io::osu_writer::write_packet(uint16_t id, shiro::io::layout data) {
     this->data.write_short(id);
     this->data.write_byte(0);
-    this->data.write_int(data.get_size());
     this->data.write_string(data.marshal());
 
     return this->data;
