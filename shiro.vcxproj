@@ -60,7 +60,7 @@
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">shiro.dir\Debug\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">shiro</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.exe</TargetExt>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkIncremental>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</GenerateManifest>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">F:\bancho i osu\shiro\bin\Release\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">shiro.dir\Release\</IntDir>
@@ -82,12 +82,8 @@
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">true</GenerateManifest>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>F:\cpp-libraries\mysql-5.7.22-win32\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);F:\cpp-libraries\mysql-5.7.22-win32\include</IncludePath>
     <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86;F:\cpp-libraries\mysql-5.7.22-win32\lib</LibraryPath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86;F:\cpp-libraries\mysql-5.7.22-win32\lib</LibraryPath>
-    <IncludePath>F:\cpp-libraries\mysql-5.7.22-win32\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -121,16 +117,15 @@
     <Link>
       <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;libmysqld.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalOptions>%(AdditionalOptions) /machine:X86 /clr</AdditionalOptions>
+      <AdditionalOptions>%(AdditionalOptions) /machine:X86</AdditionalOptions>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ImportLibrary>F:/bancho i osu/shiro/Debug/shiro.lib</ImportLibrary>
       <ProgramDataBaseFile>F:/bancho i osu/shiro/bin/Debug/shiro.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
-      <ShowProgress>LinkVerbose</ShowProgress>
     </Link>
     <ProjectReference>
-      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -163,7 +158,7 @@
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
     </Midl>
     <Link>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;libmysql.lib</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>%(AdditionalOptions) /machine:X86</AdditionalOptions>
       <GenerateDebugInformation>false</GenerateDebugInformation>
@@ -318,6 +313,11 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="F:\bancho i osu\shiro\src\config\cli_args.cc" />
+    <ClCompile Include="src\utils\leb128.cc" />
+    <ClInclude Include="F:\bancho i osu\shiro\src\config\cli_args.hh" />
+    <ClCompile Include="F:\bancho i osu\shiro\src\config\db_file.cc" />
+    <ClInclude Include="F:\bancho i osu\shiro\src\config\db_file.hh" />
     <ClCompile Include="F:\bancho i osu\shiro\src\database\database.cc" />
     <ClInclude Include="F:\bancho i osu\shiro\src\database\database.hh" />
     <ClCompile Include="F:\bancho i osu\shiro\src\io\osu_buffer.cc" />
@@ -327,8 +327,11 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ClCompile Include="F:\bancho i osu\shiro\src\main.cc" />
     <ClCompile Include="F:\bancho i osu\shiro\src\shiro.cc" />
     <ClInclude Include="F:\bancho i osu\shiro\src\shiro.hh" />
+    <ClInclude Include="F:\bancho i osu\shiro\src\thirdparty\cli11.hh" />
+    <ClInclude Include="F:\bancho i osu\shiro\src\thirdparty\cpptoml.hh" />
     <ClInclude Include="F:\bancho i osu\shiro\src\thirdparty\httplib.hh" />
     <ClInclude Include="F:\bancho i osu\shiro\src\thirdparty\loguru.hh" />
+    <ClInclude Include="src\utils\leb128.hh" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="F:\bancho i osu\shiro\ZERO_CHECK.vcxproj">

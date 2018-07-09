@@ -1,4 +1,5 @@
 #include "osu_buffer.hh"
+#include "../utils/leb128.hh"
 
 // Constructor
 shiro::io::buffer::buffer(const std::string &data) {
@@ -157,11 +158,25 @@ void shiro::io::buffer::write_double(double value) {
 }
 
 std::string shiro::io::buffer::read_string() {
-    return "";
+    if (this->read_byte() != 11)
+        return "";
+
+    std::string result;
+    uint64_t length = shiro::utils::leb128::read_leb128(*this);
+
+    for (int i = 0; i < static_cast<int>(length); i++) {
+        result += static_cast<char>(this->read_byte());
+    }
+
+    return result;
 }
 
 void shiro::io::buffer::write_string(std::string value) {
+    this->allocate(value.length());
 
+    for (char &c : value) {
+        this->bytes.at(this->written_size++) = static_cast<uint8_t>(c);
+    }
 }
 
 std::vector<int32_t> shiro::io::buffer::read_array() {
