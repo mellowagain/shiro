@@ -3,7 +3,7 @@
 
 #include <string>
 
-#if __has_include(mysql++.h>)
+#if __has_include(<mysql++.h>)
     #include <mysql++.h>
 #else
     #define MYSQLPP_MYSQL_HEADERS_BURIED
