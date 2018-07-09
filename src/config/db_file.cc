@@ -17,11 +17,11 @@ void shiro::config::database::parse() {
         LOG_S(FATAL) << "Failed to parse database.toml file: " << ex.what() << ".";
     }
 
-    address = *config_file->get_as<std::string>("database.address");
-    port = *config_file->get_as<unsigned int>("database.port");
-    database = *config_file->get_as<std::string>("database.database");
-    username = *config_file->get_as<std::string>("database.username");
-    password = *config_file->get_as<std::string>("database.password");
+    address = config_file->get_qualified_as<std::string>("database.address").value_or("127.0.0.1");
+    port = config_file->get_qualified_as<unsigned int>("database.port").value_or(3306);
+    database = config_file->get_qualified_as<std::string>("database.database").value_or("shiro");
+    username = config_file->get_qualified_as<std::string>("database.username").value_or("root");
+    password = config_file->get_qualified_as<std::string>("database.password").value_or("hunter2");
 
     LOG_S(INFO) << "Successfully parsed database.toml.";
 
