@@ -1,16 +1,21 @@
 #ifndef SHIRO_DATABASE_HH
 #define SHIRO_DATABASE_HH
 
-#include <mysql/mysql.h>
 #include <string>
 #include <vector>
+
+#if __has_include(<mysql.h>)
+    #include <mysql.h>
+#else
+    #include <mysql/mysql.h>
+#endif
 
 namespace shiro {
 
     class database {
     private:
         MYSQL connection;
-        
+
         std::string address;
         unsigned int port;
         std::string db;

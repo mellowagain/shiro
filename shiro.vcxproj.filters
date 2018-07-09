@@ -1,6 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <ClCompile Include="F:\bancho i osu\shiro\src\config\cli_args.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\bancho i osu\shiro\src\config\db_file.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="F:\bancho i osu\shiro\src\database\database.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -18,6 +24,12 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="F:\bancho i osu\shiro\src\config\cli_args.hh">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\bancho i osu\shiro\src\config\db_file.hh">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="F:\bancho i osu\shiro\src\database\database.hh">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -28,6 +40,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="F:\bancho i osu\shiro\src\shiro.hh">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\bancho i osu\shiro\src\thirdparty\cli11.hh">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\bancho i osu\shiro\src\thirdparty\cpptoml.hh">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="F:\bancho i osu\shiro\src\thirdparty\httplib.hh">
