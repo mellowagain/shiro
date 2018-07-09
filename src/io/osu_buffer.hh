@@ -11,15 +11,15 @@ namespace shiro::io {
     private:
 		std::vector<uint8_t> bytes;
 
-		int written_size = 0;
-        int position = 0;
+		size_t written_size = 0;
+        unsigned int position = 0;
 
 		void allocate(int size);
-		void seek(int position);
+		void seek(unsigned int position);
 		void advance(int size);
 
     public:
-        buffer(const std::string &data);
+        explicit buffer(const std::string &data);
 
         uint8_t read_byte();
         void write_byte(uint8_t value);
