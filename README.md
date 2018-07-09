@@ -5,5 +5,5 @@ C++ osu!Bancho re-implementation
 ### Dependencies
 
 * cmake
-* C++17 compiler (Clang, MSVC)
-* mysql++
+* C++17 compiler
+* libmysql

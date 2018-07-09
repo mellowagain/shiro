@@ -2,42 +2,42 @@
 #define SHIRO_DATABASE_HH
 
 #include <string>
+#include <vector>
 
-#if __has_include(<mysql++.h>)
-    #include <mysql++.h>
+#if __has_include(<mysql.h>)
+#include <mysql.h>
 #else
-    #define MYSQLPP_MYSQL_HEADERS_BURIED
-    #include <mysql++/mysql++.h>
+#include <mysql/mysql.h>
 #endif
 
 namespace shiro {
 
-    class database {
-    private:
-        std::string address;
-        unsigned int port;
-        std::string db;
+	class database {
+	private:
+		std::string address;
+		unsigned int port;
+		std::string db;
 
-        std::string username;
-        std::string password;
+		std::string username;
+		std::string password;
 
-        mysqlpp::Connection connection = nullptr;
+		MYSQL connection;
 
-        database(const std::string &address, unsigned int port, const std::string &db, const std::string &username, const std::string &password);
+		database(const std::string &address, unsigned int port, const std::string &db, const std::string &username, const std::string &password);
 
-    public:
-        void connect();
-        void disconnect();
+	public:
+		void connect();
+		void disconnect();
 
-        void setup();
+		void setup();
 
-        void update(const std::string &query_str);
-        mysqlpp::StoreQueryResult query(const std::string &query_str);
+		void update(const std::string &query_str);
+		std::vector<MYSQL_ROW> query(const std::string &query_str);
 
-        bool is_connected();
-        mysqlpp::Connection get_connection();
+		bool is_connected();
+		MYSQL *get_connection();
 
-    };
+	};
 
 }
 
