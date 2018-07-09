@@ -1,0 +1,5 @@
+# Bancho configuration file for shiro
+
+[server]
+host = "localhost"
+port = 8080

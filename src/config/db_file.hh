@@ -3,8 +3,6 @@
 
 #include <string>
 
-#include "../thirdparty/cpptoml.hh"
-
 namespace shiro::config::database {
 
     extern std::string address;
