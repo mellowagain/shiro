@@ -32,9 +32,9 @@ add_definitions(-DLOGURU_WITH_STREAMS=1)
 if (WIN32)
     set(CMAKE_LINK_LIBS)
 elseif (APPLE)
-    set(CMAKE_LINK_LIBS ${CMAKE_LINK_LIBS} c stdc++ mysqlpp)
+    set(CMAKE_LINK_LIBS ${CMAKE_LINK_LIBS} c stdc++ mysqlclient)
 elseif (UNIX) # Linux
-    set(CMAKE_LINK_LIBS ${CMAKE_LINK_LIBS} c stdc++ stdc++fs pthread dl mysqlpp)
+    set(CMAKE_LINK_LIBS ${CMAKE_LINK_LIBS} c stdc++ stdc++fs pthread dl mysqlclient)
 endif()
 
 add_executable(shiro ${SRC})
