@@ -82,7 +82,7 @@ size_t shiro::io::layout::get_size() {
     return 0;
 }
 
-std::string &shiro::io::layout::marshal() {
+std::string shiro::io::layout::marshal() {
     buffer buf;
 
     switch (this->type) {
