@@ -22,6 +22,7 @@
     <ClCompile Include="F:\bancho i osu\shiro\src\shiro.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\utils\leb128.cc" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="F:\bancho i osu\shiro\src\config\cli_args.hh">
@@ -54,6 +55,7 @@
     <ClInclude Include="F:\bancho i osu\shiro\src\thirdparty\loguru.hh">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\utils\leb128.hh" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="F:\bancho i osu\shiro\CMakeLists.txt" />

@@ -314,6 +314,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="F:\bancho i osu\shiro\src\config\cli_args.cc" />
+    <ClCompile Include="src\utils\leb128.cc" />
     <ClInclude Include="F:\bancho i osu\shiro\src\config\cli_args.hh" />
     <ClCompile Include="F:\bancho i osu\shiro\src\config\db_file.cc" />
     <ClInclude Include="F:\bancho i osu\shiro\src\config\db_file.hh" />
@@ -330,6 +331,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ClInclude Include="F:\bancho i osu\shiro\src\thirdparty\cpptoml.hh" />
     <ClInclude Include="F:\bancho i osu\shiro\src\thirdparty\httplib.hh" />
     <ClInclude Include="F:\bancho i osu\shiro\src\thirdparty\loguru.hh" />
+    <ClInclude Include="src\utils\leb128.hh" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="F:\bancho i osu\shiro\ZERO_CHECK.vcxproj">
