@@ -1,10 +1,10 @@
 #include "leb128.hh"
 
 uint64_t shiro::utils::leb128::read_leb128(shiro::io::buffer &buffer) {
-    int total = 0;
+    uint64_t total = 0;
     int shift = 0;
 
-    auto byte = buffer.read_byte();
+    uint8_t byte = buffer.read_byte();
 
     if ((byte & 0x80) == 0) {
         total |= ((byte & 0x7F) << shift);

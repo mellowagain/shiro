@@ -2,12 +2,14 @@
 #define SHIRO_LEB128_HH
 
 #include <cstdint>
+
 #include "../io/osu_buffer.hh"
 
 namespace shiro::utils::leb128 {
     
-    uint64_t read_leb128(shiro::io::buffer &buffer);
-    void write_leb128(shiro::io::buffer &buffer, uint64_t value);
+    uint64_t read_leb128(io::buffer &buffer);
+
+    void write_leb128(io::buffer &buffer, uint64_t value);
 
 }
 

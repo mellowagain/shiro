@@ -4,6 +4,12 @@
 
 static std::shared_ptr<cpptoml::table> config_file = nullptr;
 
+std::string shiro::config::database::address = "127.0.0.1";
+unsigned int shiro::config::database::port = 3306;
+std::string shiro::config::database::database = "shiro";
+std::string shiro::config::database::username = "root";
+std::string shiro::config::database::password = "hunter2";
+
 void shiro::config::database::parse() {
     // For convenience
     using namespace cpptoml;
