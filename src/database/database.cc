@@ -31,12 +31,11 @@ void shiro::database::setup() {
     update("CREATE TABLE IF NOT EXISTS `beatmaps` "
            "(id INT PRIMARY KEY, beatmap_id INT, beatmapset_id INT, beatmap_md5 VARCHAR(32), song_name VARCHAR(128), "
            "ar FLOAT, od FLOAT, diff_std FLOAT, diff_taiko FLOAT, diff_ctb FLOAT, diff_mania FLOAT, "
-           "max_combo INT, hit_length INT, bpm INT, ranked BOOLEAN, last_update INT, "
-           "ranked_status_freezed BOOLEAN, play_count INT, pass_count INT, "
-           "pp_100 INT, pp_99 INT, pp_98 INT, pp_95 INT);");
+           "max_combo INT, hit_length INT, bpm INT, ranked TINYINT, last_update INT, "
+           "ranked_status_freezed BOOLEAN, play_count INT, pass_count INT);");
 
     // IRC channels
-    update("CREATE TABLE IF NOT EXISTS `channels` (id INT, name VARCHAR(32), desc VARCHAR(32), is_staff_only BOOL);");
+    update("CREATE TABLE IF NOT EXISTS `channels` (id INT PRIMARY KEY, name VARCHAR(32), desc VARCHAR(32), is_staff_only BOOL);");
 
     // Submitted scores
     update("CREATE TABLE IF NOT EXISTS `scores` "
