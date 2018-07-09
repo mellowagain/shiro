@@ -17,6 +17,7 @@ int shiro::init(int argc, char **argv) {
             config::database::address, config::database::port, config::database::database, config::database::username, config::database::password
     );
     db_connection->connect();
+    db_connection->setup();
 
     LOG_S(INFO) << "Welcome to shiro.";
 

@@ -24,6 +24,9 @@ void shiro::database::disconnect() {
 }
 
 void shiro::database::setup() {
+    if (!this->is_connected())
+        return;
+
     // Beatmaps
     update("CREATE TABLE IF NOT EXISTS `beatmaps` "
            "(id INT PRIMARY KEY, beatmap_id INT, beatmapset_id INT, beatmap_md5 VARCHAR(32), song_name VARCHAR(128), "
