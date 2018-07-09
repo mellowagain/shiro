@@ -9,14 +9,14 @@ namespace shiro::io {
 
     class buffer {
     private:
-		std::vector<uint8_t> bytes;
+        std::vector<uint8_t> bytes;
 
-		size_t written_size = 0;
+        size_t written_size = 0;
         unsigned int position = 0;
 
-		void allocate(int size);
-		void seek(unsigned int position);
-		void advance(int size);
+        void allocate(int size);
+        void seek(unsigned int position);
+        void advance(int size);
 
     public:
         explicit buffer(const std::string &data);

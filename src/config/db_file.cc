@@ -26,9 +26,9 @@ void shiro::config::database::parse() {
 
     LOG_S(INFO) << "Successfully parsed database.toml.";
 
-    cli::cli_app.add_option("-ad,--address", address, "Address of MySQL server to connect to")->required(false);
-    cli::cli_app.add_option("-port,--port", port, "Port of MySQL server to connect to")->required(false);
-    cli::cli_app.add_option("-db,--database", database, "Database in MySQL server to put data into")->required(false);
-    cli::cli_app.add_option("-un,--username", username, "Username used to authenticate with MySQL server")->required(false);
-    cli::cli_app.add_option("-pw,--password", password, "Password used to authenticate with MySQL server")->required(false);
+    cli::cli_app.add_option("--db-address", address, "Address of MySQL server to connect to")->required(false);
+    cli::cli_app.add_option("--db-port", port, "Port of MySQL server to connect to")->required(false);
+    cli::cli_app.add_option("--db-database", database, "Database in MySQL server to put data into")->required(false);
+    cli::cli_app.add_option("--db-username", username, "Username used to authenticate with MySQL server")->required(false);
+    cli::cli_app.add_option("--db-password", password, "Password used to authenticate with MySQL server")->required(false);
 }
