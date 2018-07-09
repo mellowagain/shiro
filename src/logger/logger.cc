@@ -23,12 +23,12 @@ void shiro::logging::init(int argc, char **argv) {
         std::time_t now = std::time(nullptr);
         time_struct = *std::localtime(&now);
 
-        std::strftime(buffer, sizeof(buffer), "%d.%m.%Y %X", &time_struct);
+        std::strftime(buffer, sizeof(buffer), "%d-%m-%Y %H.%M.%S", &time_struct);
 
         return std::string(buffer);
     }();
     char buffer[128];
-    std::snprintf(buffer, sizeof(buffer), "logs/shiro-%s.log", current_time.c_str());
+    std::snprintf(buffer, sizeof(buffer), "logs/shiro %s.log", current_time.c_str());
     loguru::add_file(buffer, loguru::FileMode::Append, loguru::Verbosity_INFO);
 
     loguru::init(argc, argv);

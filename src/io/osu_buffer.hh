@@ -19,6 +19,7 @@ namespace shiro::io {
         void advance(int size);
 
     public:
+        buffer() = default;
         explicit buffer(const std::string &data);
 
         uint8_t read_byte();

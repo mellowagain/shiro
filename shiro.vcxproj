@@ -85,6 +85,10 @@
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);F:\cpp-libraries\mysql-5.7.22-win32\include</IncludePath>
     <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86;F:\cpp-libraries\mysql-5.7.22-win32\lib</LibraryPath>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);F:\cpp-libraries\mysql-5.7.22-win32\include</IncludePath>
+    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86;F:\cpp-libraries\mysql-5.7.22-win32\lib</LibraryPath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <AdditionalOptions>%(AdditionalOptions) -std=c++17 -std=c++17 -g3 -ggdb</AdditionalOptions>
@@ -158,7 +162,7 @@
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
     </Midl>
     <Link>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;libmysql.lib;Ws2_32.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>%(AdditionalOptions) /machine:X86</AdditionalOptions>
       <GenerateDebugInformation>false</GenerateDebugInformation>
@@ -314,6 +318,15 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="F:\bancho i osu\shiro\src\config\cli_args.cc" />
+    <ClCompile Include="src\config\bancho_file.cc" />
+    <ClCompile Include="src\io\layouts\layout.cc" />
+    <ClCompile Include="src\io\osu_reader.cc" />
+    <ClCompile Include="src\io\osu_writer.cc" />
+    <ClCompile Include="src\routes\impl\root_route.cc" />
+    <ClCompile Include="src\routes\routes.cc" />
+    <ClCompile Include="src\signal\nix\nix_signal_handler.cc" />
+    <ClCompile Include="src\signal\signal_handler.cc" />
+    <ClCompile Include="src\signal\win32\windows_signal_handler.cc" />
     <ClCompile Include="src\utils\leb128.cc" />
     <ClInclude Include="F:\bancho i osu\shiro\src\config\cli_args.hh" />
     <ClCompile Include="F:\bancho i osu\shiro\src\config\db_file.cc" />
@@ -331,6 +344,16 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ClInclude Include="F:\bancho i osu\shiro\src\thirdparty\cpptoml.hh" />
     <ClInclude Include="F:\bancho i osu\shiro\src\thirdparty\httplib.hh" />
     <ClInclude Include="F:\bancho i osu\shiro\src\thirdparty\loguru.hh" />
+    <ClInclude Include="src\config\bancho_file.hh" />
+    <ClInclude Include="src\io\layouts\layout.hh" />
+    <ClInclude Include="src\io\layouts\packets.hh" />
+    <ClInclude Include="src\io\osu_reader.hh" />
+    <ClInclude Include="src\io\osu_writer.hh" />
+    <ClInclude Include="src\routes\impl\root_route.hh" />
+    <ClInclude Include="src\routes\routes.hh" />
+    <ClInclude Include="src\signal\nix\nix_signal_handler.hh" />
+    <ClInclude Include="src\signal\signal_handler.hh" />
+    <ClInclude Include="src\signal\win32\windows_signal_handler.hh" />
     <ClInclude Include="src\utils\leb128.hh" />
   </ItemGroup>
   <ItemGroup>
