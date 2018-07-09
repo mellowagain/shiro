@@ -10,7 +10,7 @@ jobs:
           name: Install dependencies
           command: |
             apt-get update -qq
-            apt-get install -y g++ cmake git wget ssh libmysql++3v5 libmysql++-dev
+            apt-get install -y clang cmake git wget ssh libmysql++3v5 libmysql++-dev
       - run:
           name: Generate CMake file
           command: |
