@@ -122,11 +122,18 @@ std::string shiro::io::layout::marshal() {
             buf.write_int(this->get_size());
             buf.write_double(this->data_double);
             break;
-        case data_type::string:
-            buf.write_byte(11);
-            utils::leb128::write_leb128(buf, this->data_string.size());
-            buf.write_string(this->data_string);
+        case data_type::string: {
+            io::buffer string_buffer;
+
+            string_buffer.write_byte(11);
+            utils::leb128::write_leb128(string_buffer, this->data_string.size());
+            string_buffer.write_string(this->data_string);
+
+            buf.write_int(string_buffer.serialize().length());
+            buf.write_string(string_buffer.serialize());
+
             break;
+        }
         case data_type::array:
             buf.write_int(this->data_array.size());
             buf.write_array(this->data_array);
