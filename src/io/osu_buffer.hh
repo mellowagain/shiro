@@ -54,6 +54,8 @@ namespace shiro::io {
         std::vector<int32_t> read_array();
         void write_array(std::vector<int32_t> value);
 
+        std::string serialize();
+
     };
 
 }

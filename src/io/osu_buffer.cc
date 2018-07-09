@@ -195,3 +195,13 @@ void shiro::io::buffer::write_array(std::vector<int32_t> value) {
         this->write_int(data);
     }
 }
+#include <sstream>
+std::string shiro::io::buffer::serialize() {
+    std::stringstream stream;
+
+    for (std::size_t i{}; i < this->written_size; i++) {
+        stream << std::hex << this->bytes.at(i);
+    }
+
+    return stream.str();
+}
