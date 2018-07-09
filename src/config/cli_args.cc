@@ -12,7 +12,6 @@ void shiro::config::cli::parse(int argc, char **argv) {
         cli_app.parse(argc, argv);
     } catch (const CLI::ParseError &ex) {
         LOG_S(FATAL) << "Unable to parse command line arguments: " << ex.what() << ".";
-        std::exit(-1);
     }
 }
 

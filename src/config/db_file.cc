@@ -15,7 +15,6 @@ void shiro::config::database::parse() {
         config_file = parse_file("database.toml");
     } catch (const parse_exception &ex) {
         LOG_S(FATAL) << "Failed to parse database.toml file: " << ex.what() << ".";
-        std::exit(-1);
     }
 
     address = *config_file->get_as<std::string>("database.address");

@@ -11,20 +11,16 @@ shiro::database::database(const std::string &address, unsigned int port, const s
 }
 
 void shiro::database::connect() {
-    if (!mysql_real_connect(&this->connection, this->address.c_str(), this->username.c_str(), this->password.c_str(), this->db.c_str(), this->port, nullptr, 0)) {
-        LOG_S(FATAL) << "Cannot establish connection with MySQL database:";
-        LOG_F(FATAL, "(%d) %s", mysql_errno(&this->connection), mysql_error(&this->connection));
-
-        std::exit(-1);
-    }
+    if (!mysql_real_connect(&this->connection, this->address.c_str(), this->username.c_str(), this->password.c_str(), this->db.c_str(), this->port, nullptr, 0))
+        LOG_F(FATAL, "Cannot establish connection with MySQL database: (%i) %s.", mysql_errno(&this->connection), mysql_error(&this->connection));
 
     // mysql_select_db(&this->connection, this->db.c_str()); (?)
-    LOG_S(INFO) << "Successfully connected to MySQL database";
+    LOG_S(INFO) << "Successfully connected to MySQL database.";
 }
 
 void shiro::database::disconnect() {
     mysql_close(&this->connection);
-    LOG_S(INFO) << "Successfully disconnected from MySQL database";
+    LOG_S(INFO) << "Successfully disconnected from MySQL database.";
 }
 
 void shiro::database::setup() {
