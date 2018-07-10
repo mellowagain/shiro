@@ -29,6 +29,10 @@ set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${CMAKE_CXX_FLAGS} -O3")
 # Enable logging with streams in Loguru
 add_definitions(-DLOGURU_WITH_STREAMS=1)
 
+# Boost
+set(Boost_USE_MULTITHREADED ON)
+find_package(Boost REQUIRED COMPONENTS system)
+
 if (WIN32)
     set(CMAKE_LINK_LIBS)
 elseif (APPLE)
@@ -38,4 +42,4 @@ elseif (UNIX) # Linux
 endif()
 
 add_executable(shiro ${SRC})
-target_link_libraries(shiro ${CMAKE_LINK_LIBS})
+target_link_libraries(shiro ${CMAKE_LINK_LIBS}  ${Boost_LIBRARIES})

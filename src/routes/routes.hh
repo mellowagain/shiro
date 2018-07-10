@@ -1,18 +1,16 @@
 #ifndef SHIRO_ROUTES_HH
 #define SHIRO_ROUTES_HH
 
-#include "../thirdparty/httplib.hh"
+#include "../thirdparty/crow.hh"
 #include "../shiro.hh"
 
 namespace shiro::routes {
 
-    static inline httplib::Server server;
+    static inline crow::Crow<> server;
 
     void init();
 
     void init_routes();
-
-    void init_logger();
 
 }
 
