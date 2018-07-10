@@ -3,6 +3,7 @@ project(shiro)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ./bin)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "cmake/")
 
 file(GLOB_RECURSE SRC src/*.cc src/*.hh)
 
@@ -33,8 +34,15 @@ add_definitions(-DLOGURU_WITH_STREAMS=1)
 set(Boost_USE_MULTITHREADED ON)
 find_package(Boost REQUIRED COMPONENTS system)
 
+# Tcmalloc
+find_package(Tcmalloc)
+
+if (Tcmalloc_FOUND)
+    set(CMAKE_LINK_LIBS ${CMAKE_LINK_LIBS} ${Tcmalloc_LIBRARIES})
+endif()
+
 if (WIN32)
-    set(CMAKE_LINK_LIBS)
+    set(CMAKE_LINK_LIBS ${CMAKE_LINK_LIBS})
 elseif (APPLE)
     set(CMAKE_LINK_LIBS ${CMAKE_LINK_LIBS} c stdc++ mysqlclient)
 elseif (UNIX) # Linux
