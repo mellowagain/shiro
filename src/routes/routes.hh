@@ -1,12 +1,12 @@
 #ifndef SHIRO_ROUTES_HH
 #define SHIRO_ROUTES_HH
 
-#include "../thirdparty/crow.hh"
 #include "../shiro.hh"
+#include "../thirdparty/crow.hh"
 
 namespace shiro::routes {
 
-    static inline crow::Crow<> server;
+    static crow::Crow<> server;
 
     void init();
 

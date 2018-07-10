@@ -1,7 +1,7 @@
-#include "root_route.hh"
 #include "../../io/osu_writer.hh"
+#include "root_route.hh"
 
-crow::response shiro::routes::root::handle() {
+crow::response shiro::routes::root::handle(const crow::request &request) {
     io::osu_writer writer;
 
     writer.protocol_negotiation(19);

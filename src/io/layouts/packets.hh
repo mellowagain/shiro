@@ -1,6 +1,8 @@
 #ifndef SHIRO_PACKETS_HH
 #define SHIRO_PACKETS_HH
 
+#include <cstdint>
+
 namespace shiro::io {
 
     enum class packet_id : uint16_t {

@@ -7,7 +7,7 @@
 
 namespace shiro {
 
-    static inline std::shared_ptr<database> db_connection = nullptr;
+    static std::shared_ptr<database> db_connection = nullptr;
 
     int init(int argc, char **argv);
 

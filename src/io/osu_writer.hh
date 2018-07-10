@@ -1,8 +1,8 @@
 #ifndef SHIRO_OSU_WRITER_HH
 #define SHIRO_OSU_WRITER_HH
 
-#include "osu_buffer.hh"
 #include "layouts/layout.hh"
+#include "osu_buffer.hh"
 
 namespace shiro::io {
 

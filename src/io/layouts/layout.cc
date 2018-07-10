@@ -1,5 +1,7 @@
-#include "layout.hh"
+#include <utility>
+
 #include "../../utils/leb128.hh"
+#include "layout.hh"
 
 shiro::io::layout::layout(uint8_t data) {
     this->type = data_type::byte;
@@ -48,12 +50,12 @@ shiro::io::layout::layout(double data) {
 
 shiro::io::layout::layout(std::string data) {
     this->type = data_type::string;
-    this->data_string = data;
+    this->data_string = std::move(data);
 }
 
 shiro::io::layout::layout(std::vector<int32_t> data) {
     this->type = data_type::array;
-    this->data_array = data;
+    this->data_array = std::move(data);
 }
 
 size_t shiro::io::layout::get_size() {

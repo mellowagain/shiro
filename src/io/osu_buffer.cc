@@ -1,9 +1,8 @@
 #include <sstream>
 
-#include "osu_buffer.hh"
 #include "../utils/leb128.hh"
+#include "osu_buffer.hh"
 
-// Constructor
 shiro::io::buffer::buffer(const std::string &data) {
 
 }

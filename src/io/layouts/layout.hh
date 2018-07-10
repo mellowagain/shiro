@@ -7,7 +7,7 @@ namespace shiro::io {
 
     class layout {
     protected:
-        enum class data_type {
+        enum class data_type : int {
             byte = 0,
             int16 = 1,
             uint16 = 2,
@@ -25,29 +25,29 @@ namespace shiro::io {
         data_type type;
 
     public:
-        uint8_t data_byte;
-        int16_t data_short;
-        uint16_t data_ushort;
-        int32_t data_int;
-        uint32_t data_uint;
-        int64_t data_long;
-        uint64_t data_ulong;
-        float data_float;
-        double data_double;
+        uint8_t data_byte = 0;
+        int16_t data_short = 0;
+        uint16_t data_ushort = 0;
+        int32_t data_int = 0;
+        uint32_t data_uint = 0;
+        int64_t data_long = 0;
+        uint64_t data_ulong = 0;
+        float data_float = 0.0f;
+        double data_double = 0.0;
         std::string data_string;
         std::vector<int32_t> data_array;
 
-        layout(uint8_t data);
-        layout(int16_t data);
-        layout(uint16_t data);
-        layout(int32_t data);
-        layout(uint32_t data);
-        layout(int64_t data);
-        layout(uint64_t data);
-        layout(float data);
-        layout(double data);
-        layout(std::string data);
-        layout(std::vector<int32_t> data);
+        explicit layout(uint8_t data);
+        explicit layout(int16_t data);
+        explicit layout(uint16_t data);
+        explicit layout(int32_t data);
+        explicit layout(uint32_t data);
+        explicit layout(int64_t data);
+        explicit layout(uint64_t data);
+        explicit layout(float data);
+        explicit layout(double data);
+        explicit layout(std::string data);
+        explicit layout(std::vector<int32_t> data);
 
         virtual size_t get_size();
         virtual std::string marshal();

@@ -5620,7 +5620,15 @@ namespace crow
 
         //
         std::ostringstream stringstream_;
+
+        #if defined(__clang__)
+        #pragma clang diagnostic push
+        #pragma clang diagnostic ignored "-Wunused-private-field"
+        #endif
         LogLevel level_;
+        #if defined(__clang__)
+        #pragma clang diagnostic pop
+        #endif
     };
 }
 
