@@ -7,3 +7,5 @@ C++ osu!Bancho re-implementation
 * cmake
 * C++17 compiler
 * libmysql
+* libboost
+* (Optional) tcmalloc
