@@ -1611,7 +1611,7 @@ namespace loguru
 
 	static void on_atexit()
 	{
-		LOG_F(INFO, "atexit");
+		//LOG_F(INFO, "atexit");
 		flush();
 	}
 

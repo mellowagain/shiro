@@ -81,6 +81,8 @@ size_t shiro::io::layout::get_size() {
         case data_type::array:
             return this->data_array.size();
     }
+
+    return 0;
 }
 
 std::string shiro::io::layout::marshal() {
