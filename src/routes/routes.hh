@@ -10,6 +10,10 @@ namespace shiro::routes {
 
     void init();
 
+    void init_routes();
+
+    void init_logger();
+
 }
 
 #endif //SHIRO_ROUTES_HH
