@@ -4,10 +4,7 @@
 
 void shiro::routes::init() {
     init_routes();
-    server
-            .port((uint16_t) config::bancho::port)
-            .multithreaded()
-            .run();
+    server.bindaddr(config::bancho::host).port((uint16_t) config::bancho::port).multithreaded().run();
 }
 
 void shiro::routes::init_routes() {
