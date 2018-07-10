@@ -6891,6 +6891,7 @@ namespace crow
                                 message_handler_(*this, message_, is_binary_);
                             message_.clear();
                         }
+                        [[fallthrough]];
                     }
                     case 1: // Text
                     {
