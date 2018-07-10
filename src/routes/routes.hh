@@ -1,8 +1,8 @@
 #ifndef SHIRO_ROUTES_HH
 #define SHIRO_ROUTES_HH
 
-#include "../shiro.hh"
 #include "../thirdparty/crow.hh"
+#include "../shiro.hh"
 
 namespace shiro::routes {
 

@@ -1,6 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <ClCompile Include="F:\bancho i osu\shiro\src\config\bancho_file.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="F:\bancho i osu\shiro\src\config\cli_args.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -10,7 +13,16 @@
     <ClCompile Include="F:\bancho i osu\shiro\src\database\database.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="F:\bancho i osu\shiro\src\io\layouts\layout.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="F:\bancho i osu\shiro\src\io\osu_buffer.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\bancho i osu\shiro\src\io\osu_reader.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\bancho i osu\shiro\src\io\osu_writer.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="F:\bancho i osu\shiro\src\logger\logger.cc">
@@ -19,21 +31,33 @@
     <ClCompile Include="F:\bancho i osu\shiro\src\main.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="F:\bancho i osu\shiro\src\routes\impl\root_route.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\bancho i osu\shiro\src\routes\routes.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="F:\bancho i osu\shiro\src\shiro.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\utils\leb128.cc" />
-    <ClCompile Include="src\io\osu_writer.cc" />
-    <ClCompile Include="src\io\osu_reader.cc" />
-    <ClCompile Include="src\io\layouts\layout.cc" />
-    <ClCompile Include="src\signal\nix\nix_signal_handler.cc" />
-    <ClCompile Include="src\signal\win32\windows_signal_handler.cc" />
-    <ClCompile Include="src\signal\signal_handler.cc" />
-    <ClCompile Include="src\routes\impl\root_route.cc" />
-    <ClCompile Include="src\routes\routes.cc" />
-    <ClCompile Include="src\config\bancho_file.cc" />
+    <ClCompile Include="F:\bancho i osu\shiro\src\signal\nix\nix_signal_handler.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\bancho i osu\shiro\src\signal\signal_handler.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\bancho i osu\shiro\src\signal\win32\windows_signal_handler.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\bancho i osu\shiro\src\utils\leb128.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\utils\osu_string.cc" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="F:\bancho i osu\shiro\src\config\bancho_file.hh">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="F:\bancho i osu\shiro\src\config\cli_args.hh">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -43,13 +67,40 @@
     <ClInclude Include="F:\bancho i osu\shiro\src\database\database.hh">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="F:\bancho i osu\shiro\src\io\layouts\layout.hh">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\bancho i osu\shiro\src\io\layouts\packets.hh">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="F:\bancho i osu\shiro\src\io\osu_buffer.hh">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\bancho i osu\shiro\src\io\osu_reader.hh">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\bancho i osu\shiro\src\io\osu_writer.hh">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="F:\bancho i osu\shiro\src\logger\logger.hh">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="F:\bancho i osu\shiro\src\routes\impl\root_route.hh">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\bancho i osu\shiro\src\routes\routes.hh">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="F:\bancho i osu\shiro\src\shiro.hh">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\bancho i osu\shiro\src\signal\nix\nix_signal_handler.hh">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\bancho i osu\shiro\src\signal\signal_handler.hh">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\bancho i osu\shiro\src\signal\win32\windows_signal_handler.hh">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="F:\bancho i osu\shiro\src\thirdparty\cli11.hh">
@@ -58,23 +109,16 @@
     <ClInclude Include="F:\bancho i osu\shiro\src\thirdparty\cpptoml.hh">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="F:\bancho i osu\shiro\src\thirdparty\httplib.hh">
+    <ClInclude Include="F:\bancho i osu\shiro\src\thirdparty\crow.hh">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="F:\bancho i osu\shiro\src\thirdparty\loguru.hh">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\utils\leb128.hh" />
-    <ClInclude Include="src\io\osu_writer.hh" />
-    <ClInclude Include="src\io\osu_reader.hh" />
-    <ClInclude Include="src\io\layouts\layout.hh" />
-    <ClInclude Include="src\io\layouts\packets.hh" />
-    <ClInclude Include="src\signal\nix\nix_signal_handler.hh" />
-    <ClInclude Include="src\signal\win32\windows_signal_handler.hh" />
-    <ClInclude Include="src\signal\signal_handler.hh" />
-    <ClInclude Include="src\routes\impl\root_route.hh" />
-    <ClInclude Include="src\routes\routes.hh" />
-    <ClInclude Include="src\config\bancho_file.hh" />
+    <ClInclude Include="F:\bancho i osu\shiro\src\utils\leb128.hh">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils\osu_string.hh" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="F:\bancho i osu\shiro\CMakeLists.txt" />

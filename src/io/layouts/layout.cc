@@ -1,6 +1,7 @@
 #include <utility>
 
 #include "../../utils/leb128.hh"
+#include "../../utils/osu_string.hh"
 #include "layout.hh"
 
 shiro::io::layout::layout(uint8_t data) {
@@ -80,8 +81,6 @@ size_t shiro::io::layout::get_size() {
         case data_type::array:
             return this->data_array.size();
     }
-
-    return 0;
 }
 
 std::string shiro::io::layout::marshal() {
@@ -125,14 +124,10 @@ std::string shiro::io::layout::marshal() {
             buf.write_double(this->data_double);
             break;
         case data_type::string: {
-            io::buffer string_buffer;
+            std::string osu_string = utils::osu_string(this->data_string);
 
-            string_buffer.write_byte(11);
-            utils::leb128::write_leb128(string_buffer, this->data_string.size());
-            string_buffer.write_string(this->data_string);
-
-            buf.write_int(string_buffer.serialize().length());
-            buf.write_string(string_buffer.serialize());
+            buf.write_int(osu_string.length());
+            buf.write_string(osu_string);
 
             break;
         }

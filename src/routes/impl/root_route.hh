@@ -5,7 +5,7 @@
 
 namespace shiro::routes::root {
 
-    crow::response handle(const crow::request &request);
+    void handle(const crow::request &request, crow::response &response);
 
 }
 
