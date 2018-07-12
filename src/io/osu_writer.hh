@@ -16,6 +16,7 @@ namespace shiro::io {
         osu_writer() = default;
 
         void login_reply(int32_t reply);
+        void login_permissions(int32_t permissions);
         void announce(std::string announcement);
         void protocol_negotiation(int32_t protocol_version);
 

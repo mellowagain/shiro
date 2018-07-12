@@ -22,7 +22,7 @@ namespace shiro::io {
         };
 
     private:
-        data_type type;
+        data_type type = data_type::byte;
 
     public:
         uint8_t data_byte = 0;
@@ -36,6 +36,8 @@ namespace shiro::io {
         double data_double = 0.0;
         std::string data_string;
         std::vector<int32_t> data_array;
+
+        layout() = default;
 
         explicit layout(uint8_t data);
         explicit layout(int16_t data);

@@ -9,4 +9,5 @@ C++ osu!Bancho re-implementation
 * libmysql
 * libboost
 * libcurl
+* OpenSSL
 * (Optional) tcmalloc

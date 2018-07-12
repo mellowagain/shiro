@@ -37,6 +37,13 @@ find_package(Boost REQUIRED COMPONENTS system)
 # cURL
 find_package(CURL REQUIRED)
 
+# OpenSSL
+find_package(OpenSSL REQUIRED)
+
+if (NOT OPENSSL_CRYPTO_LIBRARY)
+    message(FATAL_ERROR "Unable to find libcrypto provided by OpenSSL.")
+endif()
+
 # Tcmalloc
 find_package(Tcmalloc)
 
@@ -49,9 +56,9 @@ if (WIN32)
 elseif (APPLE)
     set(CMAKE_LINK_LIBS ${CMAKE_LINK_LIBS} c stdc++ mysqlclient)
 elseif (UNIX) # Linux
-    set(CMAKE_LINK_LIBS ${CMAKE_LINK_LIBS} c stdc++ stdc++fs pthread dl mysqlclient)
+    set(CMAKE_LINK_LIBS ${CMAKE_LINK_LIBS} c stdc++ stdc++fs pthread dl mysqlclient crypto)
 endif()
 
-include_directories(${CURL_INCLUDE_DIRS})
-add_executable(shiro ${SRC})
+include_directories(${CURL_INCLUDE_DIRS} ${OPENSSL_INCLUDE_DIR})
+add_executable(shiro ${SRC} src/views/index_view.cc src/views/index_view.hh)
 target_link_libraries(shiro ${CMAKE_LINK_LIBS} ${Boost_LIBRARIES} ${CURL_LIBRARIES})

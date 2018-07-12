@@ -37,6 +37,9 @@ namespace shiro {
         bool is_connected();
         MYSQL *get_connection();
 
+        // Prevents SQL injection
+        std::string escape(const std::string &in);
+
     };
 
 }

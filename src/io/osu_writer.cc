@@ -15,6 +15,10 @@ void shiro::io::osu_writer::login_reply(int32_t reply) {
     this->write_packet((uint16_t) packet_id::out_login_reply, layout(reply));
 }
 
+void shiro::io::osu_writer::login_permissions(int32_t permissions) {
+    this->write_packet((uint16_t) packet_id::out_login_permissions, layout(permissions));
+}
+
 void shiro::io::osu_writer::announce(std::string announcement) {
     this->write_packet((uint16_t) packet_id::out_announce, layout(std::move(announcement)));
 }

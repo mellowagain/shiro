@@ -46,7 +46,8 @@ void shiro::database::setup() {
 
     // Registered users and their stats
     update("CREATE TABLE IF NOT EXISTS `users` (id INT PRIMARY KEY, username VARCHAR(255), safe_username VARCHAR(255), "
-           "password VARCHAR(64), email VARCHAR(100), ip VARCHAR(50), registration_date INT, last_seen INT, "
+           "password VARCHAR(65), salt VARCHAR(65),"
+           "email VARCHAR(100), ip VARCHAR(50), registration_date INT, last_seen INT, "
            "followers INT, groups INT, user_page TEXT, "
            "pp_std FLOAT, pp_taiko FLOAT, pp_ctb FLOAT, pp_mania FLOAT, "
            "score_std INT, score_taiko INT, score_ctb INT, score_mania INT, "
@@ -87,4 +88,11 @@ bool shiro::database::is_connected() {
 
 MYSQL *shiro::database::get_connection() {
     return &this->connection;
+}
+
+std::string shiro::database::escape(const std::string &in) {
+    char buffer[1024];
+    mysql_real_escape_string(&this->connection, buffer, in.c_str(), in.length());
+
+    return std::string(buffer);
 }

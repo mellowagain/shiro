@@ -5,6 +5,8 @@
 
 namespace shiro::io {
 
+    static int cho_protocol = 19;
+
     enum class packet_id : uint16_t {
         in_send_user_status = 0,
         in_send_irc_message = 1,
