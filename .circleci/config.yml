@@ -10,7 +10,7 @@ jobs:
           name: Install dependencies
           command: |
             apt-get update -qq
-            apt-get install -y g++ cmake git wget ssh libmysqlclient-dev libboost-all-dev libtcmalloc-minimal4
+            apt-get install -y g++ cmake git wget ssh libmysqlclient-dev libboost-all-dev libtcmalloc-minimal4 libcurl-dev
       - run:
           name: Generate CMake file
           command: |

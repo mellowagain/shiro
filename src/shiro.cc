@@ -1,8 +1,10 @@
 #include <cstdlib>
+#include <curl/curl.h>
 
 #include "config/bancho_file.hh"
 #include "config/cli_args.hh"
 #include "config/db_file.hh"
+#include "config/geonames_file.hh"
 #include "logger/logger.hh"
 #include "routes/routes.hh"
 #include "shiro.hh"
@@ -13,10 +15,13 @@
 int shiro::init(int argc, char **argv) {
     logging::init(argc, argv);
 
+    curl_global_init(CURL_GLOBAL_DEFAULT);
+
     config::cli::parse(argc, argv);
 
-    config::database::parse();
     config::bancho::parse();
+    config::database::parse();
+    config::geonames::parse();
 
     db_connection = std::make_shared<database>(
             config::database::address, config::database::port, config::database::database, config::database::username, config::database::password

@@ -37,6 +37,9 @@ find_package(Boost REQUIRED COMPONENTS system)
 # Tcmalloc
 find_package(Tcmalloc)
 
+# libcurl
+find_package(CURL REQUIRED)
+
 if (Tcmalloc_FOUND)
     set(CMAKE_LINK_LIBS ${CMAKE_LINK_LIBS} ${Tcmalloc_LIBRARIES})
 endif()
@@ -49,5 +52,6 @@ elseif (UNIX) # Linux
     set(CMAKE_LINK_LIBS ${CMAKE_LINK_LIBS} c stdc++ stdc++fs pthread dl mysqlclient)
 endif()
 
+include_directories(${CURL_INCLUDE_DIRS})
 add_executable(shiro ${SRC})
-target_link_libraries(shiro ${CMAKE_LINK_LIBS}  ${Boost_LIBRARIES})
+target_link_libraries(shiro ${CMAKE_LINK_LIBS} ${Boost_LIBRARIES} ${CURL_LIBRARIES})

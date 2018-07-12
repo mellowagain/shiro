@@ -1,0 +1,8 @@
+# Credentials file for geonames.org
+
+# Please go to http://www.geonames.org/login and create a new account
+# After activating your account, activate your free license on http://www.geonames.org/manageaccount
+# Then put your username you used when you signed up on the site below
+
+[geonames]
+username = "demo"

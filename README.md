@@ -8,4 +8,5 @@ C++ osu!Bancho re-implementation
 * C++17 compiler
 * libmysql
 * libboost
+* libcurl
 * (Optional) tcmalloc
