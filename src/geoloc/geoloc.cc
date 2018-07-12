@@ -13,7 +13,7 @@ uint8_t shiro::geoloc::get_country(float longitude, float latitude) {
 
     if (curl != nullptr) {
         char buffer[512];
-        snprintf(buffer, sizeof(buffer), "http://api.geonames.org/countryCode?lng=%f&lat=%f&username=%s", longitude, latitude, config::geonames::username.c_str());
+        std::snprintf(buffer, sizeof(buffer), "http://api.geonames.org/countryCode?lng=%f&lat=%f&username=%s", longitude, latitude, config::geonames::username.c_str());
 
         curl_easy_setopt(curl, CURLOPT_URL, buffer);
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, callback);

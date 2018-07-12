@@ -3,8 +3,11 @@
 
 #include <cstdint>
 #include <string>
+#include <unordered_map>
 
 namespace shiro::geoloc {
+
+    static std::unordered_map<std::string, uint8_t> countries;
 
     enum class country_id : uint8_t {
         BL = 0,
@@ -224,6 +227,8 @@ namespace shiro::geoloc {
         MF = 252,
 
     };
+
+    void init();
 
     uint8_t get_country_id(const std::string &country_code);
 

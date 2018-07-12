@@ -5,12 +5,13 @@
 #include "config/cli_args.hh"
 #include "config/db_file.hh"
 #include "config/geonames_file.hh"
+#include "geoloc/country_ids.hh"
 #include "logger/logger.hh"
 #include "routes/routes.hh"
-#include "shiro.hh"
 #include "signal/signal_handler.hh"
 #include "thirdparty/cli11.hh"
 #include "thirdparty/loguru.hh"
+#include "shiro.hh"
 
 int shiro::init(int argc, char **argv) {
     logging::init(argc, argv);
@@ -22,6 +23,8 @@ int shiro::init(int argc, char **argv) {
     config::bancho::parse();
     config::database::parse();
     config::geonames::parse();
+
+    geoloc::init();
 
     db_connection = std::make_shared<database>(
             config::database::address, config::database::port, config::database::database, config::database::username, config::database::password
