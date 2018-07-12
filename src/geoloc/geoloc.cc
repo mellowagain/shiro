@@ -2,10 +2,10 @@
 
 #include "../config/geonames_file.hh"
 #include "../thirdparty/loguru.hh"
-#include "geoloc.hh"
 #include "country_ids.hh"
+#include "geoloc.hh"
 
-uint8_t shiro::geoloc::get_country(float longtitude, float latitude) {
+uint8_t shiro::geoloc::get_country(float longitude, float latitude) {
     CURL *curl = curl_easy_init();
     CURLcode status_code;
 
@@ -13,10 +13,10 @@ uint8_t shiro::geoloc::get_country(float longtitude, float latitude) {
 
     if (curl != nullptr) {
         char buffer[512];
-        snprintf(buffer, sizeof(buffer), "http://api.geonames.org/countryCode?lat=%f&lng=%f&username=%s", latitude, longtitude, config::geonames::username.c_str());
+        snprintf(buffer, sizeof(buffer), "http://api.geonames.org/countryCode?lng=%f&lat=%f&username=%s", longitude, latitude, config::geonames::username.c_str());
 
         curl_easy_setopt(curl, CURLOPT_URL, buffer);
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, libcurl_callback);
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, callback);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &output);
 
         status_code = curl_easy_perform(curl);
@@ -37,7 +37,7 @@ uint8_t shiro::geoloc::get_country(float longtitude, float latitude) {
     return get_country_id(output);
 }
 
-size_t shiro::geoloc::libcurl_callback(void *raw_data, size_t size, size_t memory, std::string *ptr) {
+size_t shiro::geoloc::callback(void *raw_data, size_t size, size_t memory, std::string *ptr) {
     size_t new_length = size * memory;
     size_t old_length = ptr->size();
 

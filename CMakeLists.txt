@@ -34,11 +34,11 @@ add_definitions(-DLOGURU_WITH_STREAMS=1)
 set(Boost_USE_MULTITHREADED ON)
 find_package(Boost REQUIRED COMPONENTS system)
 
+# cURL
+find_package(CURL REQUIRED)
+
 # Tcmalloc
 find_package(Tcmalloc)
-
-# libcurl
-find_package(CURL REQUIRED)
 
 if (Tcmalloc_FOUND)
     set(CMAKE_LINK_LIBS ${CMAKE_LINK_LIBS} ${Tcmalloc_LIBRARIES})

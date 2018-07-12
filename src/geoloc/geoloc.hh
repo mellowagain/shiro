@@ -5,9 +5,9 @@
 
 namespace shiro::geoloc {
 
-    uint8_t get_country(float longtitude, float latitude);
+    uint8_t get_country(float longitude, float latitude);
 
-    size_t libcurl_callback(void *raw_data, size_t size, size_t memory, std::string *ptr);
+    size_t callback(void *raw_data, size_t size, size_t memory, std::string *ptr);
 
 }
 
