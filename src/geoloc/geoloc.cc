@@ -23,7 +23,7 @@ uint8_t shiro::geoloc::get_country(float longtitude, float latitude) {
 
         if (status_code != CURLE_OK) {
             LOG_F(ERROR, "Received invalid response from geonames.org: %s", curl_easy_strerror(status_code));
-            return (uint8_t) country_id::CH; // Default to Switzerland
+            return (uint8_t) country_id::JP;  // Default to Japan because we're weebs ¯\_(ツ)_/¯
         }
 
         curl_easy_cleanup(curl);
@@ -31,7 +31,7 @@ uint8_t shiro::geoloc::get_country(float longtitude, float latitude) {
 
     if (output.find("ERR") != std::string::npos) {
         LOG_F(ERROR, "Received invalid response from geonames.org: %s", output.c_str());
-        return (uint8_t) country_id::CH; // Default to Switzerland
+        return (uint8_t) country_id::JP;  // Default to Japan because we're weebs ¯\_(ツ)_/¯
     }
 
     return get_country_id(output);

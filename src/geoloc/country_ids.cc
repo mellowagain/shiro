@@ -434,5 +434,5 @@ uint8_t shiro::geoloc::get_country_id(const std::string &country_code) {
         return (uint8_t) country_id::MF;
     }
 
-    return (uint8_t) country_id::CH;  // Default to Switzerland
+    return (uint8_t) country_id::JP;  // Default to Japan because we're weebs ¯\_(ツ)_/¯
 }
