@@ -1,3 +1,4 @@
+#include "../channels/channel_manager.hh"
 #include "../io/layouts/packets.hh"
 #include "../io/osu_writer.hh"
 #include "../thirdparty/digestpp.hh"
@@ -76,6 +77,10 @@ void shiro::handler::login::handle(const crow::request &request, crow::response 
     writer.login_reply(user->user_id);
     writer.login_permissions(user->presence.permissions);
     writer.announce("Welcome to shiro!");
+
+    writer.channel_listing_complete();
+    channels::manager::write_channels(writer);
+    channels::manager::write_auto_join_channels(writer);
 
     response.end(writer.serialize());
 }

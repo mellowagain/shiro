@@ -5,6 +5,9 @@
 #include "converter.hh"
 
 bool shiro::utils::converter::str_to_byte(const std::string &in, uint8_t &out) {
+    if (in.empty())
+        return false;
+
     unsigned long converted = std::strtoul(in.c_str(), nullptr, 2);
 
     if (errno == ERANGE/* || converted == 0*/)
@@ -18,6 +21,9 @@ bool shiro::utils::converter::str_to_byte(const std::string &in, uint8_t &out) {
 }
 
 bool shiro::utils::converter::str_to_short(const std::string &in, int16_t &out) {
+    if (in.empty())
+        return false;
+
     long converted = std::strtol(in.c_str(), nullptr, 2);
 
     if (errno == ERANGE/* || converted == 0*/)
@@ -31,6 +37,9 @@ bool shiro::utils::converter::str_to_short(const std::string &in, int16_t &out) 
 }
 
 bool shiro::utils::converter::str_to_int(const std::string &in, int32_t &out) {
+    if (in.empty())
+        return false;
+
     long converted = std::strtol(in.c_str(), nullptr, 2);
 
     if (errno == ERANGE/* || converted == 0*/)
@@ -43,7 +52,26 @@ bool shiro::utils::converter::str_to_int(const std::string &in, int32_t &out) {
     return true;
 }
 
+bool shiro::utils::converter::str_to_uint(const std::string &in, uint32_t &out) {
+    if (in.empty())
+        return false;
+
+    long converted = std::strtoul(in.c_str(), nullptr, 2);
+
+    if (errno == ERANGE/* || converted == 0*/)
+        return false;
+
+    if (converted > std::numeric_limits<uint32_t>::max())
+        return false;
+
+    out = (uint32_t) converted;
+    return true;
+}
+
 bool shiro::utils::converter::str_to_ulong(const std::string &in, uint64_t &out) {
+    if (in.empty())
+        return false;
+
     long converted = std::strtoul(in.c_str(), nullptr, 2);
 
     if (errno == ERANGE/* || converted == 0*/)
@@ -57,6 +85,9 @@ bool shiro::utils::converter::str_to_ulong(const std::string &in, uint64_t &out)
 }
 
 bool shiro::utils::converter::str_to_float(const std::string &in, float &out) {
+    if (in.empty())
+        return false;
+
     float converted = std::strtof(in.c_str(), nullptr);
 
     if (converted == HUGE_VALF/* || converted == 0.0f*/)

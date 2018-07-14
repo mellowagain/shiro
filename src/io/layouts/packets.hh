@@ -5,7 +5,8 @@
 
 namespace shiro::io {
 
-    static int cho_protocol = 19;
+    [[maybe_unused]]
+    static const int cho_protocol = 19;
 
     enum class packet_id : uint16_t {
         in_send_user_status = 0,
@@ -93,7 +94,7 @@ namespace shiro::io {
         out_restart = 86,
         in_invite = 87,
         out_invite = 88,
-        out_channe_listing_complete = 89,
+        out_channel_listing_complete = 89,
         in_match_change_password = 90,
         out_match_change_password = 91,
         out_ban_info = 92,
@@ -114,6 +115,7 @@ namespace shiro::io {
         out_switch_tourneyServer = 107,
         in_special_join_match_channel = 108,
         in_special_leave_match_channel = 109
+
     };
 
 }

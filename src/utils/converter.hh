@@ -14,6 +14,8 @@ namespace shiro::utils::converter {
 
     bool str_to_int(const std::string &in, int32_t &out);
 
+    bool str_to_uint(const std::string &in, uint32_t &out);
+
     bool str_to_ulong(const std::string &in, uint64_t &out);
 
     bool str_to_float(const std::string &in, float &out);

@@ -1,6 +1,7 @@
 #include <cstdlib>
 #include <curl/curl.h>
 
+#include "channels/channel_manager.hh"
 #include "config/bancho_file.hh"
 #include "config/cli_args.hh"
 #include "config/db_file.hh"
@@ -27,11 +28,13 @@ int shiro::init(int argc, char **argv) {
     geoloc::init();
 
     db_connection = std::make_shared<database>(
-            config::database::address, config::database::port, config::database::database, config::database::username, config::database::password
+            config::database::address, config::database::port, config::database::database,
+            config::database::username, config::database::password
     );
     db_connection->connect();
     db_connection->setup();
 
+    channels::manager::init();
     shiro::signal_handler::install();
 
     LOG_F(INFO, "Welcome to shiro. Listening on http://%s:%i/.", config::bancho::host.c_str(), config::bancho::port);

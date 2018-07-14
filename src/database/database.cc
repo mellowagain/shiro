@@ -29,23 +29,26 @@ void shiro::database::setup() {
 
     // Beatmaps
     update("CREATE TABLE IF NOT EXISTS `beatmaps` "
-           "(id INT PRIMARY KEY, beatmap_id INT, beatmapset_id INT, beatmap_md5 VARCHAR(32), song_name VARCHAR(128), "
+           "(id INT PRIMARY KEY NOT NULL AUTO_INCREMENT, "
+           "beatmap_id INT, beatmapset_id INT, beatmap_md5 VARCHAR(32), song_name VARCHAR(128), "
            "ar FLOAT, od FLOAT, diff_std FLOAT, diff_taiko FLOAT, diff_ctb FLOAT, diff_mania FLOAT, "
            "max_combo INT, hit_length INT, bpm INT, ranked TINYINT, last_update INT, "
            "ranked_status_freezed BOOLEAN, play_count INT, pass_count INT);");
 
     // IRC channels
-    update("CREATE TABLE IF NOT EXISTS `channels` (id INT PRIMARY KEY, name VARCHAR(32), desc VARCHAR(32), is_staff_only BOOL);");
+    update("CREATE TABLE IF NOT EXISTS `channels` (id INT PRIMARY KEY NOT NULL AUTO_INCREMENT, name VARCHAR(32), description VARCHAR(32), auto_join BOOLEAN);");
 
     // Submitted scores
     update("CREATE TABLE IF NOT EXISTS `scores` "
-           "(id INT PRIMARY KEY, beatmap_md5 VARCHAR(32), user_id INT, score BIGINT, max_combo INT, fc BOOLEAN, mods INT, "
+           "(id INT PRIMARY KEY NOT NULL AUTO_INCREMENT, "
+           "beatmap_md5 VARCHAR(32), user_id INT, score BIGINT, max_combo INT, fc BOOLEAN, mods INT, "
            "300_count INT, 100_count INT, 50_count INT, "
            "katus_count INT, gekis_count INT, miss_count INT, "
            "time VARCHAR(18), play_mode TINYINT, passed BOOLEAN, accuracy FLOAT, pp FLOAT);");
 
     // Registered users and their stats
-    update("CREATE TABLE IF NOT EXISTS `users` (id INT PRIMARY KEY, username VARCHAR(255), safe_username VARCHAR(255), "
+    update("CREATE TABLE IF NOT EXISTS `users` (id INT PRIMARY KEY NOT NULL AUTO_INCREMENT, "
+           "username VARCHAR(255), safe_username VARCHAR(255), "
            "password VARCHAR(65), salt VARCHAR(65),"
            "email VARCHAR(100), ip VARCHAR(50), registration_date INT, last_seen INT, "
            "followers INT, groups INT, user_page TEXT, "
@@ -91,8 +94,13 @@ MYSQL *shiro::database::get_connection() {
 }
 
 std::string shiro::database::escape(const std::string &in) {
+    if (!this->is_connected()) {
+        LOG_F(WARNING, "Tried to escape string %s while not connected to database, returning UNSAFE!", in.c_str());
+        return in;
+    }
+
     char buffer[1024];
-    mysql_real_escape_string(&this->connection, buffer, in.c_str(), in.length());
+    mysql_real_escape_string(&this->connection, buffer, in.c_str(), 1024);
 
     return std::string(buffer);
 }
