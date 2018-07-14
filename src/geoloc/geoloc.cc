@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <curl/curl.h>
 
 #include "../config/geonames_file.hh"
@@ -18,21 +19,25 @@ uint8_t shiro::geoloc::get_country(float longitude, float latitude) {
         curl_easy_setopt(curl, CURLOPT_URL, buffer);
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, callback);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &output);
+        curl_easy_setopt(curl, CURLOPT_USERAGENT, "shiro (https://github.com/Marc3842h/shiro)");
 
         status_code = curl_easy_perform(curl);
+        curl_easy_cleanup(curl);
 
         if (status_code != CURLE_OK) {
             LOG_F(ERROR, "Received invalid response from geonames.org: %s", curl_easy_strerror(status_code));
             return (uint8_t) country_id::JP;  // Default to Japan because we're weebs ¯\_(ツ)_/¯
         }
-
-        curl_easy_cleanup(curl);
     }
 
     if (output.find("ERR") != std::string::npos) {
         LOG_F(ERROR, "Received invalid response from geonames.org: %s", output.c_str());
         return (uint8_t) country_id::JP;  // Default to Japan because we're weebs ¯\_(ツ)_/¯
     }
+
+    std::transform(output.begin(), output.end(), output.begin(), ::toupper);
+    output.erase(std::remove(output.begin(), output.end(), '\n'), output.end());
+    output.erase(std::remove_if(output.begin(), output.end(), ::isspace), output.end());
 
     return get_country_id(output);
 }

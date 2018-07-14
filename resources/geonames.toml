@@ -1,8 +1,12 @@
-# Credentials file for geonames.org
+# geonames.org credentials configuration file for shiro
 
-# Please go to http://www.geonames.org/login and create a new account
+# Please go to http://www.geonames.org/login and create a new account.
 # After activating your account, activate your free license on http://www.geonames.org/manageaccount
-# Then put your username you used when you signed up on the site below
+# Then put your username you used when you signed up on the site below.
+
+# Not doing this will result in hitting the rate limit of geonames.org
+# pretty quickly, as the "demo" user is used by other applications
+# so often that it's almost permanently rate limited.
 
 [geonames]
 username = "demo"
