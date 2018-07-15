@@ -14,6 +14,8 @@
 #include "thirdparty/loguru.hh"
 #include "shiro.hh"
 
+std::shared_ptr<shiro::database> shiro::db_connection = nullptr;
+
 int shiro::init(int argc, char **argv) {
     logging::init(argc, argv);
 

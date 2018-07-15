@@ -12,7 +12,7 @@
 
 namespace shiro {
 
-    static std::shared_ptr<database> db_connection = nullptr;
+    extern std::shared_ptr<database> db_connection;
 
     static std::time_t start_time = std::time(nullptr);
 
