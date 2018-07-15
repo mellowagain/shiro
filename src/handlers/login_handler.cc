@@ -80,7 +80,6 @@ void shiro::handler::login::handle(const crow::request &request, crow::response 
 
     writer.channel_listing_complete();
     channels::manager::write_channels(writer);
-    channels::manager::write_auto_join_channels(writer);
 
     response.end(writer.serialize());
 }

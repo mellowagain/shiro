@@ -15,7 +15,13 @@ namespace shiro::channels::manager {
 
     void write_channels(io::osu_writer &buf);
 
-    void write_auto_join_channels(io::osu_writer &buf);
+    // User methods
+
+    void join_channel(uint32_t channel_id, std::shared_ptr<users::user> user);
+
+    void leave_channel(uint32_t channel_id, std::shared_ptr<users::user> user);
+
+    bool in_channel(uint32_t channel_id, const std::shared_ptr<users::user> &user);
 
 }
 
