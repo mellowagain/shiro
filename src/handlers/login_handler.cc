@@ -74,6 +74,8 @@ void shiro::handler::login::handle(const crow::request &request, crow::response 
 
     users::manager::login_user(user);
 
+    response.set_header("cho-token", user->token);
+
     writer.login_reply(user->user_id);
     writer.login_permissions(user->presence.permissions);
     writer.announce("Welcome to shiro!");

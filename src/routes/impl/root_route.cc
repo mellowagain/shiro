@@ -35,6 +35,7 @@ void shiro::routes::root::handle(const crow::request &request, crow::response &r
 
     // Metadata
     response.set_header("cho-protocol", std::to_string(shiro::io::cho_protocol));
+    response.set_header("cho-token", "");
     response.set_header("Connection", "keep-alive");
     response.set_header("Keep-Alive", "timeout=5, max=100");
     response.set_header("Content-Type", "text/html; charset=UTF-8");
