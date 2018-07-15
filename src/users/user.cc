@@ -71,17 +71,17 @@ bool shiro::users::user::check_password(const std::string &password) {
     if (this->password.empty() || password.empty())
         return false;
 
-    char result[129];
+    char result[128];
     std::memset(result, 0, sizeof(result));
 
     uint8_t binary_result[64];
     std::memset(binary_result, 0, sizeof(binary_result));
 
     PBKDF2_HMAC_SHA_512(
-            password.c_str(), password.length(),
-            reinterpret_cast<const unsigned char*>(this->salt.c_str()), this->salt.length(),
+            password.c_str(), (int) password.length(),
+            reinterpret_cast<const unsigned char*>(this->salt.c_str()), (int) this->salt.length(),
             4096, 64, result, binary_result
     );
 
-    return std::string(password) == this->password;
+    return std::string(result) == this->password;
 }
