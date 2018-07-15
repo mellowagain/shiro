@@ -1,20 +1,18 @@
 #ifndef SHIRO_DATABASE_HH
 #define SHIRO_DATABASE_HH
 
+#include <memory>
 #include <string>
 #include <vector>
 
-#if __has_include(<mysql.h>)
-    #include <mysql.h>
-#else
-    #include <mysql/mysql.h>
-#endif
+#include "../thirdparty/mysqlcpp/mysql.hh"
+#include "../thirdparty/loguru.hh"
 
 namespace shiro {
 
     class database {
     private:
-        MYSQL connection;
+        std::shared_ptr<MySql> connection = nullptr;
 
         std::string address;
         unsigned int port;
@@ -27,18 +25,38 @@ namespace shiro {
         database(const std::string &address, unsigned int port, const std::string &db, const std::string &username, const std::string &password);
 
         void connect();
-        void disconnect();
-
         void setup();
 
-        void update(const std::string &query_str);
-        std::vector<MYSQL_ROW> query(const std::string &query_str);
+        template <typename... arguments>
+        void update(const std::string &query_str, arguments... args) {
+            if (!this->is_connected())
+                return;
+
+            try {
+                this->connection->runCommand(query_str.c_str(), args...);
+            } catch (const MySqlException &ex) {
+                LOG_S(ERROR) << "Unable to execute update: " << ex.what() << ".";
+            }
+        }
+
+        template <typename result, typename... arguments>
+        std::vector<result> query(const std::string &query_str, arguments... args) {
+            if (!this->is_connected())
+                return {};
+
+            std::vector<result> result_vector;
+
+            try {
+                this->connection->runQuery(&result_vector, query_str.c_str(), args...);
+            } catch (const MySqlException &ex) {
+                LOG_S(ERROR) << "Unable to execute query: " << ex.what() << ".";
+            }
+
+            return result_vector;
+        };
 
         bool is_connected();
-        MYSQL *get_connection();
-
-        // Prevents SQL injection
-        std::string escape(const std::string &in);
+        std::shared_ptr<MySql> get_connection();
 
     };
 

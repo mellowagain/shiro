@@ -6,31 +6,21 @@ void shiro::channels::manager::init() {
     if (!channels.empty())
         channels.clear();
 
-    std::vector<MYSQL_ROW> rows = db_connection->query("SELECT * FROM `channels`");
+    using channel_struct = std::tuple<uint32_t, std::string, std::string, bool>;
+    auto result = db_connection->query<channel_struct>("SELECT * FROM `channels`");
 
-    if (rows.empty())
-        LOG_F(WARNING, "Received empty list of channels.");
+    if (result.empty())
+        return;
 
-    for (const MYSQL_ROW &row : rows) {
-        uint32_t channel_id = 0;
-
-        if (!utils::converter::str_to_uint(row[0], channel_id)) {
-            LOG_F(ERROR, "Unable to convert channel id %s to uint32_t.", row[0]);
-            return;
-        }
-
-        int32_t auto_join_int = 0;
-        bool auto_join;
-
-        if (!utils::converter::str_to_int(row[3], auto_join_int)) {
-            LOG_F(ERROR, "Unable to convert auto join %s to uint32_t.", row[3]);
-            return;
-        }
-
-        auto_join = (bool) auto_join_int;
+    for (const channel_struct &channel_struct : result) {
+        uint32_t channel_id = std::get<0>(channel_struct);
+        const std::string &name = std::get<1>(channel_struct);
+        const std::string &description = std::get<2>(channel_struct);
+        bool auto_join = std::get<3>(channel_struct);
 
         channels.insert(std::make_pair<io::layouts::channel, std::vector<std::shared_ptr<users::user>>>(
-                io::layouts::channel(channel_id, auto_join, row[1], row[2], 0), std::vector<std::shared_ptr<users::user>>()
+                io::layouts::channel(channel_id, auto_join, name, description, 0),
+                std::vector<std::shared_ptr<users::user>>()
         ));
     }
 }

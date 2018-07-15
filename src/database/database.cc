@@ -1,4 +1,3 @@
-#include "../thirdparty/loguru.hh"
 #include "database.hh"
 
 shiro::database::database(const std::string &address, unsigned int port, const std::string &db, const std::string &username, const std::string &password)
@@ -7,20 +6,20 @@ shiro::database::database(const std::string &address, unsigned int port, const s
     , db(db)
     , username(username)
     , password(password) {
-    mysql_init(&this->connection);
+    // Initialized in initializer list
 }
 
 void shiro::database::connect() {
-    if (!mysql_real_connect(&this->connection, this->address.c_str(), this->username.c_str(), this->password.c_str(), this->db.c_str(), this->port, nullptr, 0))
-        LOG_F(FATAL, "Cannot establish connection with MySQL database: (%i) %s.", mysql_errno(&this->connection), mysql_error(&this->connection));
+    if (this->is_connected())
+        return;
 
-    // mysql_select_db(&this->connection, this->db.c_str()); (?)
+    this->connection = std::make_shared<MySql>(
+            this->address.c_str(),
+            this->username.c_str(), this->password.c_str(),
+            this->db.c_str(), (uint16_t) this->port
+    );
+
     LOG_S(INFO) << "Successfully connected to MySQL database.";
-}
-
-void shiro::database::disconnect() {
-    mysql_close(&this->connection);
-    LOG_S(INFO) << "Successfully disconnected from MySQL database.";
 }
 
 void shiro::database::setup() {
@@ -36,7 +35,9 @@ void shiro::database::setup() {
            "ranked_status_freezed BOOLEAN, play_count INT, pass_count INT);");
 
     // IRC channels
-    update("CREATE TABLE IF NOT EXISTS `channels` (id INT PRIMARY KEY NOT NULL AUTO_INCREMENT, name VARCHAR(32), description VARCHAR(32), auto_join BOOLEAN);");
+    update("CREATE TABLE IF NOT EXISTS `channels` "
+           "(id INT PRIMARY KEY NOT NULL AUTO_INCREMENT, "
+           "name VARCHAR(32), description VARCHAR(32), auto_join BOOLEAN);");
 
     // Submitted scores
     update("CREATE TABLE IF NOT EXISTS `scores` "
@@ -61,46 +62,13 @@ void shiro::database::setup() {
     LOG_S(INFO) << "Successfully created and structured tables in database.";
 }
 
-void shiro::database::update(const std::string &query_str) {
-    if (!this->is_connected())
-        return;
-
-    mysql_query(&this->connection, query_str.c_str());
-}
-
-std::vector<MYSQL_ROW> shiro::database::query(const std::string &query_str) {
-    if (!this->is_connected())
-        return {};
-
-    std::vector<MYSQL_ROW> result;
-    MYSQL_RES *query_id;
-    MYSQL_ROW row;
-
-    mysql_query(&this->connection, query_str.c_str());
-    query_id = mysql_store_result(&this->connection);
-
-    while ((row = mysql_fetch_row(query_id)) != nullptr)
-        result.push_back(row);
-
-    return result;
-}
-
 bool shiro::database::is_connected() {
-    return mysql_ping(&this->connection) == 0;
+    return this->connection != nullptr;
 }
 
-MYSQL *shiro::database::get_connection() {
-    return &this->connection;
-}
+std::shared_ptr<MySql> shiro::database::get_connection() {
+    if (!is_connected())
+        return nullptr;
 
-std::string shiro::database::escape(const std::string &in) {
-    if (!this->is_connected()) {
-        LOG_F(WARNING, "Tried to escape string %s while not connected to database, returning UNSAFE!", in.c_str());
-        return in;
-    }
-
-    char buffer[1024];
-    mysql_real_escape_string(&this->connection, buffer, in.c_str(), 1024);
-
-    return std::string(buffer);
+    return this->connection;
 }

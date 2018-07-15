@@ -46,8 +46,5 @@ int shiro::init(int argc, char **argv) {
 }
 
 void shiro::destroy() {
-    if (db_connection != nullptr)
-        db_connection->disconnect();
-
     LOG_S(INFO) << "Thank you and goodbye.";
 }

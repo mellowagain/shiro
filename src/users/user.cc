@@ -14,21 +14,30 @@ shiro::users::user::user(const std::string &username) {
 }
 
 bool shiro::users::user::init() {
-    std::pair<std::string, std::string> query_arg;
+    using user_struct = std::tuple<int, // id
+            std::string, std::string, // username, safe_username
+            std::string, std::string, // password, salt
+            std::string, std::string, int, int, // email, ip, registration_date, last_seen
+            int, int, std::string, // followers, groups, user_page
+            float, float, float, float, // pp
+            int, int, int, int, // score
+            int, int, int, int, // ranked_score
+            int, int, int, int, // play_count
+            std::string>; // country
+
+    std::vector<user_struct> result {};
 
     if (this->user_id != 0) {
-        query_arg = std::make_pair<std::string, std::string>("id", std::to_string(this->user_id));
+        result = db_connection->query<user_struct>("SELECT * FROM `users` WHERE id = ?", this->user_id);
     } else if (!this->presence.username.empty()) {
-        query_arg = std::make_pair<std::string, std::string>("username", "'" + db_connection->escape(this->presence.username) + "'");
+        result = db_connection->query<user_struct>("SELECT * FROM `users` WHERE username = ?", this->presence.username);
     } else {
         LOG_S(ERROR) << "Tried to load user without supplying a valid user id or username.";
         return false;
     }
 
-    char buffer[512];
-    std::snprintf(buffer, sizeof(buffer), "SELECT * FROM `users` WHERE %s = %s", query_arg.first.c_str(), query_arg.second.c_str());
-
-    std::vector<MYSQL_ROW> result = db_connection->query(buffer);
+    if (result.empty())
+        return false;
 
     if (result.size() != 1) {
         if (result.size() > 1)
@@ -37,45 +46,18 @@ bool shiro::users::user::init() {
         return false;
     }
 
-    MYSQL_ROW row = result.at(0);
-
-    if (!utils::converter::str_to_int(row[0], this->user_id)) {
-        LOG_F(ERROR, "Unable to convert user id %s to valid int32_t.", row[0]);
-        return false;
-    }
-
-    this->presence.user_id = this->user_id;
-    this->stats.user_id = this->user_id;
-    this->presence.username = row[1];
-    this->password = row[3];
-    this->salt = row[4];
-
-    if (!utils::converter::str_to_byte(row[10], this->presence.permissions)) {
-        LOG_F(WARNING, "Unable to convert permissions %s to valid uint8_t.", row[10]);
-        this->presence.permissions = 3; // TODO: Change to user constant
-    }
-
-    // On init, set all the data to the standard mode first
-    // When the user sends their mode, we load the corresponding data
-
-    if (!utils::converter::str_to_short(row[12], this->stats.pp)) {
-        LOG_F(WARNING, "Unable to convert pp %s to valid int16_t.", row[12]);
-        this->stats.pp = 0;
-    }
-
-    if (!utils::converter::str_to_ulong(row[16], this->stats.total_score)) {
-        LOG_F(WARNING, "Unable to convert total score %s to valid uint64_t.", row[16]);
-        this->stats.total_score = 0;
-    }
-
-    if (!utils::converter::str_to_ulong(row[20], this->stats.ranked_score)) {
-        LOG_F(WARNING, "Unable to convert ranked score %s to valid uint64_t.", row[20]);
-        this->stats.ranked_score = 0;
-    }
-
-    if (!utils::converter::str_to_int(row[24], this->stats.play_count)) {
-        LOG_F(WARNING, "Unable to convert play count %s to valid int32_t.", row[24]);
-        this->stats.play_count = 0;
+    for (const user_struct &user_struct : result) {
+        this->user_id = std::get<0>(user_struct);
+        this->presence.user_id = this->user_id;
+        this->stats.user_id = this->user_id;
+        this->presence.username = std::get<1>(user_struct);
+        this->password = std::get<3>(user_struct);
+        this->salt = std::get<4>(user_struct);
+        this->presence.permissions = std::get<10>(user_struct);
+        this->stats.pp = std::get<12>(user_struct);
+        this->stats.total_score = std::get<16>(user_struct);
+        this->stats.ranked_score = std::get<20>(user_struct);
+        this->stats.play_count = std::get<24>(user_struct);
     }
 
     return true;
@@ -101,5 +83,5 @@ bool shiro::users::user::check_password(const std::string &password) {
             4096, 64, result, binary_result
     );
 
-    return std::string(result) == this->password;
+    return std::string(password) == this->password;
 }
