@@ -2,7 +2,6 @@
 
 #include "../thirdparty/loguru.hh"
 #include "../thirdparty/pbkdf2.hh"
-#include "../utils/converter.hh"
 #include "user.hh"
 
 shiro::users::user::user(int32_t user_id) : user_id(user_id) {

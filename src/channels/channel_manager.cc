@@ -1,7 +1,6 @@
 #include <utility>
 
 #include "../thirdparty/loguru.hh"
-#include "../utils/converter.hh"
 #include "channel_manager.hh"
 
 void shiro::channels::manager::init() {

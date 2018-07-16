@@ -48,5 +48,7 @@ int shiro::init(int argc, char **argv) {
 }
 
 void shiro::destroy() {
+    curl_global_cleanup();
+
     LOG_S(INFO) << "Thank you and goodbye.";
 }
