@@ -6,7 +6,6 @@
 #include <vector>
 
 #include "../thirdparty/mysqlcpp/mysql.hh"
-#include "../thirdparty/loguru.hh"
 
 namespace shiro {
 
@@ -35,7 +34,7 @@ namespace shiro {
             try {
                 this->connection->runCommand(query_str.c_str(), args...);
             } catch (const MySqlException &ex) {
-                LOG_S(ERROR) << "Unable to execute update: " << ex.what() << ".";
+                log_mysql_error("update", ex);
             }
         }
 
@@ -49,7 +48,7 @@ namespace shiro {
             try {
                 this->connection->runQuery(&result_vector, query_str.c_str(), args...);
             } catch (const MySqlException &ex) {
-                LOG_S(ERROR) << "Unable to execute query: " << ex.what() << ".";
+                log_mysql_error("query", ex);
             }
 
             return result_vector;
@@ -57,6 +56,9 @@ namespace shiro {
 
         bool is_connected();
         std::shared_ptr<MySql> get_connection();
+
+    private:
+        void log_mysql_error(const std::string &target, const MySqlException &ex);
 
     };
 

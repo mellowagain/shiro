@@ -1,3 +1,4 @@
+#include "../thirdparty/loguru.hh"
 #include "database.hh"
 
 shiro::database::database(const std::string &address, unsigned int port, const std::string &db, const std::string &username, const std::string &password)
@@ -71,4 +72,13 @@ std::shared_ptr<MySql> shiro::database::get_connection() {
         return nullptr;
 
     return this->connection;
+}
+
+// Internal method for logging exceptions of update() / query()
+// Normally, the method itself would call LOG with their own custom message
+// but that requires the include of loguru.hh directly in the header.
+// database.hh is included by shiro.hh which is included literally everywhere
+// so including big header only library loguru.hh increases build time drastically
+void shiro::database::log_mysql_error(const std::string &target, const MySqlException &ex) {
+    LOG_S(ERROR) << "Failed to execute " << target << ":" << ex.what() << ".";
 }

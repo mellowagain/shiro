@@ -7,6 +7,7 @@ namespace shiro::logging {
 
     class route_logger : public crow::ILogHandler {
     public:
+        virtual ~route_logger() = default;
         void log(std::string message, crow::LogLevel level) override;
 
     };

@@ -23,6 +23,11 @@ void shiro::routes::root::handle(const crow::request &request, crow::response &r
         return;
     }
 
+    // Generic response metadata
+    response.set_header("Keep-Alive", "timeout=5, max=100");
+    response.set_header("Content-Type", "text/html; charset=UTF-8");
+    response.set_header("Server", "shiro (https://github.com/Marc3842h/shiro)");
+
     const std::string &user_agent = request.get_header_value("user-agent");
 
     if (user_agent.empty() || user_agent.find("osu!") == std::string::npos) {
@@ -33,12 +38,9 @@ void shiro::routes::root::handle(const crow::request &request, crow::response &r
         return;
     }
 
-    // Metadata
+    // osu! metadata
     response.set_header("cho-protocol", std::to_string(shiro::io::cho_protocol));
     response.set_header("cho-token", "");
-    response.set_header("Connection", "keep-alive");
-    response.set_header("Keep-Alive", "timeout=5, max=100");
-    response.set_header("Content-Type", "text/html; charset=UTF-8");
 
     if (request.get_header_value("osu-token").length() <= 0) {
         handler::login::handle(request, response);

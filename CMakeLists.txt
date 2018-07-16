@@ -24,12 +24,6 @@ if (NOT CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D_DEBUG")
 endif()
 
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${CMAKE_CXX_FLAGS} -Og -g3 -ggdb")
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${CMAKE_CXX_FLAGS} -O3")
-
-# Enable logging with streams in Loguru
-add_definitions(-DLOGURU_WITH_STREAMS=1)
-
 # Boost
 set(Boost_USE_MULTITHREADED ON)
 find_package(Boost REQUIRED COMPONENTS system)
@@ -49,16 +43,27 @@ find_package(Tcmalloc)
 
 if (Tcmalloc_FOUND)
     set(CMAKE_LINK_LIBS ${CMAKE_LINK_LIBS} ${Tcmalloc_LIBRARIES})
+
+    if (NOT CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-builtin-malloc -fno-builtin-calloc")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-builtin-realloc -fno-builtin-free")
+    endif()
 endif()
+
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${CMAKE_CXX_FLAGS} -Og -g3 -ggdb")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${CMAKE_CXX_FLAGS} -O3")
+
+# Enable logging with streams in Loguru
+add_definitions(-DLOGURU_WITH_STREAMS=1)
 
 if (WIN32)
     set(CMAKE_LINK_LIBS ${CMAKE_LINK_LIBS})
 elseif (APPLE)
-    set(CMAKE_LINK_LIBS ${CMAKE_LINK_LIBS} pthread dl mysqlclient crypto)
+    set(CMAKE_LINK_LIBS pthread dl mysqlclient crypto ${CMAKE_LINK_LIBS})
 elseif (UNIX) # Linux
-    set(CMAKE_LINK_LIBS ${CMAKE_LINK_LIBS} pthread dl mysqlclient crypto)
+    set(CMAKE_LINK_LIBS pthread dl mysqlclient crypto ${CMAKE_LINK_LIBS})
 endif()
 
 include_directories(${CURL_INCLUDE_DIRS} ${OPENSSL_INCLUDE_DIR})
 add_executable(shiro ${SRC})
-target_link_libraries(shiro ${CMAKE_LINK_LIBS} ${Boost_LIBRARIES} ${CURL_LIBRARIES})
+target_link_libraries(shiro ${Boost_LIBRARIES} ${CURL_LIBRARIES} ${CMAKE_LINK_LIBS})
