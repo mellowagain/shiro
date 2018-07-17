@@ -5,6 +5,10 @@
 #include <string>
 #include <unordered_map>
 
+#if defined(_WIN32)
+	#undef IN
+#endif
+
 namespace shiro::geoloc {
 
     static std::unordered_map<std::string, uint8_t> countries;

@@ -3,6 +3,11 @@
 
 #include <unordered_set>
 
+#if defined(_WIN32)
+	#undef min
+	#undef max
+#endif
+
 namespace caches
 {
 

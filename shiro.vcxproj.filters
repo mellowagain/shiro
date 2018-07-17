@@ -1,134 +1,159 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="F:\bancho i osu\shiro\src\config\bancho_file.cc">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="F:\bancho i osu\shiro\src\config\cli_args.cc">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="F:\bancho i osu\shiro\src\config\db_file.cc">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="F:\bancho i osu\shiro\src\database\database.cc">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="F:\bancho i osu\shiro\src\io\layouts\layout.cc">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="F:\bancho i osu\shiro\src\io\osu_buffer.cc">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="F:\bancho i osu\shiro\src\io\osu_reader.cc">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="F:\bancho i osu\shiro\src\io\osu_writer.cc">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="F:\bancho i osu\shiro\src\logger\logger.cc">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="F:\bancho i osu\shiro\src\main.cc">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="F:\bancho i osu\shiro\src\routes\impl\root_route.cc">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="F:\bancho i osu\shiro\src\routes\routes.cc">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="F:\bancho i osu\shiro\src\shiro.cc">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="F:\bancho i osu\shiro\src\signal\nix\nix_signal_handler.cc">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="F:\bancho i osu\shiro\src\signal\signal_handler.cc">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="F:\bancho i osu\shiro\src\signal\win32\windows_signal_handler.cc">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="F:\bancho i osu\shiro\src\utils\leb128.cc">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\utils\osu_string.cc" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="F:\bancho i osu\shiro\src\config\bancho_file.hh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="F:\bancho i osu\shiro\src\config\cli_args.hh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="F:\bancho i osu\shiro\src\config\db_file.hh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="F:\bancho i osu\shiro\src\database\database.hh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="F:\bancho i osu\shiro\src\io\layouts\layout.hh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="F:\bancho i osu\shiro\src\io\layouts\packets.hh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="F:\bancho i osu\shiro\src\io\osu_buffer.hh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="F:\bancho i osu\shiro\src\io\osu_reader.hh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="F:\bancho i osu\shiro\src\io\osu_writer.hh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="F:\bancho i osu\shiro\src\logger\logger.hh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="F:\bancho i osu\shiro\src\routes\impl\root_route.hh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="F:\bancho i osu\shiro\src\routes\routes.hh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="F:\bancho i osu\shiro\src\shiro.hh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="F:\bancho i osu\shiro\src\signal\nix\nix_signal_handler.hh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="F:\bancho i osu\shiro\src\signal\signal_handler.hh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="F:\bancho i osu\shiro\src\signal\win32\windows_signal_handler.hh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="F:\bancho i osu\shiro\src\thirdparty\cli11.hh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="F:\bancho i osu\shiro\src\thirdparty\cpptoml.hh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="F:\bancho i osu\shiro\src\thirdparty\crow.hh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="F:\bancho i osu\shiro\src\thirdparty\loguru.hh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="F:\bancho i osu\shiro\src\utils\leb128.hh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\utils\osu_string.hh" />
-  </ItemGroup>
-  <ItemGroup>
-    <CustomBuild Include="F:\bancho i osu\shiro\CMakeLists.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <Filter Include="Header Files">
       <UniqueIdentifier>{9F1C0FCD-2198-3663-AE8A-507A961FB27A}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files">
       <UniqueIdentifier>{873240F1-987E-3408-8B60-71A3ECBBF578}</UniqueIdentifier>
     </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\channels\channel_manager.cc" />
+    <ClCompile Include="src\config\bancho_file.cc" />
+    <ClCompile Include="src\config\cli_args.cc" />
+    <ClCompile Include="src\config\db_file.cc" />
+    <ClCompile Include="src\database\database.cc" />
+    <ClCompile Include="src\geoloc\country_ids.cc" />
+    <ClCompile Include="src\geoloc\geoloc.cc" />
+    <ClCompile Include="src\handlers\login_handler.cc" />
+    <ClCompile Include="src\io\layouts\channel\channel.cc" />
+    <ClCompile Include="src\io\layouts\user\user_presence.cc" />
+    <ClCompile Include="src\io\layouts\user\user_stats.cc" />
+    <ClCompile Include="src\io\layouts\user\user_status.cc" />
+    <ClCompile Include="src\io\layouts\layout.cc" />
+    <ClCompile Include="src\io\osu_buffer.cc" />
+    <ClCompile Include="src\io\osu_reader.cc" />
+    <ClCompile Include="src\io\osu_writer.cc" />
+    <ClCompile Include="src\logger\logger.cc" />
+    <ClCompile Include="src\logger\route_logger.cc" />
+    <ClCompile Include="src\routes\impl\root_route.cc" />
+    <ClCompile Include="src\routes\routes.cc" />
+    <ClCompile Include="src\signal\nix\nix_signal_handler.cc" />
+    <ClCompile Include="src\signal\win32\windows_signal_handler.cc" />
+    <ClCompile Include="src\signal\signal_handler.cc" />
+    <ClCompile Include="src\thirdparty\mysqlcpp\mysql.cc" />
+    <ClCompile Include="src\thirdparty\mysqlcpp\mysqlexception.cc" />
+    <ClCompile Include="src\thirdparty\mysqlcpp\mysqlpreparedstatement.cc" />
+    <ClCompile Include="src\thirdparty\mysqlcpp\outputbinder.cc" />
+    <ClCompile Include="src\thirdparty\pbkdf2.cc" />
+    <ClCompile Include="src\users\user.cc" />
+    <ClCompile Include="src\users\user_manager.cc" />
+    <ClCompile Include="src\utils\leb128.cc" />
+    <ClCompile Include="src\utils\osu_string.cc" />
+    <ClCompile Include="src\utils\string_utils.cc" />
+    <ClCompile Include="src\views\index_view.cc" />
+    <ClCompile Include="src\main.cc" />
+    <ClCompile Include="src\shiro.cc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\channels\channel_manager.hh" />
+    <ClInclude Include="src\config\bancho_file.hh" />
+    <ClInclude Include="src\config\cli_args.hh" />
+    <ClInclude Include="src\config\db_file.hh" />
+    <ClInclude Include="src\database\database.hh" />
+    <ClInclude Include="src\geoloc\country_ids.hh" />
+    <ClInclude Include="src\geoloc\geoloc.hh" />
+    <ClInclude Include="src\geoloc\location_info.hh" />
+    <ClInclude Include="src\handlers\login_handler.hh" />
+    <ClInclude Include="src\io\layouts\channel\channel.hh" />
+    <ClInclude Include="src\io\layouts\user\user_presence.hh" />
+    <ClInclude Include="src\io\layouts\user\user_stats.hh" />
+    <ClInclude Include="src\io\layouts\user\user_status.hh" />
+    <ClInclude Include="src\io\layouts\layout.hh" />
+    <ClInclude Include="src\io\layouts\packets.hh" />
+    <ClInclude Include="src\io\osu_buffer.hh" />
+    <ClInclude Include="src\io\osu_reader.hh" />
+    <ClInclude Include="src\io\osu_writer.hh" />
+    <ClInclude Include="src\logger\logger.hh" />
+    <ClInclude Include="src\logger\route_logger.hh" />
+    <ClInclude Include="src\routes\impl\root_route.hh" />
+    <ClInclude Include="src\routes\routes.hh" />
+    <ClInclude Include="src\signal\nix\nix_signal_handler.hh" />
+    <ClInclude Include="src\signal\win32\windows_signal_handler.hh" />
+    <ClInclude Include="src\signal\signal_handler.hh" />
+    <ClInclude Include="src\thirdparty\algorithm\detail\constants\blake_constants.hh" />
+    <ClInclude Include="src\thirdparty\algorithm\detail\constants\blake2_constants.hh" />
+    <ClInclude Include="src\thirdparty\algorithm\detail\constants\groestl_constants.hh" />
+    <ClInclude Include="src\thirdparty\algorithm\detail\constants\jh_constants.hh" />
+    <ClInclude Include="src\thirdparty\algorithm\detail\constants\kupyna_constants.hh" />
+    <ClInclude Include="src\thirdparty\algorithm\detail\constants\md5_constants.hh" />
+    <ClInclude Include="src\thirdparty\algorithm\detail\constants\sha1_constants.hh" />
+    <ClInclude Include="src\thirdparty\algorithm\detail\constants\sha2_constants.hh" />
+    <ClInclude Include="src\thirdparty\algorithm\detail\constants\sha3_constants.hh" />
+    <ClInclude Include="src\thirdparty\algorithm\detail\constants\skein_constants.hh" />
+    <ClInclude Include="src\thirdparty\algorithm\detail\constants\streebog_constants.hh" />
+    <ClInclude Include="src\thirdparty\algorithm\detail\constants\whirlpool_constants.hh" />
+    <ClInclude Include="src\thirdparty\algorithm\detail\blake_provider.hh" />
+    <ClInclude Include="src\thirdparty\algorithm\detail\blake2_provider.hh" />
+    <ClInclude Include="src\thirdparty\algorithm\detail\groestl_provider.hh" />
+    <ClInclude Include="src\thirdparty\algorithm\detail\jh_provider.hh" />
+    <ClInclude Include="src\thirdparty\algorithm\detail\k12m14_provider.hh" />
+    <ClInclude Include="src\thirdparty\algorithm\detail\kmac_provider.hh" />
+    <ClInclude Include="src\thirdparty\algorithm\detail\kupyna_provider.hh" />
+    <ClInclude Include="src\thirdparty\algorithm\detail\md5_provider.hh" />
+    <ClInclude Include="src\thirdparty\algorithm\detail\sha1_provider.hh" />
+    <ClInclude Include="src\thirdparty\algorithm\detail\sha2_provider.hh" />
+    <ClInclude Include="src\thirdparty\algorithm\detail\sha3_provider.hh" />
+    <ClInclude Include="src\thirdparty\algorithm\detail\shake_provider.hh" />
+    <ClInclude Include="src\thirdparty\algorithm\detail\skein_provider.hh" />
+    <ClInclude Include="src\thirdparty\algorithm\detail\sm3_provider.hh" />
+    <ClInclude Include="src\thirdparty\algorithm\detail\streebog_provider.hh" />
+    <ClInclude Include="src\thirdparty\algorithm\detail\whirlpool_provider.hh" />
+    <ClInclude Include="src\thirdparty\algorithm\mixin\blake_mixin.hh" />
+    <ClInclude Include="src\thirdparty\algorithm\mixin\blake2_mixin.hh" />
+    <ClInclude Include="src\thirdparty\algorithm\mixin\cshake_mixin.hh" />
+    <ClInclude Include="src\thirdparty\algorithm\mixin\k12m14_mixin.hh" />
+    <ClInclude Include="src\thirdparty\algorithm\mixin\kmac_mixin.hh" />
+    <ClInclude Include="src\thirdparty\algorithm\mixin\null_mixin.hh" />
+    <ClInclude Include="src\thirdparty\algorithm\mixin\skein_mixin.hh" />
+    <ClInclude Include="src\thirdparty\algorithm\blake.hh" />
+    <ClInclude Include="src\thirdparty\algorithm\blake2.hh" />
+    <ClInclude Include="src\thirdparty\algorithm\groestl.hh" />
+    <ClInclude Include="src\thirdparty\algorithm\jh.hh" />
+    <ClInclude Include="src\thirdparty\algorithm\k12m14.hh" />
+    <ClInclude Include="src\thirdparty\algorithm\kmac.hh" />
+    <ClInclude Include="src\thirdparty\algorithm\kupyna.hh" />
+    <ClInclude Include="src\thirdparty\algorithm\md5.hh" />
+    <ClInclude Include="src\thirdparty\algorithm\sha1.hh" />
+    <ClInclude Include="src\thirdparty\algorithm\sha2.hh" />
+    <ClInclude Include="src\thirdparty\algorithm\sha3.hh" />
+    <ClInclude Include="src\thirdparty\algorithm\shake.hh" />
+    <ClInclude Include="src\thirdparty\algorithm\skein.hh" />
+    <ClInclude Include="src\thirdparty\algorithm\sm3.hh" />
+    <ClInclude Include="src\thirdparty\algorithm\streebog.hh" />
+    <ClInclude Include="src\thirdparty\algorithm\whirlpool.hh" />
+    <ClInclude Include="src\thirdparty\cache\cache.hh" />
+    <ClInclude Include="src\thirdparty\cache\cache_policy.hh" />
+    <ClInclude Include="src\thirdparty\cache\fifo_cache_policy.hh" />
+    <ClInclude Include="src\thirdparty\cache\lfu_cache_policy.hh" />
+    <ClInclude Include="src\thirdparty\cache\lru_cache_policy.hh" />
+    <ClInclude Include="src\thirdparty\detail\absorb_data.hh" />
+    <ClInclude Include="src\thirdparty\detail\functions.hh" />
+    <ClInclude Include="src\thirdparty\detail\stream_width_fixer.hh" />
+    <ClInclude Include="src\thirdparty\detail\traits.hh" />
+    <ClInclude Include="src\thirdparty\detail\validate_hash_size.hh" />
+    <ClInclude Include="src\thirdparty\mysqlcpp\inputbinder.hh" />
+    <ClInclude Include="src\thirdparty\mysqlcpp\mysql.hh" />
+    <ClInclude Include="src\thirdparty\mysqlcpp\mysqlexception.hh" />
+    <ClInclude Include="src\thirdparty\mysqlcpp\mysqlpreparedstatement.hh" />
+    <ClInclude Include="src\thirdparty\mysqlcpp\outputbinder.hh" />
+    <ClInclude Include="src\thirdparty\cli11.hh" />
+    <ClInclude Include="src\thirdparty\cpptoml.hh" />
+    <ClInclude Include="src\thirdparty\crow.hh" />
+    <ClInclude Include="src\thirdparty\digestpp.hh" />
+    <ClInclude Include="src\thirdparty\hasher.hh" />
+    <ClInclude Include="src\thirdparty\json.hh" />
+    <ClInclude Include="src\thirdparty\loguru.hh" />
+    <ClInclude Include="src\thirdparty\pbkdf2.hh" />
+    <ClInclude Include="src\thirdparty\uuid.hh" />
+    <ClInclude Include="src\users\user.hh" />
+    <ClInclude Include="src\users\user_manager.hh" />
+    <ClInclude Include="src\utils\leb128.hh" />
+    <ClInclude Include="src\utils\osu_string.hh" />
+    <ClInclude Include="src\utils\string_utils.hh" />
+    <ClInclude Include="src\views\index_page.hh" />
+    <ClInclude Include="src\views\index_view.hh" />
+    <ClInclude Include="src\shiro.hh" />
   </ItemGroup>
 </Project>
