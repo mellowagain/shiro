@@ -3,7 +3,12 @@
 
 #include <cassert>
 #include <cstdint>
-#include <mysql/mysql.h>
+
+#if __has_include(<mysql.h>)
+	#include <mysql.h>
+#else
+	#include <mysql/mysql.h>
+#endif
 
 #include <string>
 #include <sstream>

@@ -1,7 +1,11 @@
 #ifndef SHIRO_MYSQLEXCEPTION_HH
 #define SHIRO_MYSQLEXCEPTION_HH
 
-#include <mysql/mysql.h>
+#if __has_include(<mysql.h>)
+	#include <mysql.h>
+#else
+	#include <mysql/mysql.h>
+#endif
 
 #include <exception>
 #include <string>

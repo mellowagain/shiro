@@ -4,7 +4,12 @@
 #include <cstddef>
 // MYSQL and MYSQL_STMT are typedefs so we have to include mysql.h.
 // Otherwise, I would just forward declare them.
-#include <mysql/mysql.h>
+
+#if __has_include(<mysql.h>)
+	#include <mysql.h>
+#else
+	#include <mysql/mysql.h>
+#endif
 
 #include <vector>
 

@@ -1,7 +1,12 @@
 #include "mysqlexception.hh"
 #include "mysqlpreparedstatement.hh"
 
-#include <mysql/mysql.h>
+#if __has_include(<mysql.h>)
+	#include <mysql.h>
+#else
+	#include <mysql/mysql.h>
+#endif
+
 #include <string>
 
 using std::string;

@@ -2,7 +2,12 @@
 #define SHIRO_OUTPUTBINDER_HH
 
 #include <cstdint>
-#include <mysql/mysql.h>
+
+#if __has_include(<mysql.h>)
+	#include <mysql.h>
+#else
+	#include <mysql/mysql.h>
+#endif
 
 #include <boost/lexical_cast.hpp>
 #include <memory>
