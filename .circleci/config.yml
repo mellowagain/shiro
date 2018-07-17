@@ -22,3 +22,7 @@ jobs:
       - store_artifacts:
           path: ~/shiro/bin/shiro
           destination: shiro
+
+notify:
+  webhooks:
+    - url: http://shiro.host:5000/shiro/callback
