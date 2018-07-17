@@ -9,7 +9,7 @@
 #include "country_ids.hh"
 #include "geoloc.hh"
 
-shiro::geoloc::location_info shiro::geoloc::get_country(const std::string &ip_address) {
+shiro::geoloc::location_info shiro::geoloc::get_location(const std::string &ip_address) {
     // For convenience
     using json = nlohmann::json;
 

@@ -1,4 +1,6 @@
 #include "../channels/channel_manager.hh"
+#include "../geoloc/geoloc.hh"
+#include "../geoloc/location_info.hh"
 #include "../io/layouts/packets.hh"
 #include "../io/osu_writer.hh"
 #include "../thirdparty/digestpp.hh"
@@ -71,6 +73,11 @@ void shiro::handler::login::handle(const crow::request &request, crow::response 
     user->client_version = version;
     user->utc_offset = utc_offset;
     user->hwid = digestpp::sha256().absorb(hwid).hexdigest();
+
+    geoloc::location_info info = geoloc::get_location(request.get_header_value("X-Forwarded-For"));
+    user->presence.country_id = info.country;
+    user->presence.latitude = info.latitude;
+    user->presence.longitude = info.longitude;
 
     users::manager::login_user(user);
 

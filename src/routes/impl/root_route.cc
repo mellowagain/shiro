@@ -30,7 +30,7 @@ void shiro::routes::root::handle(const crow::request &request, crow::response &r
 
     const std::string &user_agent = request.get_header_value("user-agent");
 
-    if (user_agent.empty() || user_agent.find("osu!") == std::string::npos) {
+    if (user_agent.empty() || user_agent != "osu!") {
         response.code = 403;
         response.end();
 
