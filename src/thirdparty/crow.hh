@@ -6301,17 +6301,6 @@ namespace crow
 {
     enum class HTTPMethod
     {
-#ifndef DELETE
-        DELETE = 0,
-        GET,
-        HEAD,
-        POST,
-        PUT,
-        CONNECT,
-        OPTIONS,
-        TRACE,
-#endif
-
         Delete = 0,
         Get,
         Head,

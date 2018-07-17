@@ -10,7 +10,7 @@
 #include "root_route.hh"
 
 void shiro::routes::root::handle(const crow::request &request, crow::response &response) {
-    if (request.method == crow::HTTPMethod::GET) {
+    if (request.method == crow::HTTPMethod::Get) {
         std::string view = shiro::views::index::get_view();
 
         if (view.empty()) {
