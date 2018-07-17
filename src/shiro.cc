@@ -5,7 +5,6 @@
 #include "config/bancho_file.hh"
 #include "config/cli_args.hh"
 #include "config/db_file.hh"
-#include "config/geonames_file.hh"
 #include "geoloc/country_ids.hh"
 #include "logger/logger.hh"
 #include "routes/routes.hh"
@@ -25,7 +24,6 @@ int shiro::init(int argc, char **argv) {
 
     config::bancho::parse();
     config::database::parse();
-    config::geonames::parse();
 
     geoloc::init();
 
@@ -37,12 +35,12 @@ int shiro::init(int argc, char **argv) {
     db_connection->setup();
 
     channels::manager::init();
-    shiro::signal_handler::install();
+    signal_handler::install();
 
     LOG_F(INFO, "Welcome to shiro. Listening on http://%s:%i/.", config::bancho::host.c_str(), config::bancho::port);
     LOG_F(INFO, "Press CTRL + C to quit.");
 
-    shiro::routes::init();
+    routes::init();
 
     return EXIT_SUCCESS;
 }

@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include "../thirdparty/loguru.hh"
 #include "country_ids.hh"
 
@@ -227,4 +229,23 @@ uint8_t shiro::geoloc::get_country_id(const std::string &country_code) {
     }
 
     return (uint8_t) country_id::JP;  // Default to Japan because we're weebs ¯\_(ツ)_/¯
+}
+
+std::string shiro::geoloc::get_country_name(uint8_t country_id) {
+    std::string result_country = "JP"; // Default to Japan because we're weebs ¯\_(ツ)_/¯
+
+    auto method = [&](const std::unordered_map<std::string, uint8_t>::value_type &vt) -> bool {
+        if (vt.second == country_id) {
+            result_country = vt.first;
+            return true;
+        }
+
+        return false;
+    };
+
+    if (std::find_if(countries.begin(), countries.end(), method) == countries.end()) {
+        LOG_F(WARNING, "Unable to find country name for country id: %hhu", country_id);
+    }
+
+    return result_country;
 }

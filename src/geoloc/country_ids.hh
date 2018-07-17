@@ -232,6 +232,8 @@ namespace shiro::geoloc {
 
     uint8_t get_country_id(const std::string &country_code);
 
+    std::string get_country_name(uint8_t country_id);
+
 }
 
 #endif //SHIRO_COUNTRY_IDS_HH
