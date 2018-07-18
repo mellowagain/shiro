@@ -17,6 +17,9 @@ This server handles the following features:
 * Screenshots
 * osu!direct
 
+The web back- and frontend which handles the browser facing portion
+is available at [`Marc3842h/kuro`](https://github.com/Marc3842h/kuro).
+
 ## Installation
 
 Installation of shiro is simple and can be done using a few simple steps.
