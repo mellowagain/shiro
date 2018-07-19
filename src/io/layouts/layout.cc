@@ -143,41 +143,8 @@ std::string shiro::io::layout::marshal() {
 }
 
 void shiro::io::layout::unmarshal(shiro::io::buffer &buffer) {
-    data_type type = (data_type) buffer.read_int();
+    // That's not that easy...
 
-    switch (type) {
-        case data_type::byte:
-            this->data_byte = buffer.read_byte();
-            break;
-        case data_type::int16:
-            this->data_short = buffer.read_short();
-            break;
-        case data_type::uint16:
-            this->data_ushort = buffer.read_ushort();
-            break;
-        case data_type::int32:
-            this->data_int = buffer.read_int();
-            break;
-        case data_type::uint32:
-            this->data_uint = buffer.read_uint();
-            break;
-        case data_type::int64:
-            this->data_long = buffer.read_long();
-            break;
-        case data_type::uint64:
-            this->data_ulong = buffer.read_ulong();
-            break;
-        case data_type::flt:
-            this->data_float = buffer.read_float();
-            break;
-        case data_type::dble:
-            this->data_double = buffer.read_double();
-            break;
-        case data_type::string:
-            this->data_string = buffer.read_string();
-            break;
-        case data_type::array:
-            this->data_array = buffer.read_array();
-            break;
-    }
+    // Reading values directly from buffer
+    // will be a better idea
 }

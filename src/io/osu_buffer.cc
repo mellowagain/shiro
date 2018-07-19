@@ -4,7 +4,9 @@
 #include "osu_buffer.hh"
 
 shiro::io::buffer::buffer(const std::string &data) {
-
+    for (char c : data) {
+        this->write_byte(c);
+    }
 }
 
 void shiro::io::buffer::allocate(int size) {
@@ -205,4 +207,8 @@ std::string shiro::io::buffer::serialize() {
     }
 
     return stream.str();
+}
+
+bool shiro::io::buffer::can_read(size_t amount) {
+    return this->position + amount <= this->written_size;
 }

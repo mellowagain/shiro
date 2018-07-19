@@ -2,12 +2,11 @@
 #define SHIRO_OSU_READER_HH
 
 #include "osu_buffer.hh"
+#include "osu_packet.hh"
 
 namespace shiro::io {
 
-    class osu_reader {
-
-    };
+    std::vector<osu_packet> parse_packets(std::string data);
 
 }
 

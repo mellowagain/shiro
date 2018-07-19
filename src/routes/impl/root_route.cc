@@ -2,6 +2,7 @@
 
 #include "../../handlers/login_handler.hh"
 #include "../../io/layouts/packets.hh"
+#include "../../io/osu_reader.hh"
 #include "../../io/osu_writer.hh"
 #include "../../thirdparty/loguru.hh"
 #include "../../users/user_manager.hh"
@@ -57,5 +58,15 @@ void shiro::routes::root::handle(const crow::request &request, crow::response &r
         return;
     }
 
-    // Continue with our stuff
+    LOG_S(INFO) << "Received data, reading packet...";
+
+    auto packets = io::parse_packets(request.body);
+
+    LOG_S(INFO) << "Successfully parsed";
+
+    for (auto packet : packets) {
+        LOG_F(INFO, "Received packet with ID: %hu", packet.id);
+    }
+
+    LOG_S(INFO) << "ok done despacito";
 }
