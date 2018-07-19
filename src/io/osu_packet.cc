@@ -6,17 +6,8 @@ shiro::io::osu_packet::osu_packet(buffer &data) {
     data.read_byte();
 
     int data_size = data.read_int();
-    this->data.write_int(data_size);
 
     for (int i = 0; i < data_size; i++) {
-        this->data.write_byte(data.read_byte());
+        this->data.write_byte(static_cast<char>(data.read_byte()));
     }
-}
-
-template<typename l = shiro::io::layout>
-l shiro::io::osu_packet::unmarshal() {
-    l result;
-    result.unmarshal(this->data);
-
-    return result;
 }
