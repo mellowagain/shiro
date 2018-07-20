@@ -6,8 +6,8 @@ void shiro::handler::ping::handle(shiro::io::osu_packet &in, shiro::io::osu_writ
     std::chrono::seconds seconds = std::chrono::duration_cast<std::chrono::seconds>(
             std::chrono::system_clock::now().time_since_epoch()
     );
-
     user->last_ping = seconds;
 
     out.user_presence(user->presence);
+    out.user_stats(user->stats);
 }

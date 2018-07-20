@@ -8,7 +8,7 @@ void shiro::channels::manager::init() {
         channels.clear();
 
     using channel_struct = std::tuple<uint32_t, std::string, std::string, bool>;
-    auto result = db_connection->query<channel_struct>("SELECT * FROM `channels`");
+    std::vector<channel_struct> result = db_connection->query<channel_struct>("SELECT * FROM `channels`");
 
     if (result.empty())
         return;
