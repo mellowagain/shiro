@@ -56,6 +56,18 @@ void shiro::io::osu_writer::user_stats(shiro::io::layouts::user_stats stats) {
     this->write_packet((uint16_t) packet_id::out_handle_osu_update, std::move(stats));
 }
 
+void shiro::io::osu_writer::friend_list(std::vector<int32_t> friends) {
+    this->write_packet((uint16_t) packet_id::out_friends_list, layout(std::move(friends)));
+}
+
+void shiro::io::osu_writer::send_message(shiro::io::layouts::message message) {
+    this->write_packet((uint16_t) packet_id::out_send_message, std::move(message));
+}
+
+void shiro::io::osu_writer::rtx(std::string rtx) {
+    this->write_packet((uint16_t) packet_id::out_rtx, layout(std::move(rtx)));
+}
+
 std::string shiro::io::osu_writer::serialize() {
     return this->data.serialize();
 }

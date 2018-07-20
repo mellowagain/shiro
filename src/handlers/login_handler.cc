@@ -92,8 +92,10 @@ void shiro::handler::login::handle(const crow::request &request, crow::response 
     writer.login_permissions(user->presence.permissions);
     writer.announce("Welcome to shiro!");
 
+    writer.friend_list(user->friends);
+
     writer.channel_listing_complete();
-    channels::manager::write_channels(writer);
+    channels::manager::write_channels(writer, user);
 
     response.end(writer.serialize());
 }

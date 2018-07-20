@@ -17,6 +17,8 @@ namespace shiro::users {
         std::string password;
         std::string salt;
 
+        std::vector<int32_t> friends;
+
         // Session info
         std::string token; // UUID v4
         std::string client_version;

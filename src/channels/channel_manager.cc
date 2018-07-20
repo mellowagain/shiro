@@ -31,12 +31,14 @@ void shiro::channels::manager::init() {
     }
 }
 
-void shiro::channels::manager::write_channels(shiro::io::osu_writer &buf) {
-    for (const auto &pair : channels) {
+void shiro::channels::manager::write_channels(shiro::io::osu_writer &buf, std::shared_ptr<shiro::users::user> user) {
+    for (auto &pair : channels) {
         buf.channel_available(pair.first);
 
-        if (pair.first.auto_join)
+        if (pair.first.auto_join) {
             buf.channel_join(pair.first.name);
+            pair.second.emplace_back(user);
+        }
     }
 }
 
@@ -77,4 +79,13 @@ bool shiro::channels::manager::in_channel(uint32_t channel_id, const std::shared
     }
 
     return false;
+}
+
+std::vector<std::shared_ptr<shiro::users::user>> shiro::channels::manager::get_users_in_channel(const std::string &channel_name) {
+    for (const auto &pair : channels) {
+        if (pair.first.name == channel_name)
+            return pair.second;
+    }
+
+    return {};
 }

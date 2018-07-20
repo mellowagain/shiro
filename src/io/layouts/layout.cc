@@ -130,7 +130,6 @@ std::string shiro::io::layout::marshal() {
 
             buf.write_int(osu_string.length());
             buf.write_string(osu_string);
-
             break;
         }
         case data_type::array:

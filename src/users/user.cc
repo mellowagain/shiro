@@ -25,28 +25,28 @@ bool shiro::users::user::init() {
             int, int, int, int, // play_count
             std::string>; // country
 
-    std::vector<user_struct> result {};
+    std::vector<user_struct> user_result;
 
     if (this->user_id != 0) {
-        result = db_connection->query<user_struct>("SELECT * FROM `users` WHERE id = ?", this->user_id);
+        user_result = db_connection->query<user_struct>("SELECT * FROM `users` WHERE id = ?", this->user_id);
     } else if (!this->presence.username.empty()) {
-        result = db_connection->query<user_struct>("SELECT * FROM `users` WHERE username = ?", this->presence.username);
+        user_result = db_connection->query<user_struct>("SELECT * FROM `users` WHERE username = ?", this->presence.username);
     } else {
         LOG_S(ERROR) << "Tried to load user without supplying a valid user id or username.";
         return false;
     }
 
-    if (result.empty())
+    if (user_result.empty())
         return false;
 
-    if (result.size() != 1) {
-        if (result.size() > 1)
-            LOG_F(ERROR, "Got %zu results for user id %i, expected 1.", result.size(), user_id);
+    if (user_result.size() != 1) {
+        if (user_result.size() > 1)
+            LOG_F(ERROR, "Got %zu results for user id %i, expected 1.", user_result.size(), user_id);
 
         return false;
     }
 
-    for (const user_struct &user_struct : result) {
+    for (const user_struct &user_struct : user_result) {
         this->user_id = std::get<0>(user_struct);
         this->presence.user_id = this->user_id;
         this->stats.user_id = this->user_id;
@@ -58,6 +58,16 @@ bool shiro::users::user::init() {
         this->stats.total_score = std::get<16>(user_struct);
         this->stats.ranked_score = std::get<20>(user_struct);
         this->stats.play_count = std::get<24>(user_struct);
+    }
+
+    using relationship_struct = std::tuple<int, int, bool>; // origin, target, blocked
+
+    std::vector<relationship_struct> relationship_result = db_connection->query<relationship_struct>(
+            "SELECT * FROM `relationships` WHERE origin = ? AND blocked = 0", this->user_id
+    );
+
+    for (const relationship_struct &relationship_struct : relationship_result) {
+        this->friends.emplace_back(std::get<1>(relationship_struct));
     }
 
     return true;

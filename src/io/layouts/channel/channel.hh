@@ -22,6 +22,7 @@ namespace shiro::io::layouts {
         void unmarshal(shiro::io::buffer &buffer) override;
 
         bool operator==(const channel &other_channel) const;
+        bool operator!=(const channel &other_channel) const;
 
     };
 

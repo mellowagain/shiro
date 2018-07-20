@@ -36,6 +36,10 @@ bool shiro::io::layouts::channel::operator==(const shiro::io::layouts::channel &
     return (this->name == other_channel.name && this->description == other_channel.description);
 }
 
+bool shiro::io::layouts::channel::operator!=(const shiro::io::layouts::channel &other_channel) const {
+    return !operator==(other_channel);
+}
+
 size_t std::hash<shiro::io::layouts::channel>::operator()(const shiro::io::layouts::channel &channel) const {
     size_t id_hash = std::hash<uint32_t>()(channel.id);
     size_t name_hash = std::hash<std::string>()(channel.name);

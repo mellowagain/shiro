@@ -112,7 +112,7 @@ namespace shiro::io {
         out_account_restricted = 104,
         out_rtx = 105,
         in_match_abort = 106,
-        out_switch_tourneyServer = 107,
+        out_switch_tourney_server = 107,
         in_special_join_match_channel = 108,
         in_special_leave_match_channel = 109
 

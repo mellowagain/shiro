@@ -2,13 +2,16 @@
 #include "../../handlers/user_status_handler.hh"
 #include "../../thirdparty/loguru.hh"
 #include "packet_router.hh"
+#include "../../handlers/chat/public_chat_handler.hh"
 
 void shiro::routes::packets::route(shiro::io::packet_id packet_id, shiro::io::osu_packet &in, shiro::io::osu_writer &out, std::shared_ptr<users::user> user) {
     switch (packet_id) {
         case io::packet_id::in_send_user_status:
             handler::user_status::handle(in, out, user);
             break;
-        case io::packet_id::in_send_irc_message:break;
+        case io::packet_id::in_send_irc_message:
+            handler::chat::handle_public(in, out, user);
+            break;
         case io::packet_id::in_exit:break;
         case io::packet_id::in_request_status_update:break;
         case io::packet_id::in_pong:

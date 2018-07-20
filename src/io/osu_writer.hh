@@ -6,6 +6,7 @@
 #include "layouts/user/user_presence.hh"
 #include "layouts/user/user_stats.hh"
 #include "osu_buffer.hh"
+#include "layouts/message/message.hh"
 
 namespace shiro::io {
 
@@ -34,6 +35,12 @@ namespace shiro::io {
 
         void user_presence(layouts::user_presence presence);
         void user_stats(layouts::user_stats stats);
+
+        void friend_list(std::vector<int32_t> friends);
+
+        void send_message(layouts::message message);
+
+        void rtx(std::string rtx);
 
         std::string serialize();
 

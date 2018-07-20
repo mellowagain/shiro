@@ -207,7 +207,7 @@ void shiro::io::buffer::write_buffer(shiro::io::buffer &buffer) {
 std::string shiro::io::buffer::serialize() {
     std::stringstream stream;
 
-    for (std::size_t i{}; i < this->written_size; i++) {
+    for (size_t i = 0; i < this->written_size; i++) {
         stream << std::hex << this->bytes.at(i);
     }
 

@@ -60,6 +60,9 @@ void shiro::database::setup() {
            "play_count_std INT, play_count_taiko INT, play_count_ctb INT, play_count_mania INT, "
            "country VARCHAR(2));");
 
+    // Relationships between users (friends and blocked)
+    update("CREATE TABLE IF NOT EXISTS `relationships` (origin INT, target INT, blocked BOOLEAN);");
+
     LOG_S(INFO) << "Successfully created and structured tables in database.";
 }
 
