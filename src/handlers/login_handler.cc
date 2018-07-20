@@ -69,10 +69,15 @@ void shiro::handler::login::handle(const crow::request &request, crow::response 
         return;
     }
 
+    std::chrono::seconds seconds = std::chrono::duration_cast<std::chrono::seconds>(
+            std::chrono::system_clock::now().time_since_epoch()
+    );
+
     user->token = sole::uuid4().str();
     user->client_version = version;
     user->utc_offset = utc_offset;
     user->hwid = digestpp::sha256().absorb(hwid).hexdigest();
+    user->last_ping = seconds;
 
     geoloc::location_info info = geoloc::get_location(request.get_header_value("X-Forwarded-For"));
     user->presence.country_id = info.country;

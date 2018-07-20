@@ -81,6 +81,9 @@ std::shared_ptr<shiro::users::user> shiro::users::manager::get_user_by_token(con
     if (token.empty())
         return nullptr;
 
+    if (!is_online(token))
+        return nullptr;
+
     for (const std::shared_ptr<user> &user : online_users) {
         if (user->token == token)
             return user;

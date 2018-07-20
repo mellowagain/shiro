@@ -1,13 +1,13 @@
 #include <string>
 
 #include "../../handlers/login_handler.hh"
-#include "../../io/layouts/packets.hh"
 #include "../../io/osu_reader.hh"
 #include "../../io/osu_writer.hh"
 #include "../../thirdparty/loguru.hh"
 #include "../../users/user_manager.hh"
 #include "../../views/index_view.hh"
 #include "../../shiro.hh"
+#include "../packets/packet_router.hh"
 #include "root_route.hh"
 
 void shiro::routes::root::handle(const crow::request &request, crow::response &response) {
@@ -58,15 +58,12 @@ void shiro::routes::root::handle(const crow::request &request, crow::response &r
         return;
     }
 
-    LOG_S(INFO) << "Received data, reading packet...";
+    std::vector<io::osu_packet> packets = io::parse_packets(request.body);
+    io::osu_writer writer;
 
-    auto packets = io::parse_packets(request.body);
-
-    LOG_S(INFO) << "Successfully parsed";
-
-    for (auto packet : packets) {
-        LOG_F(INFO, "Received packet with ID: %hu", packet.id);
+    for (io::osu_packet packet : packets) {
+        routes::packets::route(packet.id, packet, writer, user);
     }
 
-    LOG_S(INFO) << "ok done despacito";
+    response.end(writer.serialize());
 }

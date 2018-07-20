@@ -1,9 +1,12 @@
 #ifndef SHIRO_USER_HH
 #define SHIRO_USER_HH
 
+#include <chrono>
+
 #include "../io/layouts/user/user_presence.hh"
 #include "../io/layouts/user/user_stats.hh"
 #include "../shiro.hh"
+#include "../io/layouts/user/user_status.hh"
 
 namespace shiro::users {
 
@@ -18,9 +21,11 @@ namespace shiro::users {
         std::string client_version;
         std::string utc_offset;
         std::string hwid; // SHA256
+        std::chrono::seconds last_ping;
 
         io::layouts::user_presence presence;
         io::layouts::user_stats stats;
+        io::layouts::user_status status;
 
         explicit user(int32_t user_id);
         explicit user(const std::string &username);
