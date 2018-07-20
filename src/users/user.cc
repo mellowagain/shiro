@@ -2,6 +2,7 @@
 
 #include "../thirdparty/loguru.hh"
 #include "../thirdparty/pbkdf2.hh"
+#include "../utils/play_mode.hh"
 #include "user.hh"
 
 shiro::users::user::user(int32_t user_id) : user_id(user_id) {
@@ -63,7 +64,63 @@ bool shiro::users::user::init() {
 }
 
 void shiro::users::user::update() {
-    // TODO: Update stats of user based on current mode etc.
+    using user_struct = std::tuple<int, // id
+            std::string, std::string, // username, safe_username
+            std::string, std::string, // password, salt
+            std::string, std::string, int, int, // email, ip, registration_date, last_seen
+            int, int, std::string, // followers, groups, user_page
+            float, float, float, float, // pp
+            int, int, int, int, // score
+            int, int, int, int, // ranked_score
+            int, int, int, int, // play_count
+            std::string>; // country
+
+    std::vector<user_struct> result = db_connection->query<user_struct>("SELECT * FROM `users` WHERE id = ?", this->user_id);
+
+    if (result.empty())
+        return;
+
+    if (result.size() != 1) {
+        if (result.size() > 1)
+            LOG_F(ERROR, "Got %zu results for user id %i, expected 1.", result.size(), user_id);
+
+        return;
+    }
+
+    for (const user_struct &user_struct : result) {
+        uint8_t mode = this->status.play_mode;
+        int16_t pp = 0;
+        uint64_t total_score = 0;
+        uint64_t ranked_score = 0;
+        int32_t play_count = 0;
+
+        if (mode == (uint8_t) utils::play_mode::standard) {
+            pp = std::get<12>(user_struct);
+            total_score = std::get<16>(user_struct);
+            ranked_score = std::get<20>(user_struct);
+            play_count = std::get<24>(user_struct);
+        } else if (mode == (uint8_t) utils::play_mode::taiko) {
+            pp = std::get<13>(user_struct);
+            total_score = std::get<17>(user_struct);
+            ranked_score = std::get<21>(user_struct);
+            play_count = std::get<25>(user_struct);
+        } else if (mode == (uint8_t) utils::play_mode::fruits) {
+            pp = std::get<14>(user_struct);
+            total_score = std::get<18>(user_struct);
+            ranked_score = std::get<22>(user_struct);
+            play_count = std::get<26>(user_struct);
+        } else if (mode == (uint8_t) utils::play_mode::mania) {
+            pp = std::get<15>(user_struct);
+            total_score = std::get<19>(user_struct);
+            ranked_score = std::get<23>(user_struct);
+            play_count = std::get<27>(user_struct);
+        }
+
+        this->stats.pp = pp;
+        this->stats.total_score = total_score;
+        this->stats.ranked_score = ranked_score;
+        this->stats.play_count = play_count;
+    }
 }
 
 bool shiro::users::user::check_password(const std::string &password) {
