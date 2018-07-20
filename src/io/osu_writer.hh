@@ -3,6 +3,8 @@
 
 #include "layouts/channel/channel.hh"
 #include "layouts/layout.hh"
+#include "layouts/user/user_presence.hh"
+#include "layouts/user/user_stats.hh"
 #include "osu_buffer.hh"
 
 namespace shiro::io {
@@ -29,6 +31,9 @@ namespace shiro::io {
         void channel_listing_complete();
         void channel_available(layouts::channel channel);
         void channel_join(std::string channel_name);
+
+        void user_presence(layouts::user_presence presence);
+        void user_stats(layouts::user_stats stats);
 
         std::string serialize();
 

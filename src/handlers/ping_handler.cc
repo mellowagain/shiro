@@ -8,4 +8,6 @@ void shiro::handler::ping::handle(shiro::io::osu_packet &in, shiro::io::osu_writ
     );
 
     user->last_ping = seconds;
+
+    out.user_presence(user->presence);
 }

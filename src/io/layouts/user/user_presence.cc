@@ -1,10 +1,15 @@
+#include "../../../utils/osu_string.hh"
 #include "user_presence.hh"
 
 std::string shiro::io::layouts::user_presence::marshal() {
+    std::string username = utils::osu_string(this->username);
+
     buffer buf;
 
+    buf.write_int(4 + username.length() + 1 + 1 + 1 + 4 + 4 + 4);
+
     buf.write_int(this->user_id);
-    buf.write_string(this->username);
+    buf.write_string(username);
 
     buf.write_byte(this->time_zone);
     buf.write_byte(this->country_id);

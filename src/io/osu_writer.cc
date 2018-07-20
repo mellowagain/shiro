@@ -48,6 +48,14 @@ void shiro::io::osu_writer::channel_join(std::string channel_name) {
     this->write_packet((uint16_t) packet_id::out_channel_join_success, layout(std::move(channel_name)));
 }
 
+void shiro::io::osu_writer::user_presence(shiro::io::layouts::user_presence presence) {
+    this->write_packet((uint16_t) packet_id::out_user_presence, std::move(presence));
+}
+
+void shiro::io::osu_writer::user_stats(shiro::io::layouts::user_stats stats) {
+    this->write_packet((uint16_t) packet_id::out_handle_osu_update, std::move(stats));
+}
+
 std::string shiro::io::osu_writer::serialize() {
     return this->data.serialize();
 }

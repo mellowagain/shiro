@@ -1,14 +1,20 @@
+#include "../../../utils/osu_string.hh"
 #include "user_stats.hh"
 
 std::string shiro::io::layouts::user_stats::marshal() {
+    std::string status_text = utils::osu_string(this->status_text);
+    std::string beatmap_checksum = utils::osu_string(this->beatmap_checksum);
+
     buffer buf;
+
+    buf.write_int(4 + 1 + status_text.length() + beatmap_checksum.length() + 4 + 1 + 4 + 8 + 4 + 4 + 8 + 4 + 2);
 
     buf.write_int(this->user_id);
 
     buf.write_byte(this->status);
-    buf.write_string(this->status_text);
+    buf.write_string(status_text);
 
-    buf.write_string(this->beatmap_checksum);
+    buf.write_string(beatmap_checksum);
 
     buf.write_uint(this->current_mods);
     buf.write_byte(this->play_mode);
