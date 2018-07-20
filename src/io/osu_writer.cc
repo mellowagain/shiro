@@ -51,3 +51,7 @@ void shiro::io::osu_writer::channel_join(std::string channel_name) {
 std::string shiro::io::osu_writer::serialize() {
     return this->data.serialize();
 }
+
+shiro::io::buffer shiro::io::osu_writer::get_buffer() {
+    return this->data;
+}

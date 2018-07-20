@@ -32,6 +32,8 @@ namespace shiro::io {
 
         std::string serialize();
 
+        buffer get_buffer();
+
     };
 
 }

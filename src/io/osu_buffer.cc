@@ -199,6 +199,11 @@ void shiro::io::buffer::write_array(std::vector<int32_t> value) {
     }
 }
 
+void shiro::io::buffer::write_buffer(shiro::io::buffer &buffer) {
+    this->bytes.insert(this->bytes.end(), buffer.bytes.begin(), buffer.bytes.end());
+    this->written_size += buffer.written_size;
+}
+
 std::string shiro::io::buffer::serialize() {
     std::stringstream stream;
 
@@ -211,4 +216,14 @@ std::string shiro::io::buffer::serialize() {
 
 bool shiro::io::buffer::can_read(size_t amount) {
     return this->position + amount <= this->written_size;
+}
+
+bool shiro::io::buffer::is_empty() {
+    return this->bytes.empty();
+}
+
+void shiro::io::buffer::reset() {
+    this->bytes.clear();
+    this->written_size = 0;
+    this->position = 0;
 }

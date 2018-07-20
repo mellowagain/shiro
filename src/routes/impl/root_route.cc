@@ -65,5 +65,11 @@ void shiro::routes::root::handle(const crow::request &request, crow::response &r
         routes::packets::route(packet.id, packet, writer, user);
     }
 
-    response.end(writer.serialize());
+    std::string result = writer.serialize();
+
+    if (!user->queue.is_empty()) {
+        result.append(user->queue.serialize());
+    }
+
+    response.end(result);
 }
