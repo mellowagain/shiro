@@ -73,7 +73,7 @@ std::string shiro::io::buffer::read_string() {
             } while (!end);
         }
 
-        for (size_t i = 0; i < total; i++) {
+        for (int32_t i = 0; i < total; i++) {
             result += this->read<uint8_t>();
         }
 
