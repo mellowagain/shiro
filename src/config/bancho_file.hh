@@ -7,6 +7,7 @@ namespace shiro::config::bancho {
 
     extern std::string host;
     extern int port;
+    extern uint16_t concurrency;
 
     void parse();
 

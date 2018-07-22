@@ -2,6 +2,7 @@
 #include "../logger/route_logger.hh"
 #include "impl/root_route.hh"
 #include "routes.hh"
+#include "../thirdparty/loguru.hh"
 
 void shiro::routes::init() {
     server.loglevel(crow::LogLevel::Info);
@@ -9,8 +10,12 @@ void shiro::routes::init() {
 
     init_routes();
 
-    server.concurrency(64); // osu! connections are keep alive so we should be able to handle them concurrently
-    server.bindaddr(config::bancho::host).port((uint16_t) config::bancho::port).multithreaded().run();
+    try {
+        server.concurrency(config::bancho::concurrency);
+        server.bindaddr(config::bancho::host).port((uint16_t) config::bancho::port).multithreaded().run();
+    } catch (const boost::system::system_error &ex) {
+        LOG_S(FATAL) << "Unable to start server: " << ex.what() << ".";
+    }
 }
 
 void shiro::routes::init_routes() {
