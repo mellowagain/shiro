@@ -1,6 +1,7 @@
 #include <cstdlib>
 #include <curl/curl.h>
 
+#include "bot/bot.hh"
 #include "channels/channel_manager.hh"
 #include "config/bancho_file.hh"
 #include "config/cli_args.hh"
@@ -34,7 +35,11 @@ int shiro::init(int argc, char **argv) {
     db_connection->connect();
     db_connection->setup();
 
+    bot::init();
+    bot::init_commands();
+
     channels::manager::init();
+
     signal_handler::install();
 
     LOG_F(INFO, "Welcome to shiro. Listening on http://%s:%i/.", config::bancho::host.c_str(), config::bancho::port);
