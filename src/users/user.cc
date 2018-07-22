@@ -36,13 +36,16 @@ bool shiro::users::user::init() {
         return false;
     }
 
-    if (user_result.empty())
+    if (user_result.empty()) {
+        LOG_S(ERROR) << "Result is empty.";
         return false;
+    }
 
     if (user_result.size() != 1) {
         if (user_result.size() > 1)
             LOG_F(ERROR, "Got %zu results for user id %i, expected 1.", user_result.size(), user_id);
 
+        LOG_S(ERROR) << "Size is " << user_result.size() << ", expected 1.";
         return false;
     }
 

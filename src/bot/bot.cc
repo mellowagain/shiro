@@ -47,7 +47,7 @@ void shiro::bot::init() {
                               "JP");
     }
 
-    std::shared_ptr<users::user> bot_user = std::make_shared<users::user>(config::bot::name);
+    std::shared_ptr<users::user> bot_user = std::make_shared<users::user>(1);
 
     if (!bot_user->init()) {
         LOG_S(FATAL) << "Unable to initialize chat bot.";
