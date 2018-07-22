@@ -75,12 +75,20 @@ void shiro::handler::login::handle(const crow::request &request, crow::response 
 
     user->token = sole::uuid4().str();
     user->client_version = version;
-    user->utc_offset = utc_offset;
     user->hwid = digestpp::sha256().absorb(hwid).hexdigest();
     user->last_ping = seconds;
 
+    uint8_t time_zone = 9;
+
+    try {
+        time_zone = boost::lexical_cast<uint8_t>(utc_offset);
+    } catch (const boost::bad_lexical_cast &ex) {
+        LOG_S(WARNING) << "Unable to cast " << utc_offset << " to uint8_t: " << ex.what() << ".";
+    }
+
     geoloc::location_info info = geoloc::get_location(request.get_header_value("X-Forwarded-For"));
     user->presence.country_id = info.country;
+    user->presence.time_zone = time_zone;
     user->presence.latitude = info.latitude;
     user->presence.longitude = info.longitude;
 

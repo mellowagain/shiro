@@ -22,7 +22,6 @@ namespace shiro::users {
         // Session info
         std::string token; // UUID v4
         std::string client_version;
-        std::string utc_offset;
         std::string hwid; // SHA256
         std::chrono::seconds last_ping;
 

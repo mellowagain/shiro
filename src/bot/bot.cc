@@ -60,11 +60,11 @@ void shiro::bot::init() {
 
     bot_user->token = sole::uuid4().str();
     bot_user->client_version = "b19700101.01";
-    bot_user->utc_offset = "+09";
     bot_user->hwid = digestpp::sha256().absorb(config::bot::name).hexdigest();
     bot_user->last_ping = seconds;
 
     bot_user->presence.country_id = (uint8_t) geoloc::country_id::JP;
+    bot_user->presence.time_zone = 9;
     bot_user->presence.latitude = 35.6895f;
     bot_user->presence.longitude = 139.6917f;
 
