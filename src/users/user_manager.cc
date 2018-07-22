@@ -77,6 +77,30 @@ bool shiro::users::manager::is_online(const std::string &token) {
     return false;
 }
 
+std::shared_ptr<shiro::users::user> shiro::users::manager::get_user_by_username(const std::string &username) {
+    if (username.empty())
+        return nullptr;
+
+    for (const std::shared_ptr<user> &user : online_users) {
+        if (user->presence.username == username)
+            return user;
+    }
+
+    return nullptr;
+}
+
+std::shared_ptr<shiro::users::user> shiro::users::manager::get_user_by_id(int32_t id) {
+    if (!is_online(id))
+        return nullptr;
+
+    for (const std::shared_ptr<user> &user : online_users) {
+        if (user->user_id == id)
+            return user;
+    }
+
+    return nullptr;
+}
+
 std::shared_ptr<shiro::users::user> shiro::users::manager::get_user_by_token(const std::string &token) {
     if (token.empty())
         return nullptr;

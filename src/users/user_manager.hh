@@ -21,6 +21,8 @@ namespace shiro::users::manager {
     bool is_online(int32_t user_id);
     bool is_online(const std::string &token);
 
+    std::shared_ptr<user> get_user_by_username(const std::string &username);
+    std::shared_ptr<user> get_user_by_id(int32_t id);
     std::shared_ptr<user> get_user_by_token(const std::string &token);
 
     size_t get_online_users();

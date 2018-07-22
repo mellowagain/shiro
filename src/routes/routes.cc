@@ -1,8 +1,8 @@
 #include "../config/bancho_file.hh"
 #include "../logger/route_logger.hh"
+#include "../thirdparty/loguru.hh"
 #include "impl/root_route.hh"
 #include "routes.hh"
-#include "../thirdparty/loguru.hh"
 
 void shiro::routes::init() {
     server.loglevel(crow::LogLevel::Info);

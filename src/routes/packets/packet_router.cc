@@ -1,8 +1,9 @@
+#include "../../handlers/chat/private_chat_handler.hh"
+#include "../../handlers/chat/public_chat_handler.hh"
 #include "../../handlers/ping_handler.hh"
 #include "../../handlers/user_status_handler.hh"
 #include "../../thirdparty/loguru.hh"
 #include "packet_router.hh"
-#include "../../handlers/chat/public_chat_handler.hh"
 
 void shiro::routes::packets::route(shiro::io::packet_id packet_id, shiro::io::osu_packet &in, shiro::io::osu_writer &out, std::shared_ptr<users::user> user) {
     switch (packet_id) {
@@ -22,7 +23,9 @@ void shiro::routes::packets::route(shiro::io::packet_id packet_id, shiro::io::os
         case io::packet_id::in_spectate_frames:break;
         case io::packet_id::in_error_report:break;
         case io::packet_id::in_cant_spectate:break;
-        case io::packet_id::in_send_irc_message_private:break;
+        case io::packet_id::in_send_irc_message_private:
+            handler::chat::handle_private(in, out, user);
+            break;
         case io::packet_id::in_lobby_part:break;
         case io::packet_id::in_lobby_join:break;
         case io::packet_id::in_match_create:break;
