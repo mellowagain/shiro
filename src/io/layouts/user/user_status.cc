@@ -1,29 +1,23 @@
 #include "user_status.hh"
 
-std::string shiro::io::layouts::user_status::marshal() {
+shiro::io::buffer shiro::io::layouts::user_status::marshal() {
     buffer buf;
 
-    buf.write_byte(this->status);
-    buf.write_string(this->status_text);
-
-    buf.write_string(this->beatmap_checksum);
-
-    buf.write_uint(this->current_mods);
-    buf.write_byte(this->play_mode);
-
-    buf.write_int(this->beatmap_id);
-
-    return buf.serialize();
+    return buf;
 }
 
-void shiro::io::layouts::user_status::unmarshal(shiro::io::buffer &buffer) {
-    this->status = buffer.read_byte();
-    this->status_text = buffer.read_string();
+void shiro::io::layouts::user_status::unmarshal(shiro::io::buffer &data) {
+    this->activity = data.read<uint8_t>();
+    this->activity_desc = data.read_string();
 
-    this->beatmap_checksum = buffer.read_string();
+    this->beatmap_checksum = data.read_string();
 
-    this->current_mods = buffer.read_uint();
-    this->play_mode = buffer.read_byte();
+    this->current_mods = data.read<uint32_t>();
+    this->play_mode = data.read<uint8_t>();
 
-    this->beatmap_id = buffer.read_int();
+    this->beatmap_id = data.read<int32_t>();
+}
+
+int32_t shiro::io::layouts::user_status::get_size() {
+    return (int32_t) this->marshal().get_size();
 }

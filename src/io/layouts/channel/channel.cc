@@ -12,24 +12,27 @@ shiro::io::layouts::channel::channel(uint32_t id, bool auto_join, std::string na
     // Initialized in initializer list
 }
 
-std::string shiro::io::layouts::channel::marshal() {
+shiro::io::buffer shiro::io::layouts::channel::marshal() {
     std::string name = utils::osu_string(this->name);
     std::string description = utils::osu_string(this->description);
 
     buffer buf;
 
-    buf.write_int(name.length() + description.length() + 4);
     buf.write_string(name);
     buf.write_string(description);
-    buf.write_int(this->user_count);
+    buf.write<int32_t>(this->user_count);
 
-    return buf.serialize();
+    return buf;
 }
 
 void shiro::io::layouts::channel::unmarshal(shiro::io::buffer &buffer) {
     this->name = buffer.read_string();
     this->description = buffer.read_string();
-    this->user_count = buffer.read_int();
+    this->user_count = buffer.read<int32_t>();
+}
+
+int32_t shiro::io::layouts::channel::get_size() {
+    return (int32_t) this->marshal().get_size();
 }
 
 bool shiro::io::layouts::channel::operator==(const shiro::io::layouts::channel &other_channel) const {

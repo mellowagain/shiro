@@ -1,229 +1,122 @@
-#include <sstream>
-
-#include "../utils/leb128.hh"
 #include "osu_buffer.hh"
 
-shiro::io::buffer::buffer(const std::string &data) {
-    for (char c : data) {
-        this->write_byte(c);
+void shiro::io::buffer::allocate(size_t amount) {
+    for (size_t i = 0; i < amount; i++) {
+        this->bytes.emplace_back((uint8_t) 0x0);
     }
 }
 
-void shiro::io::buffer::allocate(int size) {
-    for (int i = 0; i < size; i++) {
-        this->bytes.push_back(0x0);
+void shiro::io::buffer::append(std::string data) {
+    for (const char &c : data) {
+        this->write<uint8_t>(c);
     }
 }
 
-void shiro::io::buffer::seek(unsigned int position) {
-    this->position = position;
+void shiro::io::buffer::append(buffer &buf) {
+    this->append(buf.serialize());
 }
 
-void shiro::io::buffer::advance(int size) {
-    this->position += size;
-}
-
-uint8_t shiro::io::buffer::read_byte() {
-    return this->bytes.at(this->position++);
-}
-
-void shiro::io::buffer::write_byte(uint8_t value) {
-    this->allocate(1);
-    this->bytes.at(this->written_size++) = value;
-}
-
-int16_t shiro::io::buffer::read_short() {
-    int16_t data = *reinterpret_cast<int16_t*>((uintptr_t) this->bytes.data() + this->position);
-    this->advance(2);
-
-    return data;
-}
-
-void shiro::io::buffer::write_short(int16_t value) {
-    this->allocate(2);
-    uint8_t *data = reinterpret_cast<uint8_t*>(&value);
-
-    for (size_t i = 0; i < sizeof(int16_t); i++) {
-        this->bytes.at(this->written_size++) = data[i];
+shiro::io::buffer::buffer(const buffer &buf) {
+    for (uint8_t byte : buf.bytes) {
+        this->write<uint8_t>(byte);
     }
 }
 
-uint16_t shiro::io::buffer::read_ushort() {
-    uint16_t data = *reinterpret_cast<uint16_t*>((uintptr_t) this->bytes.data() + this->position);
-    this->advance(2);
-
-    return data;
-}
-
-void shiro::io::buffer::write_ushort(uint16_t value) {
-    this->allocate(2);
-    uint8_t *data = reinterpret_cast<uint8_t*>(&value);
-
-    for (size_t i = 0; i < sizeof(uint16_t); i++) {
-        this->bytes.at(this->written_size++) = data[i];
+shiro::io::buffer::buffer(buffer &buf) {
+    for (uint8_t byte : buf.bytes) {
+        this->write<uint8_t>(byte);
     }
 }
 
-int32_t shiro::io::buffer::read_int() {
-    int32_t data = *reinterpret_cast<int32_t*>((uintptr_t) this->bytes.data() + this->position);
-    this->advance(4);
-
-    return data;
-}
-
-void shiro::io::buffer::write_int(int32_t value) {
-    this->allocate(4);
-    uint8_t *data = reinterpret_cast<uint8_t*>(&value);
-
-    for (size_t i = 0; i < sizeof(int32_t); i++) {
-        this->bytes.at(this->written_size++) = data[i];
+shiro::io::buffer::buffer(std::string data) {
+    for (const char &c : data) {
+        this->write<uint8_t>(c);
     }
 }
 
-uint32_t shiro::io::buffer::read_uint() {
-    uint32_t data = *reinterpret_cast<uint32_t*>((uintptr_t) this->bytes.data() + this->position);
-    this->advance(4);
-
-    return data;
+void shiro::io::buffer::write_string(std::string data) {
+    this->append(data);
 }
 
-void shiro::io::buffer::write_uint(uint32_t value) {
-    this->allocate(4);
-    uint8_t *data = reinterpret_cast<uint8_t*>(&value);
+void shiro::io::buffer::write_array(std::vector<int32_t> data) {
+    this->write<int16_t>(data.size());
 
-    for (size_t i = 0; i < sizeof(uint32_t); i++) {
-        this->bytes.at(this->written_size++) = data[i];
-    }
-}
-
-int64_t shiro::io::buffer::read_long() {
-    int64_t data = *reinterpret_cast<uint32_t*>((int64_t) this->bytes.data() + this->position);
-    this->advance(8);
-
-    return data;
-}
-
-void shiro::io::buffer::write_long(int64_t value) {
-    this->allocate(8);
-    uint8_t *data = reinterpret_cast<uint8_t*>(&value);
-
-    for (size_t i = 0; i < sizeof(int64_t); i++) {
-        this->bytes.at(this->written_size++) = data[i];
-    }
-}
-
-uint64_t shiro::io::buffer::read_ulong() {
-    uint64_t data = *reinterpret_cast<uint64_t*>((uintptr_t) this->bytes.data() + this->position);
-    this->advance(8);
-
-    return data;
-}
-
-void shiro::io::buffer::write_ulong(uint64_t value) {
-    this->allocate(8);
-    uint8_t *data = reinterpret_cast<uint8_t*>(&value);
-
-    for (size_t i = 0; i < sizeof(uint64_t); i++) {
-        this->bytes.at(this->written_size++) = data[i];
-    }
-}
-
-float shiro::io::buffer::read_float() {
-    float data = *reinterpret_cast<float*>((uintptr_t) this->bytes.data() + this->position);
-    this->advance(4);
-
-    return data;
-}
-
-void shiro::io::buffer::write_float(float value) {
-    this->allocate(4);
-    uint8_t *data = reinterpret_cast<uint8_t*>(&value);
-
-    for (size_t i = 0; i < sizeof(float); i++) {
-        this->bytes.at(this->written_size++) = data[i];
-    }
-}
-
-double shiro::io::buffer::read_double() {
-    double data = *reinterpret_cast<double*>((uintptr_t) this->bytes.data() + this->position);
-    this->advance(8);
-
-    return data;
-}
-
-void shiro::io::buffer::write_double(double value) {
-    this->allocate(8);
-    uint8_t *data = reinterpret_cast<uint8_t*>(&value);
-
-    for (size_t i = 0; i < sizeof(double); i++) {
-        this->bytes.at(this->written_size++) = data[i];
+    for (int32_t item : data) {
+        this->write<int32_t>(item);
     }
 }
 
 std::string shiro::io::buffer::read_string() {
-    if (this->read_byte() != 11)
-        return "";
+    if (this->read<uint8_t>() == 11) {
+        int32_t total = 0;
+        int32_t shift = 0;
 
-    std::string result;
-    uint64_t length = shiro::utils::leb128::read_leb128(*this);
+        std::string result;
+        uint8_t byte = this->read<uint8_t>();
 
-    for (int i = 0; i < static_cast<int>(length); i++) {
-        result += static_cast<char>(this->read_byte());
+        if ((byte & 0x80) == 0) {
+            total |= ((byte & 0x7F) << shift);
+        }
+        else {
+            bool end = false;
+
+            do {
+                if (shift)
+                    byte = this->read<uint8_t>();
+
+                total |= ((byte & 0x7F) << shift);
+
+                if ((byte & 0x80) == 0)
+                    end = true;
+
+                shift += 7;
+            } while (!end);
+        }
+
+        for (size_t i = 0; i < total; i++) {
+            result += this->read<uint8_t>();
+        }
+
+        return result;
     }
 
-    return result;
-}
-
-void shiro::io::buffer::write_string(std::string value) {
-    this->allocate(value.length());
-
-    for (char &c : value) {
-        this->bytes.at(this->written_size++) = static_cast<uint8_t>(c);
-    }
+    return "";
 }
 
 std::vector<int32_t> shiro::io::buffer::read_array() {
-    int size = this->read_int();
     std::vector<int32_t> result;
+    uint16_t size = this->read<uint16_t>();
 
-    for (int i = 0; i < size; i++) {
-        result.push_back(this->read_int());
+    for (uint16_t i = 0; i < size; i++) {
+        result.emplace_back(this->read<int32_t>());
     }
 
     return result;
-}
-
-void shiro::io::buffer::write_array(std::vector<int32_t> value) {
-    for (int32_t &data : value) {
-        this->write_int(data);
-    }
-}
-
-void shiro::io::buffer::write_buffer(shiro::io::buffer &buffer) {
-    this->bytes.insert(this->bytes.end(), buffer.bytes.begin(), buffer.bytes.end());
-    this->written_size += buffer.written_size;
 }
 
 std::string shiro::io::buffer::serialize() {
     std::stringstream stream;
 
-    for (size_t i = 0; i < this->written_size; i++) {
+    for (size_t i = 0; i < this->written_size; i++)
         stream << std::hex << this->bytes.at(i);
-    }
 
     return stream.str();
 }
 
 bool shiro::io::buffer::can_read(size_t amount) {
-    return this->position + amount <= this->written_size;
+    return amount <= this->written_size - this->position;
 }
 
 bool shiro::io::buffer::is_empty() {
-    return this->bytes.empty();
+    return this->written_size == 0;
 }
 
-void shiro::io::buffer::reset() {
+void shiro::io::buffer::clear() {
     this->bytes.clear();
     this->written_size = 0;
     this->position = 0;
+}
+
+size_t shiro::io::buffer::get_size() {
+    return this->written_size;
 }

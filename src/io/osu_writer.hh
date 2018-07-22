@@ -2,26 +2,34 @@
 #define SHIRO_OSU_WRITER_HH
 
 #include "layouts/channel/channel.hh"
-#include "layouts/layout.hh"
+#include "layouts/message/message.hh"
+#include "layouts/serializable.hh"
 #include "layouts/user/user_presence.hh"
 #include "layouts/user/user_stats.hh"
+#include "layouts/packets.hh"
 #include "osu_buffer.hh"
-#include "layouts/message/message.hh"
 
 namespace shiro::io {
 
     class osu_writer {
     private:
-        buffer data;
+        buffer buf;
 
-        buffer &write_packet(uint16_t id);
+        void write(packet_id id) {
+            buf.write<int16_t>((int16_t)id);
+            buf.write<uint8_t>(0);
+            buf.write<int32_t>(0);
+        }
 
-        template <typename l>
-        buffer &write_packet(uint16_t id, l data);
+        template <typename t = serializable>
+        void write(packet_id id, t data) {
+            buf.write<int16_t>((int16_t)id);
+            buf.write<uint8_t>(0);
+            buf.write<int32_t>(data.get_size());
+            buf.append(data.marshal().serialize());
+        }
 
     public:
-        osu_writer() = default;
-
         void login_reply(int32_t reply);
         void login_permissions(int32_t permissions);
 
@@ -43,8 +51,7 @@ namespace shiro::io {
         void rtx(std::string rtx);
 
         std::string serialize();
-
-        buffer get_buffer();
+        buffer &get_buffer();
 
     };
 

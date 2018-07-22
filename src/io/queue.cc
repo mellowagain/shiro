@@ -2,11 +2,11 @@
 
 void shiro::io::queue::enqueue(shiro::io::osu_writer &writer) {
     buffer buf = writer.get_buffer();
-    this->packet_queue.write_buffer(buf);
+    this->packet_queue.append(buf);
 }
 
 void shiro::io::queue::enqueue(shiro::io::buffer &buffer) {
-    this->packet_queue.write_buffer(buffer);
+    this->packet_queue.append(buffer);
 }
 
 bool shiro::io::queue::is_empty() {
@@ -15,7 +15,7 @@ bool shiro::io::queue::is_empty() {
 
 std::string shiro::io::queue::serialize() {
     std::string result = this->packet_queue.serialize();
-    this->packet_queue.reset();
+    this->packet_queue.clear();
 
     return result;
 }

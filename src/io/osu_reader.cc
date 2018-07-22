@@ -1,12 +1,13 @@
 #include "osu_reader.hh"
 
-std::vector<shiro::io::osu_packet> shiro::io::parse_packets(std::string data) {
-    std::vector<osu_packet> result;
-    buffer buf(data);
+shiro::io::osu_reader::osu_reader(std::string data) {
+    this->data = buffer(data);
+}
 
-    while (buf.can_read(7)) {
-        result.emplace_back(osu_packet(buf));
+std::vector<shiro::io::osu_packet> &shiro::io::osu_reader::parse() {
+    while (this->data.can_read(7)) {
+        this->packets.emplace_back(osu_packet(this->data));
     }
 
-    return result;
+    return this->packets;
 }

@@ -5,7 +5,7 @@
 std::string shiro::utils::osu_string(std::string value) {
     io::buffer buffer;
 
-    buffer.write_byte(11);
+    buffer.write<uint8_t>(11);
     utils::leb128::write_leb128(buffer, value.size());
     buffer.write_string(value);
 

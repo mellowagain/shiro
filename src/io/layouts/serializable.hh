@@ -1,11 +1,11 @@
-#ifndef SHIRO_LAYOUT_HH
-#define SHIRO_LAYOUT_HH
+#ifndef SHIRO_SERIALIZABLE_HH
+#define SHIRO_SERIALIZABLE_HH
 
 #include "../osu_buffer.hh"
 
 namespace shiro::io {
 
-    class layout {
+    class serializable {
     protected:
         enum class data_type : int {
             byte = 0,
@@ -37,26 +37,27 @@ namespace shiro::io {
         std::string data_string;
         std::vector<int32_t> data_array;
 
-        layout() = default;
+        serializable() = default;
 
-        explicit layout(uint8_t data);
-        explicit layout(int16_t data);
-        explicit layout(uint16_t data);
-        explicit layout(int32_t data);
-        explicit layout(uint32_t data);
-        explicit layout(int64_t data);
-        explicit layout(uint64_t data);
-        explicit layout(float data);
-        explicit layout(double data);
-        explicit layout(std::string data);
-        explicit layout(std::vector<int32_t> data);
+        explicit serializable(uint8_t data);
+        explicit serializable(int16_t data);
+        explicit serializable(uint16_t data);
+        explicit serializable(int32_t data);
+        explicit serializable(uint32_t data);
+        explicit serializable(int64_t data);
+        explicit serializable(uint64_t data);
+        explicit serializable(float data);
+        explicit serializable(double data);
+        explicit serializable(std::string data);
+        explicit serializable(std::vector<int32_t> data);
 
-        virtual size_t get_size();
-        virtual std::string marshal();
-        virtual void unmarshal(shiro::io::buffer &buffer);
+        virtual shiro::io::buffer marshal();
+        virtual void unmarshal(buffer &buf);
+
+        virtual int32_t get_size();
 
     };
 
 }
 
-#endif //SHIRO_LAYOUT_HH
+#endif //SHIRO_SERIALIZABLE_HH

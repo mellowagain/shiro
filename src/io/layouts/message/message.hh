@@ -1,23 +1,25 @@
 #ifndef SHIRO_MESSAGE_HH
 #define SHIRO_MESSAGE_HH
 
-#include "../layout.hh"
+#include "../serializable.hh"
 
 namespace shiro::io::layouts {
 
-    class message : public layout {
+    class message : public serializable {
     public:
         message() = default;
         message(std::string sender, int32_t sender_id, std::string content, std::string channel);
 
         std::string sender;
-        int32_t sender_id;
+        int32_t sender_id = 0;
 
         std::string content;
         std::string channel;
 
-        std::string marshal() override;
+        buffer marshal() override;
         void unmarshal(shiro::io::buffer &buffer) override;
+
+        int32_t get_size() override;
 
     };
 

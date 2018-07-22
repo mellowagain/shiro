@@ -9,23 +9,21 @@ shiro::io::layouts::message::message(std::string sender, int32_t sender_id, std:
     // Initialized in initializer list
 }
 
-std::string shiro::io::layouts::message::marshal() {
+shiro::io::buffer shiro::io::layouts::message::marshal() {
     std::string sender = utils::osu_string(this->sender);
     std::string content = utils::osu_string(this->content);
     std::string channel = utils::osu_string(this->channel);
 
     buffer buf;
 
-    buf.write_int(sender.length() + content.length() + channel.length() + 4);
-
     buf.write_string(sender);
 
     buf.write_string(content);
     buf.write_string(channel);
 
-    buf.write_int(this->sender_id);
+    buf.write<int32_t>(this->sender_id);
 
-    return buf.serialize();
+    return buf;
 }
 
 void shiro::io::layouts::message::unmarshal(shiro::io::buffer &buffer) {
@@ -34,5 +32,9 @@ void shiro::io::layouts::message::unmarshal(shiro::io::buffer &buffer) {
     this->content = buffer.read_string();
     this->channel = buffer.read_string();
 
-    this->sender_id = buffer.read_int();
+    this->sender_id = buffer.read<int32_t>();
+}
+
+int32_t shiro::io::layouts::message::get_size() {
+    return (int32_t) this->marshal().get_size();
 }

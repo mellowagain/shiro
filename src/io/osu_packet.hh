@@ -1,8 +1,8 @@
 #ifndef SHIRO_OSU_PACKET_HH
 #define SHIRO_OSU_PACKET_HH
 
-#include "osu_buffer.hh"
 #include "layouts/packets.hh"
+#include "osu_buffer.hh"
 
 namespace shiro::io {
 
@@ -21,7 +21,7 @@ namespace shiro::io {
             return result;
         }
 
-     };
+    };
 
 }
 

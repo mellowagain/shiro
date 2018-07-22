@@ -58,10 +58,10 @@ void shiro::routes::root::handle(const crow::request &request, crow::response &r
         return;
     }
 
-    std::vector<io::osu_packet> packets = io::parse_packets(request.body);
     io::osu_writer writer;
+    io::osu_reader reader(request.body);
 
-    for (io::osu_packet packet : packets) {
+    for (io::osu_packet &packet : reader.parse()) {
         routes::packets::route(packet.id, packet, writer, user);
     }
 

@@ -2,6 +2,7 @@
 #define SHIRO_OSU_BUFFER_HH
 
 #include <cstdint>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -12,56 +13,50 @@ namespace shiro::io {
         std::vector<uint8_t> bytes;
 
         size_t written_size = 0;
-        unsigned int position = 0;
+        size_t position = 0;
 
-        void allocate(int size);
-        void seek(unsigned int position);
-        void advance(int size);
+        void allocate(size_t amount);
 
     public:
         buffer() = default;
-        explicit buffer(const std::string &data);
+        buffer(const buffer &buf);
 
-        uint8_t read_byte();
-        void write_byte(uint8_t value);
+        buffer(buffer &buf);
+        explicit buffer(std::string data);
 
-        int16_t read_short();
-        void write_short(int16_t value);
+        void append(std::string data);
+        void append(buffer &buf);
 
-        uint16_t read_ushort();
-        void write_ushort(uint16_t value);
+        template <typename t = uint8_t>
+        void write(t data) {
+            this->allocate(sizeof(t));
+            uint8_t *data_arr = reinterpret_cast<uint8_t*>(&data);
 
-        int32_t read_int();
-        void write_int(int32_t value);
+            for (size_t i = 0; i < sizeof(t); i++)
+                this->bytes.at(this->written_size++) = data_arr[i];
+        }
 
-        uint32_t read_uint();
-        void write_uint(uint32_t value);
+        template <typename t = uint8_t>
+        t read() {
+            t data = *reinterpret_cast<t*>((uintptr_t)this->bytes.data() + this->position);
+            this->position += sizeof(t);
 
-        int64_t read_long();
-        void write_long(int64_t value);
+            return data;
+        }
 
-        uint64_t read_ulong();
-        void write_ulong(uint64_t value);
-
-        float read_float();
-        void write_float(float value);
-
-        double read_double();
-        void write_double(double value);
+        void write_string(std::string data);
+        void write_array(std::vector<int32_t> data);
 
         std::string read_string();
-        void write_string(std::string value);
-
         std::vector<int32_t> read_array();
-        void write_array(std::vector<int32_t> value);
-
-        void write_buffer(buffer &buffer);
 
         std::string serialize();
-        bool can_read(size_t amount);
 
+        bool can_read(size_t amount);
         bool is_empty();
-        void reset();
+        void clear();
+
+        size_t get_size();
 
     };
 

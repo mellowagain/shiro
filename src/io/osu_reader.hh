@@ -6,7 +6,18 @@
 
 namespace shiro::io {
 
-    std::vector<osu_packet> parse_packets(std::string data);
+    class osu_reader {
+    private:
+        buffer data;
+        std::vector<osu_packet> packets;
+
+    public:
+        osu_reader() = default;
+        explicit osu_reader(std::string data);
+
+        std::vector<osu_packet> &parse();
+
+    };
 
 }
 

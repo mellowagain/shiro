@@ -4,7 +4,7 @@ uint64_t shiro::utils::leb128::read_leb128(shiro::io::buffer &buffer) {
     uint64_t total = 0;
     int shift = 0;
 
-    uint8_t byte = buffer.read_byte();
+    uint8_t byte = buffer.read<uint8_t>();
 
     if ((byte & 0x80) == 0) {
         total |= ((byte & 0x7F) << shift);
@@ -13,7 +13,7 @@ uint64_t shiro::utils::leb128::read_leb128(shiro::io::buffer &buffer) {
 
         do {
             if (shift) {
-                byte = buffer.read_byte();
+                byte = buffer.read<uint8_t>();
             }
 
             total |= ((byte & 0x7F) << shift);
@@ -30,7 +30,7 @@ uint64_t shiro::utils::leb128::read_leb128(shiro::io::buffer &buffer) {
 
 void shiro::utils::leb128::write_leb128(shiro::io::buffer &buffer, uint64_t value) {
     if (value == 0) {
-        buffer.write_byte(static_cast<std::uint8_t>('\0'));
+        buffer.write<uint8_t>(static_cast<std::uint8_t>('\0'));
     } else {
         int len = 0;
         std::vector<uint8_t> bytes;
@@ -47,7 +47,7 @@ void shiro::utils::leb128::write_leb128(shiro::io::buffer &buffer, uint64_t valu
         } while (value > 0);
 
         for (uint8_t &byte : bytes) {
-            buffer.write_byte(byte);
+            buffer.write<uint8_t>(byte);
         }
     }
 }

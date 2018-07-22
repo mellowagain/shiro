@@ -1,11 +1,11 @@
 #ifndef SHIRO_CHANNEL_HH
 #define SHIRO_CHANNEL_HH
 
-#include "../layout.hh"
+#include "../serializable.hh"
 
 namespace shiro::io::layouts {
 
-    class channel : public layout {
+    class channel : public serializable {
     public:
         channel(uint32_t id, bool auto_join, std::string name, std::string description, int32_t user_count);
 
@@ -18,8 +18,10 @@ namespace shiro::io::layouts {
         std::string description;
         int32_t user_count;
 
-        std::string marshal() override;
+        buffer marshal() override;
         void unmarshal(shiro::io::buffer &buffer) override;
+
+        int32_t get_size() override;
 
         bool operator==(const channel &other_channel) const;
         bool operator!=(const channel &other_channel) const;

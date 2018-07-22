@@ -5,8 +5,8 @@ void shiro::handler::user_status::handle(shiro::io::osu_packet &in, shiro::io::o
     io::layouts::user_status status = in.unmarshal<io::layouts::user_status>();
     user->status = status;
 
-    user->stats.status = status.status;
-    user->stats.status_text = status.status_text;
+    user->stats.activity = status.activity;
+    user->stats.activity_desc = status.activity_desc;
     user->stats.beatmap_id = status.beatmap_id;
     user->stats.beatmap_checksum = status.beatmap_checksum;
     user->stats.play_mode = status.play_mode;
