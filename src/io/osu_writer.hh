@@ -5,6 +5,7 @@
 #include "layouts/message/message.hh"
 #include "layouts/serializable.hh"
 #include "layouts/user/user_presence.hh"
+#include "layouts/user/user_quit.hh"
 #include "layouts/user/user_stats.hh"
 #include "layouts/packets.hh"
 #include "osu_buffer.hh"
@@ -32,6 +33,8 @@ namespace shiro::io {
     public:
         void login_reply(int32_t reply);
         void login_permissions(int32_t permissions);
+
+        void user_quit(layouts::user_quit user_quit);
 
         void announce(std::string announcement);
 

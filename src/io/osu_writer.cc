@@ -8,6 +8,10 @@ void shiro::io::osu_writer::login_permissions(int32_t permissions) {
     this->write(packet_id::out_login_permissions, serializable(permissions));
 }
 
+void shiro::io::osu_writer::user_quit(shiro::io::layouts::user_quit user_quit) {
+    this->write(packet_id::out_handle_user_quit, std::move(user_quit));
+}
+
 void shiro::io::osu_writer::announce(std::string announcement) {
     this->write(packet_id::out_announce, serializable(std::move(announcement)));
 }

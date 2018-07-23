@@ -1,5 +1,6 @@
 #include "../../handlers/chat/private_chat_handler.hh"
 #include "../../handlers/chat/public_chat_handler.hh"
+#include "../../handlers/logout_handler.hh"
 #include "../../handlers/ping_handler.hh"
 #include "../../handlers/user_status_handler.hh"
 #include "../../thirdparty/loguru.hh"
@@ -13,7 +14,9 @@ void shiro::routes::packets::route(shiro::io::packet_id packet_id, shiro::io::os
         case io::packet_id::in_send_irc_message:
             handler::chat::handle_public(in, out, user);
             break;
-        case io::packet_id::in_exit:break;
+        case io::packet_id::in_exit:
+            handler::logout::handle(in, out, user);
+            break;
         case io::packet_id::in_request_status_update:break;
         case io::packet_id::in_pong:
             handler::ping::handle(in, out, user);
