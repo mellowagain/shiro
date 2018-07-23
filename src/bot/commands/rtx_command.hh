@@ -8,7 +8,7 @@
 
 namespace shiro::bot::commands {
 
-    bool rtx(std::deque<std::string> &args, std::shared_ptr<users::user> user);
+    bool rtx(std::deque<std::string> &args, std::shared_ptr<users::user> user, std::string channel);
 
 }
 

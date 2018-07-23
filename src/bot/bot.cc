@@ -10,10 +10,14 @@
 #include "../thirdparty/loguru.hh"
 #include "../thirdparty/uuid.hh"
 #include "../users/user_manager.hh"
+#include "commands/help_command.hh"
+#include "commands/pp_command.hh"
+#include "commands/rank_command.hh"
+#include "commands/roll_command.hh"
 #include "commands/rtx_command.hh"
 #include "bot.hh"
 
-static std::unordered_map<std::string, std::function<bool(std::deque<std::string>&, std::shared_ptr<shiro::users::user>)>> commands_map;
+static std::unordered_map<std::string, std::function<bool(std::deque<std::string>&, std::shared_ptr<shiro::users::user>, std::string)>> commands_map;
 
 void shiro::bot::init() {
     using exists_struct = std::tuple<bool>;
@@ -74,17 +78,29 @@ void shiro::bot::init() {
 }
 
 void shiro::bot::init_commands() {
+    commands_map.insert(std::make_pair("help", commands::help));
+    commands_map.insert(std::make_pair("pp", commands::pp));
+    commands_map.insert(std::make_pair("rank", commands::rank));
+    commands_map.insert(std::make_pair("roll", commands::roll));
     commands_map.insert(std::make_pair("rtx", commands::rtx));
 
     LOG_S(INFO) << "Bot commands have been successfully loaded. " << commands_map.size() << " commands available.";
 }
 
-bool shiro::bot::handle(const std::string &command, std::deque<std::string> &args, std::shared_ptr<shiro::users::user> user) {
+bool shiro::bot::handle(const std::string &command, std::deque<std::string> &args, std::shared_ptr<shiro::users::user> user, std::string channel) {
     try {
-        return commands_map.at(command)(args, std::move(user));
+        return commands_map.at(command)(args, user, channel);
     } catch (const std::out_of_range &ex) {
-        // Command has not been found
-        // TODO? Maybe send message to user or smth?
+        io::layouts::message msg;
+        io::osu_writer writer;
+
+        msg.sender = config::bot::name;
+        msg.sender_id = 1;
+        msg.channel = channel;
+        msg.content = "!" + command + " could not be found. Type !help to get a list of available commands.";
+
+        writer.send_message(msg);
+        user->queue.enqueue(writer);
     }
 
     return false;

@@ -26,7 +26,7 @@ void shiro::handler::chat::handle_public(shiro::io::osu_packet &in, shiro::io::o
         std::deque<std::string> args(splitted.begin(), splitted.end());
         args.pop_front(); // Remove command which is the first argument
 
-        bot::handle(command, args, user);
+        bot::handle(command, args, user, message.channel);
     }
 
     message_buffer.send_message(message);

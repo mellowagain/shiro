@@ -30,7 +30,7 @@ void shiro::handler::chat::handle_private(shiro::io::osu_packet &in, shiro::io::
         std::deque<std::string> args(splitted.begin(), splitted.end());
         args.pop_front(); // Remove command which is the first argument
 
-        bot::handle(command, args, user);
+        bot::handle(command, args, user, user->presence.username);
         return;
     }
 

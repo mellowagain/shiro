@@ -1,5 +1,6 @@
 #include <cstdlib>
 #include <curl/curl.h>
+#include <thread>
 
 #include "bot/bot.hh"
 #include "channels/channel_manager.hh"
@@ -35,6 +36,9 @@ int shiro::init(int argc, char **argv) {
     db_connection->connect();
     db_connection->setup();
 
+    std::thread scheduler_updater([&]() { scheduler.Update(); });
+    scheduler_updater.detach(); // The root of all suffering is attachment
+
     bot::init();
     bot::init_commands();
 
@@ -52,6 +56,8 @@ int shiro::init(int argc, char **argv) {
 
 void shiro::destroy() {
     curl_global_cleanup();
+
+    scheduler.CancelAll();
 
     LOG_S(INFO) << "Thank you and goodbye.";
 }
