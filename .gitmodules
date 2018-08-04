@@ -1,0 +1,4 @@
+[submodule "kuro"]
+	path = kuro
+	url = https://github.com/Marc3842h/kuro.git
+	branch = master
