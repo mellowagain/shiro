@@ -67,9 +67,9 @@ add_definitions(-DLOGURU_WITH_STREAMS=1)
 if (WIN32)
     set(CMAKE_LINK_LIBS ${CMAKE_LINK_LIBS})
 elseif (APPLE)
-    set(CMAKE_LINK_LIBS dl mysqlclient sqlpp-mysql crypto ${CMAKE_LINK_LIBS})
+    set(CMAKE_LINK_LIBS dl sqlpp-mysql mysqlclient crypto ${CMAKE_LINK_LIBS})
 elseif (UNIX) # Linux
-    set(CMAKE_LINK_LIBS dl mysqlclient sqlpp-mysql crypto ${CMAKE_LINK_LIBS})
+    set(CMAKE_LINK_LIBS dl sqlpp-mysql mysqlclient crypto ${CMAKE_LINK_LIBS})
 endif()
 
 include_directories(${CURL_INCLUDE_DIRS} ${OPENSSL_INCLUDE_DIR} ${HinnantDate_INCLUDE_DIR})

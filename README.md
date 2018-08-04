@@ -19,6 +19,7 @@ This server handles the following features:
 
 The web back- and frontend which handles the browser facing portion
 is available at [`Marc3842h/kuro`](https://github.com/Marc3842h/kuro).
+It is registered as submodule in this repository.
 
 ## Installation
 
@@ -34,6 +35,9 @@ Install the following dependencies
 * libboost
 * libcurl
 * OpenSSL
+* [HinnantDate](https://github.com/HowardHinnant/date)
+* [sqlpp11](https://github.com/rbock/sqlpp11)
+* [sqlpp11-connector-mysql](https://github.com/rbock/sqlpp11-connector-mysql)
 * tcmalloc (Optional)
 
 #### Building
@@ -54,7 +58,7 @@ the same directory as the `shiro` executeable. After that
 you can start shiro like any other program:
 
 ```
-$ chmod +x shiro
+$ chmod a+x shiro
 $ ./shiro
 ```
 
@@ -68,6 +72,13 @@ you should see a similar message:
 
 shiro is now accepting connections from osu! on the address
 it's listening on.
+
+## Docker ![Docker](https://img.shields.io/docker/pulls/marc3842h/shiro.svg)
+
+Two docker images are available for shiro:
+
+* `marc3842h/shiro:latest` Image used for easy setup of shiro, contains all dependencies and a setup nginx. Requires building and running of shiro manually. Based on latest Ubuntu stable.
+* `marc3842h/shiro:ci` Image used for continuous integration, used **only** for building shiro and running its tests. Based on latest Ubuntu rolling release.
 
 ## License
 

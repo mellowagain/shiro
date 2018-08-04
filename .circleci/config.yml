@@ -3,7 +3,7 @@ jobs:
   build:
     working_directory: ~/shiro
     docker:
-      - image: marc3842h/shiro:0.0.1
+      - image: marc3842h/shiro:ci
     steps:
       - checkout
       - run:
