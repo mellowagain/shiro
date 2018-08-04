@@ -1,31 +1,33 @@
 #include <utility>
 
+#include "../database/tables/channel_table.hh"
 #include "../thirdparty/loguru.hh"
+#include "../shiro.hh"
 #include "channel_manager.hh"
 
 void shiro::channels::manager::init() {
     if (!channels.empty())
         channels.clear();
 
-    using channel_struct = std::tuple<uint32_t, std::string, std::string, bool>;
-    std::vector<channel_struct> result = db_connection->query<channel_struct>("SELECT * FROM `channels`");
+    sqlpp::mysql::connection db(db_connection->get_config());
+    const tables::channels channel_table {};
 
-    if (result.empty())
+    auto result = db(select(all_of(channel_table)).from(channel_table).unconditionally());
+    bool empty = is_query_empty(result);
+
+    if (empty)
         return;
 
-    for (const channel_struct &channel_struct : result) {
-        uint32_t channel_id = std::get<0>(channel_struct);
-        std::string name = std::get<1>(channel_struct);
-        const std::string &description = std::get<2>(channel_struct);
-        bool auto_join = std::get<3>(channel_struct);
+    for (const auto &row : result) {
+        std::string name = row.name;
 
         if (name.find('#') == std::string::npos) {
-            LOG_F(WARNING, "Channel name of channel id %i doesn't start with #, fixing (%s -> %s).", channel_id, name.c_str(), ("#" + name).c_str());
+            LOG_F(WARNING, "Channel name of channel id %i doesn't start with #, fixing (%s -> %s).", (int) row.id, name.c_str(), ("#" + name).c_str());
             name.insert(0, "#");
         }
 
         channels.insert(std::make_pair<io::layouts::channel, std::vector<std::shared_ptr<users::user>>>(
-                io::layouts::channel(channel_id, auto_join, name, description, 0),
+                io::layouts::channel(row.id, row.auto_join, name, row.description, 0),
                 std::vector<std::shared_ptr<users::user>>()
         ));
     }

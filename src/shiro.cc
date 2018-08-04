@@ -4,6 +4,7 @@
 
 #include "bot/bot.hh"
 #include "channels/channel_manager.hh"
+#include "config/bot_file.hh"
 #include "config/bancho_file.hh"
 #include "config/cli_args.hh"
 #include "config/db_file.hh"
@@ -24,6 +25,7 @@ int shiro::init(int argc, char **argv) {
 
     config::cli::parse(argc, argv);
 
+    config::bot::parse();
     config::bancho::parse();
     config::database::parse();
 

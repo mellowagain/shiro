@@ -1,3 +1,4 @@
+#include <boost/lexical_cast.hpp>
 #include <random>
 
 #include "../../utils/bot_utils.hh"

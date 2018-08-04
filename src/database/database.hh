@@ -1,17 +1,17 @@
 #ifndef SHIRO_DATABASE_HH
 #define SHIRO_DATABASE_HH
 
+#include <sqlpp11/mysql/mysql.h>
+#include <sqlpp11/sqlpp11.h>
+
 #include <memory>
 #include <string>
-#include <vector>
-
-#include "../thirdparty/mysqlcpp/mysql.hh"
 
 namespace shiro {
 
     class database {
     private:
-        std::shared_ptr<MySql> connection = nullptr;
+        std::shared_ptr<sqlpp::mysql::connection_config> config = nullptr;
 
         std::string address;
         unsigned int port;
@@ -26,42 +26,22 @@ namespace shiro {
         void connect();
         void setup();
 
-        template <typename... arguments>
-        void update(const std::string &query_str, arguments... args) {
-            if (!this->is_connected())
-                return;
-
-            try {
-                this->connection->runCommand(query_str.c_str(), args...);
-            } catch (const MySqlException &ex) {
-                log_mysql_error("update", ex);
-            }
-        }
-
-        template <typename result, typename... arguments>
-        std::vector<result> query(const std::string &query_str, arguments... args) {
-            if (!this->is_connected())
-                return {};
-
-            std::vector<result> result_vector;
-
-            try {
-                this->connection->runQuery(&result_vector, query_str.c_str(), args...);
-            } catch (const MySqlException &ex) {
-                log_mysql_error("query", ex);
-            }
-
-            return result_vector;
-        };
-
         bool is_connected();
-        std::shared_ptr<MySql> get_connection();
-
-    private:
-        void log_mysql_error(const std::string &target, const MySqlException &ex);
+        std::shared_ptr<sqlpp::mysql::connection_config> get_config();
 
     };
 
 }
+
+#define is_query_empty(x) [&]() -> bool {                   \
+    bool empty = true;                                      \
+                                                            \
+    for ([[maybe_unused]] const auto &row : x) {            \
+        empty = false;                                      \
+        break;                                              \
+    }                                                       \
+                                                            \
+    return empty;                                           \
+}();                                                        \
 
 #endif //SHIRO_DATABASE_HH

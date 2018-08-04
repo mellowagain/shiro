@@ -1,8 +1,11 @@
 #include <cstring>
 
+#include "../database/tables/relationship_table.hh"
+#include "../database/tables/user_table.hh"
 #include "../thirdparty/loguru.hh"
 #include "../thirdparty/pbkdf2.hh"
 #include "../utils/play_mode.hh"
+#include "../shiro.hh"
 #include "user.hh"
 
 shiro::users::user::user(int32_t user_id) : user_id(user_id) {
@@ -14,125 +17,75 @@ shiro::users::user::user(const std::string &username) {
 }
 
 bool shiro::users::user::init() {
-    using user_struct = std::tuple<int, // id
-            std::string, std::string, // username, safe_username
-            std::string, std::string, // password, salt
-            std::string, std::string, int, int, // email, ip, registration_date, last_seen
-            int, int, std::string, // followers, groups, user_page
-            float, float, float, float, // pp
-            int, int, int, int, // score
-            int, int, int, int, // ranked_score
-            int, int, int, int, // play_count
-            std::string>; // country
+    sqlpp::mysql::connection db(db_connection->get_config());
+    const tables::users user_table {};
+    const tables::relationships relationships_table {};
 
-    std::vector<user_struct> user_result;
+    auto user_result = db(select(all_of(user_table)).from(user_table).where(user_table.id == this->user_id or user_table.username == this->presence.username));
+    bool user_result_empty = is_query_empty(user_result);
 
-    if (this->user_id != 0) {
-        user_result = db_connection->query<user_struct>("SELECT * FROM `users` WHERE id = ?", this->user_id);
-    } else if (!this->presence.username.empty()) {
-        user_result = db_connection->query<user_struct>("SELECT * FROM `users` WHERE username = ?", this->presence.username);
-    } else {
-        LOG_S(ERROR) << "Tried to load user without supplying a valid user id or username.";
-        return false;
-    }
-
-    if (user_result.empty()) {
+    if (user_result_empty) {
         LOG_S(ERROR) << "Result is empty.";
         return false;
     }
 
-    if (user_result.size() != 1) {
-        if (user_result.size() > 1)
-            LOG_F(ERROR, "Got %zu results for user id %i, expected 1.", user_result.size(), user_id);
-
-        LOG_S(ERROR) << "Size is " << user_result.size() << ", expected 1.";
-        return false;
-    }
-
-    for (const user_struct &user_struct : user_result) {
-        this->user_id = std::get<0>(user_struct);
+    for (const auto &row : user_result) {
+        this->user_id = row.id;
         this->presence.user_id = this->user_id;
         this->stats.user_id = this->user_id;
-        this->presence.username = std::get<1>(user_struct);
-        this->password = std::get<3>(user_struct);
-        this->salt = std::get<4>(user_struct);
-        this->presence.permissions = std::get<10>(user_struct);
-        this->stats.pp = std::get<12>(user_struct);
-        this->stats.total_score = std::get<16>(user_struct);
-        this->stats.ranked_score = std::get<20>(user_struct);
-        this->stats.play_count = std::get<24>(user_struct);
+        this->presence.username = row.username;
+        this->password = row.password;
+        this->salt = row.salt;
+        this->presence.permissions = row.groups;
+        this->stats.pp = row.pp_std;
+        this->stats.total_score = row.score_std;
+        this->stats.ranked_score = row.ranked_score_std;
+        this->stats.play_count = row.play_count_std;
     }
 
-    using relationship_struct = std::tuple<int, int, bool>; // origin, target, blocked
+    auto relationship_result = db(select(all_of(relationships_table)).from(relationships_table).where(relationships_table.origin == this->user_id and relationships_table.blocked == false));
 
-    std::vector<relationship_struct> relationship_result = db_connection->query<relationship_struct>(
-            "SELECT * FROM `relationships` WHERE origin = ? AND blocked = 0", this->user_id
-    );
-
-    for (const relationship_struct &relationship_struct : relationship_result) {
-        this->friends.emplace_back(std::get<1>(relationship_struct));
+    for (const auto &row : relationship_result) {
+        this->friends.emplace_back(row.target);
     }
 
     return true;
 }
 
 void shiro::users::user::update() {
-    using user_struct = std::tuple<int, // id
-            std::string, std::string, // username, safe_username
-            std::string, std::string, // password, salt
-            std::string, std::string, int, int, // email, ip, registration_date, last_seen
-            int, int, std::string, // followers, groups, user_page
-            float, float, float, float, // pp
-            int, int, int, int, // score
-            int, int, int, int, // ranked_score
-            int, int, int, int, // play_count
-            std::string>; // country
+    sqlpp::mysql::connection db(db_connection->get_config());
+    const tables::users user_table {};
 
-    std::vector<user_struct> result = db_connection->query<user_struct>("SELECT * FROM `users` WHERE id = ?", this->user_id);
+    auto result = db(select(all_of(user_table)).from(user_table).where(user_table.id == this->user_id));
+    bool empty = is_query_empty(result);
 
-    if (result.empty())
+    if (empty)
         return;
 
-    if (result.size() != 1) {
-        if (result.size() > 1)
-            LOG_F(ERROR, "Got %zu results for user id %i, expected 1.", result.size(), user_id);
-
-        return;
-    }
-
-    for (const user_struct &user_struct : result) {
+    for (const auto &row : result) {
         uint8_t mode = this->status.play_mode;
-        int16_t pp = 0;
-        uint64_t total_score = 0;
-        uint64_t ranked_score = 0;
-        int32_t play_count = 0;
 
         if (mode == (uint8_t) utils::play_mode::standard) {
-            pp = std::get<12>(user_struct);
-            total_score = std::get<16>(user_struct);
-            ranked_score = std::get<20>(user_struct);
-            play_count = std::get<24>(user_struct);
+            this->stats.pp = row.pp_std;
+            this->stats.total_score = row.score_std;
+            this->stats.ranked_score = row.ranked_score_std;
+            this->stats.play_count = row.play_count_std;
         } else if (mode == (uint8_t) utils::play_mode::taiko) {
-            pp = std::get<13>(user_struct);
-            total_score = std::get<17>(user_struct);
-            ranked_score = std::get<21>(user_struct);
-            play_count = std::get<25>(user_struct);
+            this->stats.pp = row.pp_taiko;
+            this->stats.total_score = row.score_taiko;
+            this->stats.ranked_score = row.ranked_score_taiko;
+            this->stats.play_count = row.play_count_taiko;
         } else if (mode == (uint8_t) utils::play_mode::fruits) {
-            pp = std::get<14>(user_struct);
-            total_score = std::get<18>(user_struct);
-            ranked_score = std::get<22>(user_struct);
-            play_count = std::get<26>(user_struct);
+            this->stats.pp = row.pp_ctb;
+            this->stats.total_score = row.score_ctb;
+            this->stats.ranked_score = row.ranked_score_ctb;
+            this->stats.play_count = row.play_count_ctb;
         } else if (mode == (uint8_t) utils::play_mode::mania) {
-            pp = std::get<15>(user_struct);
-            total_score = std::get<19>(user_struct);
-            ranked_score = std::get<23>(user_struct);
-            play_count = std::get<27>(user_struct);
+            this->stats.pp = row.pp_mania;
+            this->stats.total_score = row.score_mania;
+            this->stats.ranked_score = row.ranked_score_mania;
+            this->stats.play_count = row.play_count_mania;
         }
-
-        this->stats.pp = pp;
-        this->stats.total_score = total_score;
-        this->stats.ranked_score = ranked_score;
-        this->stats.play_count = play_count;
     }
 }
 

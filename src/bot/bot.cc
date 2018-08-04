@@ -1,15 +1,18 @@
 #include <functional>
 #include <unordered_map>
 #include <utility>
+#include <memory>
 
 #include "../config/bot_file.hh"
 #include "../config/db_file.hh"
+#include "../database/tables/user_table.hh"
 #include "../geoloc/country_ids.hh"
 #include "../shiro.hh"
 #include "../thirdparty/digestpp.hh"
 #include "../thirdparty/loguru.hh"
 #include "../thirdparty/uuid.hh"
 #include "../users/user_manager.hh"
+#include "../utils/escaper.hh"
 #include "commands/help_command.hh"
 #include "commands/pp_command.hh"
 #include "commands/rank_command.hh"
@@ -20,35 +23,45 @@
 static std::unordered_map<std::string, std::function<bool(std::deque<std::string>&, std::shared_ptr<shiro::users::user>, std::string)>> commands_map;
 
 void shiro::bot::init() {
-    using exists_struct = std::tuple<bool>;
+    sqlpp::mysql::connection db(db_connection->get_config());
+    const tables::users user_table{};
 
-    // Bot is always id 1
-    std::vector<exists_struct> exists_result = db_connection->query<exists_struct>("SELECT EXISTS(SELECT 1 FROM `users` WHERE id = 1);");
+    auto result = db(select(all_of(user_table)).from(user_table).where(user_table.id == 1));
+    bool empty = is_query_empty(result);
 
-    if (exists_result.empty() || !std::get<0>(exists_result.at(0))) {
-        db_connection->update("INSERT INTO `users` (id, "
-                              "username, safe_username, "
-                              "password, salt, "
-                              "email, ip, "
-                              "registration_date, last_seen, "
-                              "followers, groups, user_page, "
-                              "pp_std, pp_taiko, pp_ctb, pp_mania,"
-                              "score_std, score_taiko, score_ctb, score_mania,"
-                              "ranked_score_std, ranked_score_taiko, ranked_score_ctb, ranked_score_mania,"
-                              "play_count_std, play_count_taiko, play_count_ctb, play_count_mania,"
-                              "country) "
-                              "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                              1,
-                              config::bot::name, config::bot::name,
-                              digestpp::sha256().absorb(config::database::password).hexdigest(), config::database::database,
-                              config::bot::name + "@shiro.host", "127.0.0.1",
-                              0, 0,
-                              0, 5, "beep boop",
-                              0, 0, 0, 0,
-                              0, 0, 0, 0,
-                              0, 0, 0, 0,
-                              0, 0, 0, 0,
-                              "JP");
+    if (empty) {
+        // Bot user doesn't exist
+        db(insert_into(user_table).set(
+                user_table.id = 1,
+                user_table.username = config::bot::name,
+                user_table.safe_username = utils::escaper::make_safe(config::bot::name),
+                user_table.password = digestpp::sha256().absorb(config::database::password).hexdigest(),
+                user_table.salt = config::database::database,
+                user_table.email = config::bot::name + "@shiro.host",
+                user_table.ip = "127.0.0.1",
+                user_table.registration_date = 0,
+                user_table.last_seen = 0,
+                user_table.followers = 0,
+                user_table.groups = 0,
+                user_table.user_page = "beep boop",
+                user_table.pp_std = 0,
+                user_table.pp_taiko = 0,
+                user_table.pp_ctb = 0,
+                user_table.pp_mania = 0,
+                user_table.score_std = 0,
+                user_table.score_taiko = 0,
+                user_table.score_ctb = 0,
+                user_table.score_mania = 0,
+                user_table.ranked_score_std = 0,
+                user_table.ranked_score_taiko = 0,
+                user_table.ranked_score_ctb = 0,
+                user_table.ranked_score_mania = 0,
+                user_table.play_count_std = 0,
+                user_table.play_count_taiko = 0,
+                user_table.play_count_ctb = 0,
+                user_table.play_count_mania = 0,
+                user_table.country = "JP"
+        ));
     }
 
     std::shared_ptr<users::user> bot_user = std::make_shared<users::user>(1);

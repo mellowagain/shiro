@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(shiro)
+project(shiro C CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ./bin)
@@ -24,6 +24,11 @@ if (NOT CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D_DEBUG")
 endif()
 
+# Threading library (Win32 threads, pthreads)
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED)
+set(CMAKE_LINK_LIBS ${CMAKE_LINK_LIBS} Threads::Threads)
+
 # Boost
 set(Boost_USE_MULTITHREADED ON)
 find_package(Boost REQUIRED COMPONENTS system)
@@ -37,6 +42,9 @@ find_package(OpenSSL REQUIRED)
 if (NOT OPENSSL_CRYPTO_LIBRARY)
     message(FATAL_ERROR "Unable to find libcrypto provided by OpenSSL.")
 endif()
+
+# Hinnant Date (required by sqlpp11)
+find_package(HinnantDate REQUIRED)
 
 # Tcmalloc
 find_package(Tcmalloc)
@@ -59,11 +67,11 @@ add_definitions(-DLOGURU_WITH_STREAMS=1)
 if (WIN32)
     set(CMAKE_LINK_LIBS ${CMAKE_LINK_LIBS})
 elseif (APPLE)
-    set(CMAKE_LINK_LIBS pthread dl mysqlclient crypto ${CMAKE_LINK_LIBS})
+    set(CMAKE_LINK_LIBS dl mysqlclient sqlpp-mysql crypto ${CMAKE_LINK_LIBS})
 elseif (UNIX) # Linux
-    set(CMAKE_LINK_LIBS pthread dl mysqlclient crypto ${CMAKE_LINK_LIBS})
+    set(CMAKE_LINK_LIBS dl mysqlclient sqlpp-mysql crypto ${CMAKE_LINK_LIBS})
 endif()
 
-include_directories(${CURL_INCLUDE_DIRS} ${OPENSSL_INCLUDE_DIR})
+include_directories(${CURL_INCLUDE_DIRS} ${OPENSSL_INCLUDE_DIR} ${HinnantDate_INCLUDE_DIR})
 add_executable(shiro ${SRC})
 target_link_libraries(shiro ${Boost_LIBRARIES} ${CURL_LIBRARIES} ${CMAKE_LINK_LIBS})

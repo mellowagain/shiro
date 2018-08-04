@@ -1,4 +1,5 @@
 #include "../thirdparty/loguru.hh"
+#include "../shiro.hh"
 #include "database.hh"
 
 shiro::database::database(const std::string &address, unsigned int port, const std::string &db, const std::string &username, const std::string &password)
@@ -7,18 +8,20 @@ shiro::database::database(const std::string &address, unsigned int port, const s
     , db(db)
     , username(username)
     , password(password) {
-    // Initialized in initializer list
+    sqlpp::mysql::global_library_init();
 }
 
 void shiro::database::connect() {
     if (this->is_connected())
         return;
 
-    this->connection = std::make_shared<MySql>(
-            this->address.c_str(),
-            this->username.c_str(), this->password.c_str(),
-            this->db.c_str(), (uint16_t) this->port
-    );
+    this->config = std::make_shared<sqlpp::mysql::connection_config>();
+    this->config->host = this->address;
+    this->config->port = this->port;
+    this->config->database = this->db;
+    this->config->user = this->username;
+    this->config->password = this->password;
+    this->config->auto_reconnect = true;
 
     LOG_S(INFO) << "Successfully connected to MySQL database.";
 }
@@ -27,61 +30,62 @@ void shiro::database::setup() {
     if (!this->is_connected())
         return;
 
+    sqlpp::mysql::connection db(this->config);
+
     // Beatmaps
-    update("CREATE TABLE IF NOT EXISTS `beatmaps` "
+    db.execute(
+           "CREATE TABLE IF NOT EXISTS `beatmaps` "
            "(id INT PRIMARY KEY NOT NULL AUTO_INCREMENT, "
-           "beatmap_id INT, beatmapset_id INT, beatmap_md5 VARCHAR(35), song_name VARCHAR(128), "
-           "ar FLOAT, od FLOAT, diff_std FLOAT, diff_taiko FLOAT, diff_ctb FLOAT, diff_mania FLOAT, "
-           "max_combo INT, hit_length INT, bpm INT, ranked TINYINT, last_update INT, "
-           "ranked_status_freezed BOOLEAN, play_count INT, pass_count INT);");
+           "beatmap_id INT NOT NULL, beatmapset_id INT NOT NULL, beatmap_md5 VARCHAR(35) NOT NULL, song_name VARCHAR(128) NOT NULL, "
+           "ar FLOAT NOT NULL, od FLOAT NOT NULL, diff_std FLOAT NOT NULL, diff_taiko FLOAT NOT NULL, diff_ctb FLOAT NOT NULL, diff_mania FLOAT NOT NULL, "
+           "max_combo INT NOT NULL, hit_length INT NOT NULL, bpm INT NOT NULL, ranked TINYINT NOT NULL, last_update INT NOT NULL, "
+           "ranked_status_freezed BOOLEAN NOT NULL, play_count INT NOT NULL, pass_count INT NOT NULL);"
+    );
 
     // IRC channels
-    update("CREATE TABLE IF NOT EXISTS `channels` "
+    db.execute(
+           "CREATE TABLE IF NOT EXISTS `channels` "
            "(id INT PRIMARY KEY NOT NULL AUTO_INCREMENT, "
-           "name VARCHAR(32), description VARCHAR(64), auto_join BOOLEAN);");
+           "name VARCHAR(32) NOT NULL, description VARCHAR(64) NOT NULL, auto_join BOOLEAN NOT NULL);"
+    );
 
     // Submitted scores
-    update("CREATE TABLE IF NOT EXISTS `scores` "
+    db.execute(
+           "CREATE TABLE IF NOT EXISTS `scores` "
            "(id INT PRIMARY KEY NOT NULL AUTO_INCREMENT, "
-           "beatmap_md5 VARCHAR(35), user_id INT, score BIGINT, max_combo INT, fc BOOLEAN, mods INT, "
-           "300_count INT, 100_count INT, 50_count INT, "
-           "katus_count INT, gekis_count INT, miss_count INT, "
-           "time INT, play_mode TINYINT, passed BOOLEAN, accuracy FLOAT, pp FLOAT);");
+           "beatmap_md5 VARCHAR(35) NOT NULL, user_id INT NOT NULL, score BIGINT NOT NULL, max_combo INT NOT NULL, fc BOOLEAN NOT NULL, mods INT NOT NULL, "
+           "300_count INT NOT NULL, 100_count INT NOT NULL, 50_count INT NOT NULL, "
+           "katus_count INT NOT NULL, gekis_count INT NOT NULL, miss_count INT NOT NULL, "
+           "time INT NOT NULL, play_mode TINYINT NOT NULL, passed BOOLEAN NOT NULL, accuracy FLOAT NOT NULL, pp FLOAT NOT NULL);"
+    );
 
     // Registered users and their stats
-    update("CREATE TABLE IF NOT EXISTS `users` (id INT PRIMARY KEY NOT NULL AUTO_INCREMENT, "
-           "username VARCHAR(32), safe_username VARCHAR(32), "
-           "password VARCHAR(128), salt VARCHAR(64),"
-           "email VARCHAR(100), ip VARCHAR(39), registration_date INT, last_seen INT, "
-           "followers INT, groups INT, user_page TEXT, "
-           "pp_std FLOAT, pp_taiko FLOAT, pp_ctb FLOAT, pp_mania FLOAT, "
-           "score_std INT, score_taiko INT, score_ctb INT, score_mania INT, "
-           "ranked_score_std INT, ranked_score_taiko INT, ranked_score_ctb INT, ranked_score_mania INT, "
-           "play_count_std INT, play_count_taiko INT, play_count_ctb INT, play_count_mania INT, "
-           "country VARCHAR(2));");
+    db.execute(
+           "CREATE TABLE IF NOT EXISTS `users` "
+           "(id INT PRIMARY KEY NOT NULL AUTO_INCREMENT, "
+           "username VARCHAR(32) NOT NULL, safe_username VARCHAR(32) NOT NULL, "
+           "password VARCHAR(128) NOT NULL, salt VARCHAR(64) NOT NULL,"
+           "email VARCHAR(100) NOT NULL, ip VARCHAR(39) NOT NULL, registration_date INT NOT NULL, last_seen INT NOT NULL, "
+           "followers INT NOT NULL, groups INT NOT NULL, user_page TEXT NOT NULL, "
+           "pp_std FLOAT NOT NULL, pp_taiko FLOAT NOT NULL, pp_ctb FLOAT NOT NULL, pp_mania FLOAT NOT NULL, "
+           "score_std INT NOT NULL, score_taiko INT NOT NULL, score_ctb INT NOT NULL, score_mania INT NOT NULL, "
+           "ranked_score_std INT NOT NULL, ranked_score_taiko INT NOT NULL, ranked_score_ctb INT NOT NULL, ranked_score_mania INT NOT NULL, "
+           "play_count_std INT NOT NULL, play_count_taiko INT NOT NULL, play_count_ctb INT NOT NULL, play_count_mania INT NOT NULL, "
+           "country VARCHAR(2) NOT NULL);"
+    );
 
     // Relationships between users (friends and blocked)
-    update("CREATE TABLE IF NOT EXISTS `relationships` (origin INT, target INT, blocked BOOLEAN);");
+    db.execute(
+           "CREATE TABLE IF NOT EXISTS `relationships` (origin INT NOT NULL, target INT NOT NULL, blocked BOOLEAN NOT NULL);"
+    );
 
     LOG_S(INFO) << "Successfully created and structured tables in database.";
 }
 
 bool shiro::database::is_connected() {
-    return this->connection != nullptr;
+    return this->config != nullptr;
 }
 
-std::shared_ptr<MySql> shiro::database::get_connection() {
-    if (!is_connected())
-        return nullptr;
-
-    return this->connection;
-}
-
-// Internal method for logging exceptions of update() / query()
-// Normally, the method itself would call LOG with their own custom message
-// but that requires the include of loguru.hh directly in the header.
-// database.hh is included by shiro.hh which is included literally everywhere
-// so including big header only library loguru.hh increases build time drastically
-void shiro::database::log_mysql_error(const std::string &target, const MySqlException &ex) {
-    LOG_S(ERROR) << "Failed to execute " << target << ":" << ex.what() << ".";
+std::shared_ptr<sqlpp::mysql::connection_config> shiro::database::get_config() {
+    return this->config;
 }
