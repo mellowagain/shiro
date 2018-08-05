@@ -44,6 +44,10 @@ void shiro::io::osu_writer::friend_list(std::vector<int32_t> friends) {
     this->write(packet_id::out_friends_list, serializable(std::move(friends)));
 }
 
+void shiro::io::osu_writer::users_list(std::vector<int32_t> users) {
+    this->write(packet_id::out_user_presence_bundle, serializable(std::move(users)));
+}
+
 void shiro::io::osu_writer::send_message(shiro::io::layouts::message message) {
     this->write(packet_id::out_send_message, std::move(message));
 }

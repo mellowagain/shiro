@@ -1,5 +1,6 @@
 #include "../../handlers/chat/private_chat_handler.hh"
 #include "../../handlers/chat/public_chat_handler.hh"
+#include "../../handlers/presence/user_presence_request_handler.hh"
 #include "../../handlers/logout_handler.hh"
 #include "../../handlers/ping_handler.hh"
 #include "../../handlers/user_status_handler.hh"
@@ -57,7 +58,9 @@ void shiro::routes::packets::route(shiro::io::packet_id packet_id, shiro::io::os
         case io::packet_id::in_channel_leave:break;
         case io::packet_id::in_receive_updates:break;
         case io::packet_id::in_set_irc_away_message:break;
-        case io::packet_id::in_user_stats_request:break;
+        case io::packet_id::in_user_stats_request:
+            handler::presence::request_all::handle(in, out, user);
+            break;
         case io::packet_id::in_invite:break;
         case io::packet_id::in_match_change_password:break;
         case io::packet_id::in_special_match_info_request:break;
