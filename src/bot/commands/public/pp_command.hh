@@ -4,7 +4,7 @@
 #include <deque>
 #include <string>
 
-#include "../../users/user.hh"
+#include "../../../users/user.hh"
 
 namespace shiro::bot::commands {
 

@@ -13,11 +13,7 @@
 #include "../thirdparty/uuid.hh"
 #include "../users/user_manager.hh"
 #include "../utils/escaper.hh"
-#include "commands/help_command.hh"
-#include "commands/pp_command.hh"
-#include "commands/rank_command.hh"
-#include "commands/roll_command.hh"
-#include "commands/rtx_command.hh"
+#include "commands/commands.hh"
 #include "bot.hh"
 
 static std::unordered_map<std::string, std::function<bool(std::deque<std::string>&, std::shared_ptr<shiro::users::user>, std::string)>> commands_map;
@@ -91,6 +87,7 @@ void shiro::bot::init() {
 }
 
 void shiro::bot::init_commands() {
+    commands_map.insert(std::make_pair("announce", commands::announce));
     commands_map.insert(std::make_pair("help", commands::help));
     commands_map.insert(std::make_pair("pp", commands::pp));
     commands_map.insert(std::make_pair("rank", commands::rank));

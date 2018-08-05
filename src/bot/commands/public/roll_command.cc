@@ -1,7 +1,7 @@
 #include <boost/lexical_cast.hpp>
 #include <random>
 
-#include "../../utils/bot_utils.hh"
+#include "../../../utils/bot_utils.hh"
 #include "roll_command.hh"
 
 static std::random_device random_device;
