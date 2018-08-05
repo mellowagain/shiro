@@ -1,4 +1,5 @@
 #include <utility>
+#include <cstring>
 
 #include "../database/tables/channel_table.hh"
 #include "../thirdparty/loguru.hh"
@@ -23,6 +24,9 @@ void shiro::channels::manager::init() {
     for (const auto &row : result) {
         std::string name = row.name;
 
+        if ((int) row.id == 0)
+            LOG_S(FATAL) << "Channel " << name << " uses reserved id 0, aborting!";
+
         if (name.find('#') == std::string::npos) {
             LOG_F(WARNING, "Channel name of channel id %i doesn't start with #, fixing (%s -> %s).", (int) row.id, name.c_str(), ("#" + name).c_str());
             name.insert(0, "#");
@@ -35,11 +39,18 @@ void shiro::channels::manager::init() {
     }
 }
 
-void shiro::channels::manager::write_channels(shiro::io::osu_writer &buf, std::shared_ptr<shiro::users::user> user) {
+void shiro::channels::manager::write_channels(shiro::io::osu_writer &buf, std::shared_ptr<shiro::users::user> user, bool first) {
     for (auto &pair : channels) {
-        buf.channel_available(pair.first);
+        shiro::io::layouts::channel channel_layout;
+        channel_layout.id = pair.first.id;
+        channel_layout.auto_join = pair.first.auto_join;
+        channel_layout.name = pair.first.name;
+        channel_layout.description = pair.first.description;
+        channel_layout.user_count = pair.second.size();
 
-        if (pair.first.auto_join) {
+        buf.channel_available(channel_layout);
+
+        if (pair.first.auto_join && first) {
             buf.channel_join(pair.first.name);
             pair.second.emplace_back(user);
         }
@@ -50,7 +61,7 @@ void shiro::channels::manager::join_channel(uint32_t channel_id, std::shared_ptr
     if (in_channel(channel_id, user))
         leave_channel(channel_id, std::move(user));
 
-    for (auto pair : channels) {
+    for (auto &pair : channels) {
         if (pair.first.id == channel_id) {
             pair.second.emplace_back(user);
             break;
@@ -62,7 +73,7 @@ void shiro::channels::manager::leave_channel(uint32_t channel_id, std::shared_pt
     if (!in_channel(channel_id, user))
         return;
 
-    for (auto pair : channels) {
+    for (auto &pair : channels) {
         if (pair.first.id == channel_id) {
             auto iterator = std::find(pair.second.begin(), pair.second.end(), user);
 
@@ -92,4 +103,13 @@ std::vector<std::shared_ptr<shiro::users::user>> shiro::channels::manager::get_u
     }
 
     return {};
+}
+
+uint32_t shiro::channels::manager::get_channel_id(const std::string &channel_name) {
+    for (const auto &pair : channels) {
+        if (pair.first.name == channel_name)
+            return pair.first.id;
+    }
+
+    return 0;
 }

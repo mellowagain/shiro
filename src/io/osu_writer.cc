@@ -32,6 +32,10 @@ void shiro::io::osu_writer::channel_join(std::string channel_name) {
     this->write(packet_id::out_channel_join_success, serializable(std::move(channel_name)));
 }
 
+void shiro::io::osu_writer::channel_revoked(std::string channel_name) {
+    this->write(packet_id::out_channel_revoked, serializable(std::move(channel_name)));
+}
+
 void shiro::io::osu_writer::user_presence(shiro::io::layouts::user_presence presence) {
     this->write(packet_id::out_user_presence, std::move(presence));
 }

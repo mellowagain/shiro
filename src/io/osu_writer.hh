@@ -43,6 +43,7 @@ namespace shiro::io {
         void channel_listing_complete();
         void channel_available(layouts::channel channel);
         void channel_join(std::string channel_name);
+        void channel_revoked(std::string channel_name);
 
         void user_presence(layouts::user_presence presence);
         void user_stats(layouts::user_stats stats);

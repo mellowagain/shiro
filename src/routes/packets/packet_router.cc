@@ -1,3 +1,5 @@
+#include "../../handlers/chat/leave_channel_handler.hh"
+#include "../../handlers/chat/join_channel_handler.hh"
 #include "../../handlers/chat/private_chat_handler.hh"
 #include "../../handlers/chat/public_chat_handler.hh"
 #include "../../handlers/friends/friend_add_handler.hh"
@@ -51,7 +53,9 @@ void shiro::routes::packets::route(shiro::io::packet_id packet_id, shiro::io::os
         case io::packet_id::in_match_failed:break;
         case io::packet_id::in_match_has_beatmap:break;
         case io::packet_id::in_match_skip_request:break;
-        case io::packet_id::in_channel_join:break;
+        case io::packet_id::in_channel_join:
+            handler::chat::join::handle(in, out, user);
+            break;
         case io::packet_id::in_beatmap_info_request:break;
         case io::packet_id::in_match_transfer_host:break;
         case io::packet_id::in_friend_add:
@@ -61,7 +65,9 @@ void shiro::routes::packets::route(shiro::io::packet_id packet_id, shiro::io::os
             handler::friends::remove::handle(in, out, user);
             break;
         case io::packet_id::in_match_change_team:break;
-        case io::packet_id::in_channel_leave:break;
+        case io::packet_id::in_channel_leave:
+            handler::chat::leave::handle(in, out, user);
+            break;
         case io::packet_id::in_receive_updates:break;
         case io::packet_id::in_set_irc_away_message:break;
         case io::packet_id::in_user_stats_request:
