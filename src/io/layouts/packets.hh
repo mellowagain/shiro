@@ -115,7 +115,6 @@ namespace shiro::io {
         out_switch_tourney_server = 107,
         in_special_join_match_channel = 108,
         in_special_leave_match_channel = 109
-
     };
 
 }

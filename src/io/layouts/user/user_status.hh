@@ -7,15 +7,15 @@ namespace shiro::io::layouts {
 
     class user_status : public serializable {
     public:
-        uint8_t activity;
-        std::string activity_desc;
+        uint8_t activity = 0;
+        std::string activity_desc = "";
 
-        std::string beatmap_checksum;
+        std::string beatmap_checksum = "";
 
-        uint32_t current_mods;
-        uint8_t play_mode;
+        uint32_t current_mods = 0;
+        uint8_t play_mode = 0;
 
-        int32_t beatmap_id;
+        int32_t beatmap_id = 0;
 
         buffer marshal() override;
         void unmarshal(shiro::io::buffer &buffer) override;

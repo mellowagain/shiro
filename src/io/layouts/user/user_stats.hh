@@ -7,26 +7,26 @@ namespace shiro::io::layouts {
 
     class user_stats : public serializable {
     public:
-        int32_t user_id;
+        int32_t user_id = 0;
 
-        uint8_t activity;
-        std::string activity_desc;
+        uint8_t activity = 0;
+        std::string activity_desc = "";
 
-        std::string beatmap_checksum;
+        std::string beatmap_checksum = "";
 
-        uint32_t current_mods;
-        uint8_t play_mode;
+        uint32_t current_mods = 0;
+        uint8_t play_mode = 0;
 
-        int32_t beatmap_id;
+        int32_t beatmap_id = 0;
 
-        uint64_t ranked_score;
+        uint64_t ranked_score = 0;
 
-        float accuracy; // Between 0 and 1 (divide by 100 I guess)
-        int32_t play_count;
-        uint64_t total_score;
+        float accuracy = 0.0f; // Between 0 and 1 (divide by 100 I guess)
+        int32_t play_count = 0;
+        uint64_t total_score = 0;
 
-        int32_t rank;
-        int16_t pp;
+        int32_t rank = 0;
+        int16_t pp = 0;
 
         buffer marshal() override;
         void unmarshal(shiro::io::buffer &buffer) override;

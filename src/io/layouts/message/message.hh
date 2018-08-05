@@ -10,11 +10,11 @@ namespace shiro::io::layouts {
         message() = default;
         message(std::string sender, int32_t sender_id, std::string content, std::string channel);
 
-        std::string sender;
+        std::string sender = "";
         int32_t sender_id = 0;
 
-        std::string content;
-        std::string channel;
+        std::string content = "";
+        std::string channel = "";
 
         buffer marshal() override;
         void unmarshal(shiro::io::buffer &buffer) override;

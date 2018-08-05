@@ -9,7 +9,7 @@
 
 namespace shiro::channels::manager {
 
-    static std::unordered_map<io::layouts::channel, std::vector<std::shared_ptr<users::user>>> channels;
+    extern std::unordered_map<io::layouts::channel, std::vector<std::shared_ptr<users::user>>> channels;
 
     void init();
 

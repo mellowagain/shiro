@@ -3,6 +3,8 @@
 #include "../thirdparty/loguru.hh"
 #include "user_manager.hh"
 
+std::vector<std::shared_ptr<shiro::users::user>> shiro::users::manager::online_users;
+
 void shiro::users::manager::login_user(std::shared_ptr<shiro::users::user> user) {
     if (user == nullptr || user->token.empty())
         return;

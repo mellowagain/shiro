@@ -13,16 +13,16 @@ namespace shiro::users {
 
     class user {
     public:
-        int32_t user_id;
-        std::string password;
-        std::string salt;
+        int32_t user_id = 0;
+        std::string password = "";
+        std::string salt = "";
 
-        std::vector<int32_t> friends;
+        std::vector<int32_t> friends {};
 
         // Session info
-        std::string token; // UUID v4
-        std::string client_version;
-        std::string hwid; // SHA256
+        std::string token = ""; // UUID v4
+        std::string client_version = "";
+        std::string hwid = ""; // SHA256
         std::chrono::seconds last_ping;
 
         io::layouts::user_presence presence;

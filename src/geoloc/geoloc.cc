@@ -9,6 +9,8 @@
 #include "country_ids.hh"
 #include "geoloc.hh"
 
+caches::fixed_sized_cache<std::string, shiro::geoloc::location_info> shiro::geoloc::location_cache(256);
+
 shiro::geoloc::location_info shiro::geoloc::get_location(const std::string &ip_address) {
     // For convenience
     using json = nlohmann::json;

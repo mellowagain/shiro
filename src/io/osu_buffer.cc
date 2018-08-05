@@ -56,8 +56,7 @@ std::string shiro::io::buffer::read_string() {
 
         if ((byte & 0x80) == 0) {
             total |= ((byte & 0x7F) << shift);
-        }
-        else {
+        } else {
             bool end = false;
 
             do {

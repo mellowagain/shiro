@@ -14,9 +14,9 @@ namespace shiro::io::layouts {
         bool auto_join = false;
 
         // Written
-        std::string name;
-        std::string description;
-        int32_t user_count;
+        std::string name = "";
+        std::string description = "";
+        int32_t user_count = 0;
 
         buffer marshal() override;
         void unmarshal(shiro::io::buffer &buffer) override;

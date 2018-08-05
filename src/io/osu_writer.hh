@@ -46,6 +46,7 @@ namespace shiro::io {
 
         void user_presence(layouts::user_presence presence);
         void user_stats(layouts::user_stats stats);
+        // users list (vector int32) id 96
 
         void friend_list(std::vector<int32_t> friends);
 

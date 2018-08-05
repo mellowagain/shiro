@@ -36,7 +36,7 @@ int32_t shiro::io::layouts::channel::get_size() {
 }
 
 bool shiro::io::layouts::channel::operator==(const shiro::io::layouts::channel &other_channel) const {
-    return (this->name == other_channel.name && this->description == other_channel.description);
+    return this->name == other_channel.name && this->description == other_channel.description;
 }
 
 bool shiro::io::layouts::channel::operator!=(const shiro::io::layouts::channel &other_channel) const {

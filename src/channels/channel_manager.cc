@@ -5,6 +5,8 @@
 #include "../shiro.hh"
 #include "channel_manager.hh"
 
+std::unordered_map<shiro::io::layouts::channel, std::vector<std::shared_ptr<shiro::users::user>>> shiro::channels::manager::channels;
+
 void shiro::channels::manager::init() {
     if (!channels.empty())
         channels.clear();

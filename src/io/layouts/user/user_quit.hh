@@ -7,8 +7,8 @@ namespace shiro::io::layouts {
 
     class user_quit : public serializable {
     public:
-        int32_t user_id;
-        uint8_t state;
+        int32_t user_id = 0;
+        uint8_t state = 0;
 
         buffer marshal() override;
         void unmarshal(shiro::io::buffer &buffer) override;

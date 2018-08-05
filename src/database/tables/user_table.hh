@@ -51,20 +51,16 @@ namespace shiro::tables {
             users_objects::play_count_std, users_objects::play_count_taiko, users_objects::play_count_ctb, users_objects::play_count_mania,
             users_objects::country> {
         using _value_type = sqlpp::no_value_t;
-        struct _alias_t
-        {
+        struct _alias_t {
             static constexpr const char _literal[] = "users";
             using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
             template <typename T>
-            struct _member_t
-            {
+            struct _member_t {
                 T _users;
-                T& operator()()
-                {
+                T &operator()() {
                     return _users;
                 }
-                const T& operator()() const
-                {
+                const T &operator()() const {
                     return _users;
                 }
             };

@@ -4,6 +4,8 @@
 #include "impl/root_route.hh"
 #include "routes.hh"
 
+crow::Crow<> shiro::routes::server;
+
 void shiro::routes::init() {
     server.loglevel(crow::LogLevel::Info);
     crow::logger::setHandler(std::make_shared<logging::route_logger>().get());

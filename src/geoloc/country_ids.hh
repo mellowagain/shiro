@@ -11,7 +11,7 @@
 
 namespace shiro::geoloc {
 
-    static std::unordered_map<std::string, uint8_t> countries;
+    extern std::unordered_map<std::string, uint8_t> countries;
 
     enum class country_id : uint8_t {
         BL = 0,

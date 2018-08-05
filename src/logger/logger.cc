@@ -1,13 +1,13 @@
 // Loguro settings
 #if defined(_DEBUG)
-    #define LOGURU_DEBUG_LOGGING true
-    #define LOGURU_DEBUG_CHECKS true
+    #define LOGURU_DEBUG_LOGGING 1
+    #define LOGURU_DEBUG_CHECKS 1
 #else
-    #define LOGURU_DEBUG_LOGGING false
-    #define LOGURU_DEBUG_CHECKS false
+    #undef LOGURU_DEBUG_LOGGING
+    #undef LOGURU_DEBUG_CHECKS
 #endif
 
-#define LOGURU_IMPLEMENTATION true
+#define LOGURU_IMPLEMENTATION 1
 
 #include "../thirdparty/loguru.hh"
 #include "logger.hh"

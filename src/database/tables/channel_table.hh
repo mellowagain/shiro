@@ -20,21 +20,17 @@ namespace shiro::tables {
             channel_objects::name, channel_objects::description,
             channel_objects::auto_join> {
         using _value_type = sqlpp::no_value_t;
-        struct _alias_t
-        {
+        struct _alias_t {
             static constexpr const char _literal[] = "channels";
             using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
             template <typename T>
-            struct _member_t
-            {
-                T _users;
-                T& operator()()
-                {
-                    return _users;
+            struct _member_t {
+                T _channels;
+                T &operator()() {
+                    return _channels;
                 }
-                const T& operator()() const
-                {
-                    return _users;
+                const T &operator()() const {
+                    return _channels;
                 }
             };
         };

@@ -19,21 +19,17 @@ namespace shiro::tables {
             relationships_objects::origin, relationships_objects::target,
             relationships_objects::blocked> {
         using _value_type = sqlpp::no_value_t;
-        struct _alias_t
-        {
+        struct _alias_t {
             static constexpr const char _literal[] = "relationships";
             using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
             template <typename T>
-            struct _member_t
-            {
-                T _users;
-                T& operator()()
-                {
-                    return _users;
+            struct _member_t {
+                T _relationships;
+                T &operator()() {
+                    return _relationships;
                 }
-                const T& operator()() const
-                {
-                    return _users;
+                const T &operator()() const {
+                    return _relationships;
                 }
             };
         };

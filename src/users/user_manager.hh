@@ -8,7 +8,7 @@
 
 namespace shiro::users::manager {
 
-    static std::vector<std::shared_ptr<user>> online_users;
+    extern std::vector<std::shared_ptr<user>> online_users;
 
     // Adds a user to online users
     void login_user(std::shared_ptr<user> user);

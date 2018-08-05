@@ -6,7 +6,7 @@
 
 namespace shiro::routes {
 
-    static crow::Crow<> server;
+    extern crow::Crow<> server;
 
     void init();
 

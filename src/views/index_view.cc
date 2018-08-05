@@ -11,7 +11,7 @@ std::string shiro::views::index::get_view() {
     std::time_t seconds((time_t) difference);
     std::tm *p = std::gmtime(&seconds);
 
-    char buffer[40];
+    char buffer[64];
     std::snprintf(buffer, sizeof(buffer), "%i days %i hours %i minutes %i seconds", p->tm_yday, p->tm_hour, p->tm_min, p->tm_sec);
 
     size_t index = view.find("{{uptime}}");

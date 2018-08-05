@@ -7,18 +7,18 @@ namespace shiro::io::layouts {
 
     class user_presence : public serializable {
     public:
-        int32_t user_id;
-        std::string username;
+        int32_t user_id = 0;
+        std::string username = "";
 
-        uint8_t time_zone;
-        uint8_t country_id;
+        uint8_t time_zone = 0;
+        uint8_t country_id = 0;
 
-        uint8_t permissions;
+        uint8_t permissions = 5;
 
-        float longitude;
-        float latitude;
+        float longitude = 0.0f;
+        float latitude = 0.0f;
 
-        int32_t rank;
+        int32_t rank = 0;
 
         buffer marshal() override;
         void unmarshal(shiro::io::buffer &buffer) override;

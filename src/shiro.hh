@@ -17,9 +17,9 @@ namespace shiro {
     extern std::shared_ptr<database> db_connection;
 
     using namespace std::chrono_literals;
-    static tsc::TaskScheduler scheduler;
+    extern tsc::TaskScheduler scheduler;
 
-    static std::time_t start_time = std::time(nullptr);
+    extern std::time_t start_time;
 
     int init(int argc, char **argv);
 
