@@ -17,17 +17,24 @@ namespace shiro::io {
         buffer buf;
 
         void write(packet_id id) {
-            buf.write<int16_t>((int16_t)id);
+            buf.write<int16_t>((int16_t) id);
             buf.write<uint8_t>(0);
             buf.write<int32_t>(0);
         }
 
         template <typename t = serializable>
         void write(packet_id id, t data) {
-            buf.write<int16_t>((int16_t)id);
+            buf.write<int16_t>((int16_t) id);
             buf.write<uint8_t>(0);
             buf.write<int32_t>(data.get_size());
             buf.append(data.marshal().serialize());
+        }
+
+        void write(packet_id id, buffer &buf) {
+            buf.write<int16_t>((int16_t) id);
+            buf.write<uint8_t>(0);
+            buf.write<int32_t>(buf.get_size());
+            buf.append(buf);
         }
 
     public:
@@ -60,6 +67,7 @@ namespace shiro::io {
         void spectator_left_user(int32_t id);
         void spectator_left_host(int32_t id);
         void spectator_cant_spectate(int32_t id);
+        void spectate_frames(buffer &buf);
 
         std::string serialize();
         buffer &get_buffer();

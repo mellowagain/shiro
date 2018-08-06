@@ -80,6 +80,10 @@ void shiro::io::osu_writer::spectator_cant_spectate(int32_t id) {
     this->write(packet_id::out_spectator_cant_spectate, serializable(id));
 }
 
+void shiro::io::osu_writer::spectate_frames(shiro::io::buffer &buf) {
+    this->write(packet_id::out_spectate_frames, buf);
+}
+
 std::string shiro::io::osu_writer::serialize() {
     return this->buf.serialize();
 }
