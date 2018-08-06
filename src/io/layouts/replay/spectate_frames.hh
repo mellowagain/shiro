@@ -14,7 +14,7 @@ namespace shiro::io::layouts {
         int32_t extra = 0;
         std::vector<replay_frame> replay_frames;
         uint8_t action = 0;
-        score_frame score_frame;
+        layouts::score_frame score_frame;
 
         buffer marshal() override;
         void unmarshal(shiro::io::buffer &buffer) override;
