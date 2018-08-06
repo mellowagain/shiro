@@ -13,13 +13,14 @@ void shiro::spectating::manager::stop_spectating(std::shared_ptr<shiro::users::u
     if (!is_spectating(user))
         return;
 
-    auto iterator = std::find(currently_spectating.begin(), currently_spectating.end(), user);
+    for (size_t i = 0; i < currently_spectating.size(); i++) {
+        const auto pair = currently_spectating.at(i);
 
-    if (iterator == currently_spectating.end())
-        return;
-
-    ptrdiff_t index = std::distance(currently_spectating.begin(), iterator);
-    currently_spectating.erase(currently_spectating.begin() + index);
+        if (pair.first == user) {
+            currently_spectating.erase(currently_spectating.begin() + i);
+            break;
+        }
+    }
 }
 
 bool shiro::spectating::manager::is_spectating(std::shared_ptr<shiro::users::user> user) {
