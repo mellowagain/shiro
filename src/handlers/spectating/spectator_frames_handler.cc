@@ -17,6 +17,4 @@ void shiro::handler::spectating::frames::handle(shiro::io::osu_packet &in, shiro
     for (std::shared_ptr<users::user> spectator : spectators) {
         spectator->queue.enqueue(writer);
     }
-
-    LOG_F(INFO, "Sent %zu frames to %zu spectators.", frames.replay_frames.size(), spectators.size());
 }
