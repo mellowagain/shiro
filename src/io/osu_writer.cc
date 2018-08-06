@@ -60,6 +60,26 @@ void shiro::io::osu_writer::rtx(std::string rtx) {
     this->write(packet_id::out_rtx, serializable(std::move(rtx)));
 }
 
+void shiro::io::osu_writer::spectator_join_user(int32_t id) {
+    this->write(packet_id::out_fellow_spectator_joined, serializable(id));
+}
+
+void shiro::io::osu_writer::spectator_join_host(int32_t id) {
+    this->write(packet_id::out_spectator_joined, serializable(id));
+}
+
+void shiro::io::osu_writer::spectator_left_user(int32_t id) {
+    this->write(packet_id::out_fellow_spectator_left, serializable(id));
+}
+
+void shiro::io::osu_writer::spectator_left_host(int32_t id) {
+    this->write(packet_id::out_spectator_left, serializable(id));
+}
+
+void shiro::io::osu_writer::spectator_cant_spectate(int32_t id) {
+    this->write(packet_id::out_spectator_cant_spectate, serializable(id));
+}
+
 std::string shiro::io::osu_writer::serialize() {
     return this->buf.serialize();
 }

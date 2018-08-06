@@ -55,6 +55,12 @@ namespace shiro::io {
 
         void rtx(std::string rtx);
 
+        void spectator_join_user(int32_t id);
+        void spectator_join_host(int32_t id);
+        void spectator_left_user(int32_t id);
+        void spectator_left_host(int32_t id);
+        void spectator_cant_spectate(int32_t id);
+
         std::string serialize();
         buffer &get_buffer();
 
