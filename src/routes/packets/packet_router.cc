@@ -5,6 +5,10 @@
 #include "../../handlers/friends/friend_add_handler.hh"
 #include "../../handlers/friends/friend_remove_handler.hh"
 #include "../../handlers/presence/user_presence_request_handler.hh"
+#include "../../handlers/spectating/start_spectating_handler.hh"
+#include "../../handlers/spectating/stop_spectating_handler.hh"
+#include "../../handlers/spectating/spectator_frames_handler.hh"
+#include "../../handlers/spectating/cant_spectate_handler.hh"
 #include "../../handlers/logout_handler.hh"
 #include "../../handlers/ping_handler.hh"
 #include "../../handlers/user_status_handler.hh"
@@ -26,11 +30,19 @@ void shiro::routes::packets::route(shiro::io::packet_id packet_id, shiro::io::os
         case io::packet_id::in_pong:
             handler::ping::handle(in, out, user);
             break;
-        case io::packet_id::in_start_spectating:break;
-        case io::packet_id::in_stop_spectating:break;
-        case io::packet_id::in_spectate_frames:break;
+        case io::packet_id::in_start_spectating:
+            handler::spectating::start::handle(in, out, user);
+            break;
+        case io::packet_id::in_stop_spectating:
+            handler::spectating::stop::handle(in, out, user);
+            break;
+        case io::packet_id::in_spectate_frames:
+            handler::spectating::frames::handle(in, out, user);
+            break;
         case io::packet_id::in_error_report:break;
-        case io::packet_id::in_cant_spectate:break;
+        case io::packet_id::in_cant_spectate:
+            handler::spectating::cant_spectate::handle(in, out, user);
+            break;
         case io::packet_id::in_send_irc_message_private:
             handler::chat::handle_private(in, out, user);
             break;
