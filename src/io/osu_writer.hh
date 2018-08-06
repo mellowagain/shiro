@@ -3,11 +3,12 @@
 
 #include "layouts/channel/channel.hh"
 #include "layouts/message/message.hh"
-#include "layouts/serializable.hh"
+#include "layouts/replay/spectate_frames.hh"
 #include "layouts/user/user_presence.hh"
 #include "layouts/user/user_quit.hh"
 #include "layouts/user/user_stats.hh"
 #include "layouts/packets.hh"
+#include "layouts/serializable.hh"
 #include "osu_buffer.hh"
 
 namespace shiro::io {
@@ -67,7 +68,7 @@ namespace shiro::io {
         void spectator_left_user(int32_t id);
         void spectator_left_host(int32_t id);
         void spectator_cant_spectate(int32_t id);
-        void spectate_frames(buffer &buf);
+        void spectate_frames(layouts::spectate_frames frames);
 
         std::string serialize();
         buffer &get_buffer();
