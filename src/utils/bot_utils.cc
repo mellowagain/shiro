@@ -2,6 +2,7 @@
 
 #include "../channels/channel_manager.hh"
 #include "../config/bot_file.hh"
+#include "../spectating/spectator_manager.hh"
 #include "bot_utils.hh"
 
 void shiro::utils::bot::respond(std::string message, std::shared_ptr<shiro::users::user> user, std::string channel, bool only_user) {
@@ -22,6 +23,24 @@ void shiro::utils::bot::respond(std::string message, std::shared_ptr<shiro::user
 
     if (only_user)
         return;
+
+    if (channel == "#spectator") {
+        std::vector<std::shared_ptr<users::user>> spectators = spectating::manager::get_spectators(user);
+        std::shared_ptr<users::user> host = spectating::manager::get_host(user);
+
+        for (const std::shared_ptr<users::user> &spectator : spectators) {
+            if (spectator == user)
+                continue;
+
+            spectator->queue.enqueue(buffer);
+        }
+
+        if (host == nullptr)
+            return;
+
+        host->queue.enqueue(buffer);
+        return;
+    }
 
     auto users = channels::manager::get_users_in_channel(channel);
 

@@ -6,6 +6,14 @@ void shiro::spectating::manager::start_spectating(std::shared_ptr<shiro::users::
     if (is_spectating(user))
         stop_spectating(user);
 
+    io::osu_writer writer;
+    writer.channel_join("#spectator");
+
+    user->queue.enqueue(writer);
+
+    if (get_spectators(target).empty())
+        target->queue.enqueue(writer);
+
     currently_spectating.emplace_back(std::make_pair(user, target));
 }
 
@@ -15,9 +23,19 @@ void shiro::spectating::manager::stop_spectating(std::shared_ptr<shiro::users::u
 
     for (size_t i = 0; i < currently_spectating.size(); i++) {
         const auto pair = currently_spectating.at(i);
+        std::shared_ptr<shiro::users::user> target = pair.second;
 
         if (pair.first == user) {
             currently_spectating.erase(currently_spectating.begin() + i);
+
+            io::osu_writer writer;
+            writer.channel_revoked("#spectator");
+
+            user->queue.enqueue(writer);
+
+            if (get_spectators(target).empty())
+                target->queue.enqueue(writer);
+
             break;
         }
     }

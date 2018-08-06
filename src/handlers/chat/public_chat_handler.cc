@@ -5,6 +5,7 @@
 #include "../../bot/bot.hh"
 #include "../../channels/channel_manager.hh"
 #include "../../io/layouts/message/message.hh"
+#include "../../spectating/spectator_manager.hh"
 #include "../../thirdparty/loguru.hh"
 #include "../../utils/string_utils.hh"
 #include "public_chat_handler.hh"
@@ -30,6 +31,24 @@ void shiro::handler::chat::handle_public(shiro::io::osu_packet &in, shiro::io::o
     }
 
     message_buffer.send_message(message);
+
+    if (message.channel == "#spectator") {
+        std::vector<std::shared_ptr<users::user>> spectators = spectating::manager::get_spectators(user);
+        std::shared_ptr<users::user> host = spectating::manager::get_host(user);
+
+        for (const std::shared_ptr<users::user> &spectator : spectators) {
+            if (spectator == user)
+                continue;
+
+            spectator->queue.enqueue(message_buffer);
+        }
+
+        if (host == nullptr)
+            return;
+
+        host->queue.enqueue(message_buffer);
+        return;
+    }
 
     auto users = channels::manager::get_users_in_channel(message.channel);
 
