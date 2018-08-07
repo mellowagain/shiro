@@ -14,7 +14,7 @@ void shiro::handler::spectating::frames::handle(shiro::io::osu_packet &in, shiro
     io::osu_writer writer;
     writer.spectate_frames(frames);
 
-    for (std::shared_ptr<users::user> spectator : spectators) {
+    for (const std::shared_ptr<users::user> &spectator : spectators) {
         spectator->queue.enqueue(writer);
     }
 }

@@ -27,7 +27,6 @@ endif()
 # Threading library (Win32 threads, pthreads)
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
-set(CMAKE_LINK_LIBS ${CMAKE_LINK_LIBS} Threads::Threads)
 
 # Boost
 set(Boost_USE_MULTITHREADED ON)
@@ -73,5 +72,5 @@ elseif (UNIX) # Linux
 endif()
 
 include_directories(${CURL_INCLUDE_DIRS} ${OPENSSL_INCLUDE_DIR} ${HinnantDate_INCLUDE_DIR})
-add_executable(shiro ${SRC} src/spectating/spectator_manager.cc src/spectating/spectator_manager.hh src/handlers/spectating/start_spectating_handler.cc src/handlers/spectating/start_spectating_handler.hh src/handlers/spectating/stop_spectating_handler.cc src/handlers/spectating/stop_spectating_handler.hh src/handlers/spectating/spectator_frames_handler.cc src/handlers/spectating/spectator_frames_handler.hh src/handlers/spectating/cant_spectate_handler.cc src/handlers/spectating/cant_spectate_handler.hh)
-target_link_libraries(shiro ${Boost_LIBRARIES} ${CURL_LIBRARIES} ${CMAKE_LINK_LIBS})
+add_executable(shiro ${SRC})
+target_link_libraries(shiro Threads::Threads ${Boost_LIBRARIES} ${CURL_LIBRARIES} ${CMAKE_LINK_LIBS})
