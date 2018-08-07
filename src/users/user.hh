@@ -16,6 +16,7 @@ namespace shiro::users {
         int32_t user_id = 0;
         std::string password = "";
         std::string salt = "";
+        std::string country = "XX";
 
         std::vector<int32_t> friends {};
 

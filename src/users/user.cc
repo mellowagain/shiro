@@ -41,6 +41,7 @@ bool shiro::users::user::init() {
         this->stats.total_score = row.score_std;
         this->stats.ranked_score = row.ranked_score_std;
         this->stats.play_count = row.play_count_std;
+        this->country = row.country;
     }
 
     auto relationship_result = db(select(all_of(relationships_table)).from(relationships_table).where(relationships_table.origin == this->user_id and relationships_table.blocked == false));

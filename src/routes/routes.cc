@@ -1,6 +1,7 @@
 #include "../config/bancho_file.hh"
 #include "../logger/route_logger.hh"
 #include "../thirdparty/loguru.hh"
+#include "impl/web/bancho_connect_route.hh"
 #include "impl/root_route.hh"
 #include "routes.hh"
 
@@ -22,4 +23,5 @@ void shiro::routes::init() {
 
 void shiro::routes::init_routes() {
     CROW_ROUTE(server, "/").methods("GET"_method, "POST"_method)(root::handle);
+    CROW_ROUTE(server, "/web/bancho_connect.php").methods("GET"_method)(web::bancho_connect::handle);
 }

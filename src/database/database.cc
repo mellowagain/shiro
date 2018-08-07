@@ -1,3 +1,4 @@
+#include "../config/cli_args.hh"
 #include "../thirdparty/loguru.hh"
 #include "../shiro.hh"
 #include "database.hh"
@@ -8,7 +9,8 @@ shiro::database::database(const std::string &address, unsigned int port, const s
     , db(db)
     , username(username)
     , password(password) {
-    sqlpp::mysql::global_library_init();
+    auto [argc, argv] = config::cli::get_args();
+    sqlpp::mysql::global_library_init(argc, argv);
 }
 
 void shiro::database::connect() {
