@@ -2,6 +2,8 @@
 #include "bancho_connect_route.hh"
 
 void shiro::routes::web::bancho_connect::handle(const crow::request &request, crow::response &response) {
+    response.set_header("Content-Type", "text/plain");
+
     char *username = request.url_params.get("u");
     char *md5sum = request.url_params.get("h");
 
@@ -28,6 +30,5 @@ void shiro::routes::web::bancho_connect::handle(const crow::request &request, cr
     std::string country = user->country;
     std::transform(country.begin(), country.end(), country.begin(), ::tolower);
 
-    response.set_header("Content-Type", "text/plain");
     response.end(country);
 }
