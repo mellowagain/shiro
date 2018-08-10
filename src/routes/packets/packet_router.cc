@@ -96,6 +96,11 @@ void shiro::routes::packets::route(shiro::io::packet_id packet_id, shiro::io::os
         case io::packet_id::in_special_leave_match_channel:break;
         default:
             LOG_F(WARNING, "Packet %i was sent for incoming packet handling while being outbound.", (uint16_t) packet_id);
-            break;
+            return;
     }
+
+    std::chrono::seconds seconds = std::chrono::duration_cast<std::chrono::seconds>(
+            std::chrono::system_clock::now().time_since_epoch()
+    );
+    user->last_ping = seconds;
 }
