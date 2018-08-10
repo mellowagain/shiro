@@ -13,7 +13,10 @@ void shiro::handler::presence::request_all::handle(shiro::io::osu_packet &in, sh
         std::shared_ptr<users::user> target_user = users::manager::get_user_by_id(requested_user);
 
         out.user_presence(target_user->presence);
-        out.user_stats(target_user->stats);
+
+        // Do not send stats for bot
+        if (requested_user != 1)
+            out.user_stats(target_user->stats);
     }
 
     std::vector<int32_t> online_users;
