@@ -14,6 +14,7 @@
 #include "signal/signal_handler.hh"
 #include "thirdparty/cli11.hh"
 #include "thirdparty/loguru.hh"
+#include "users/user_timeout.hh"
 #include "shiro.hh"
 
 std::shared_ptr<shiro::database> shiro::db_connection = nullptr;
@@ -40,13 +41,20 @@ int shiro::init(int argc, char **argv) {
     db_connection->connect();
     db_connection->setup();
 
-    std::thread scheduler_updater([&]() { scheduler.Update(); });
+    std::thread scheduler_updater([&]() {
+        while (true) {
+            std::this_thread::sleep_for(1ms);
+            scheduler.Update(1ms);
+        }
+    });
     scheduler_updater.detach(); // The root of all suffering is attachment
 
     bot::init();
     bot::init_commands();
 
     channels::manager::init();
+
+    users::timeout::init();
 
     signal_handler::install();
 
