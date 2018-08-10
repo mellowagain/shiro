@@ -9,6 +9,10 @@ void shiro::io::queue::enqueue(shiro::io::buffer &buffer) {
     this->packet_queue.append(buffer);
 }
 
+void shiro::io::queue::clear() {
+    this->packet_queue.clear();
+}
+
 bool shiro::io::queue::is_empty() {
     return this->packet_queue.is_empty();
 }

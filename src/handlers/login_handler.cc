@@ -105,5 +105,16 @@ void shiro::handler::login::handle(const crow::request &request, crow::response 
     writer.channel_listing_complete();
     channels::manager::write_channels(writer, user);
 
+    io::osu_writer global_writer;
+    global_writer.user_presence(user->presence);
+
+    for (const std::shared_ptr<users::user> &online_user : users::manager::online_users) {
+        if (online_user == user)
+            continue;
+
+        writer.user_presence(online_user->presence);
+        online_user->queue.enqueue(global_writer);
+    }
+
     response.end(writer.serialize());
 }

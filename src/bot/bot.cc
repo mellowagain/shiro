@@ -83,6 +83,12 @@ void shiro::bot::init() {
 
     users::manager::login_user(bot_user);
 
+    scheduler.Schedule(10s, [&](tsc::TaskContext ctx) {
+        bot_user->queue.clear();
+
+        ctx.Repeat();
+    });
+
     LOG_S(INFO) << "Bot has been successfully registered as " << config::bot::name << " and is now online.";
 }
 

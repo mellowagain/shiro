@@ -18,6 +18,7 @@ namespace shiro::io {
         void enqueue(osu_writer &writer);
         void enqueue(buffer &buffer);
 
+        void clear();
         bool is_empty();
 
         // This function additionally clears the queue
