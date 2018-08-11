@@ -10,8 +10,9 @@ bool shiro::bot::commands::help(std::deque<std::string> &args, std::shared_ptr<s
 
     // TODO: Check for permissions and then display admin commands
     utils::bot::respond("Staff commands:", user, channel, true);
-    utils::bot::respond("!announce - Sends a announcement to everyone or a user", user, channel, true);
-    utils::bot::respond("!rtx - Send a rtx to a user", user, channel, true);
+    utils::bot::respond("!announce - Sends a announcement to everyone or a specific user", user, channel, true);
+    utils::bot::respond("!clear - Clears the chat for everyone or a specific user", user, channel, true);
+    utils::bot::respond("!rtx - Send a rtx to a specific user", user, channel, true);
 
     return true;
 }

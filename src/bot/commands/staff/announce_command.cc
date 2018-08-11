@@ -32,6 +32,9 @@ bool shiro::bot::commands::announce(std::deque<std::string> &args, std::shared_p
     }
 
     for (std::shared_ptr<users::user> &online_user : users::manager::online_users) {
+        if (online_user->user_id == 1)
+            continue;
+
         online_user->queue.enqueue(writer);
     }
 

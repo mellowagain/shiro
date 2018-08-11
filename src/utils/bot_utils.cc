@@ -1,9 +1,27 @@
 #include <boost/algorithm/string.hpp>
+#include <utility>
 
+#include "../bot/bot.hh"
 #include "../channels/channel_manager.hh"
 #include "../config/bot_file.hh"
 #include "../spectating/spectator_manager.hh"
 #include "bot_utils.hh"
+#include "string_utils.hh"
+
+void shiro::utils::bot::handle(shiro::io::layouts::message message, std::shared_ptr<users::user> user) {
+    if (boost::algorithm::starts_with(message.content, "!")) {
+        std::vector<std::string> splitted = strings::split(message.content.substr(1), ' ');
+
+        if (splitted.empty())
+            return;
+
+        std::string command = splitted.at(0);
+        std::deque<std::string> args(splitted.begin(), splitted.end());
+        args.pop_front(); // Remove command which is the first argument
+
+        shiro::bot::handle(command, args, std::move(user), message.channel);
+    }
+}
 
 void shiro::utils::bot::respond(std::string message, std::shared_ptr<shiro::users::user> user, std::string channel, bool only_user) {
     io::osu_writer buffer;

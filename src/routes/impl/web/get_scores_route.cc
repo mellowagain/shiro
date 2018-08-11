@@ -1,11 +1,11 @@
-#include "get_scores_route.hh"
 #include "../../../beatmaps/beatmap.hh"
+#include "../../../beatmaps/beatmap_helper.hh"
+#include "../../../geoloc/country_ids.hh"
 #include "../../../scores/score_helper.hh"
 #include "../../../thirdparty/loguru.hh"
 #include "../../../users/user_manager.hh"
-#include "../../../geoloc/country_ids.hh"
 #include "../../../utils/mods.hh"
-#include "../../../beatmaps/beatmap_helper.hh"
+#include "get_scores_route.hh"
 
 void shiro::routes::web::get_scores::handle(const crow::request &request, crow::response &response) {
     response.set_header("Content-Type", "text/plain");

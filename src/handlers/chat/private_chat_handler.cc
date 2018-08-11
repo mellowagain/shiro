@@ -2,11 +2,11 @@
 #include <deque>
 #include <vector>
 
-#include "../../bot/bot.hh"
 #include "../../channels/channel_manager.hh"
 #include "../../io/layouts/message/message.hh"
 #include "../../thirdparty/loguru.hh"
 #include "../../users/user_manager.hh"
+#include "../../utils/bot_utils.hh"
 #include "../../utils/string_utils.hh"
 #include "private_chat_handler.hh"
 
@@ -20,17 +20,8 @@ void shiro::handler::chat::handle_private(shiro::io::osu_packet &in, shiro::io::
         return;
 
     // Bot user
-    if (target_user->user_id == 1 && boost::algorithm::starts_with(message.content, "!")) {
-        std::vector<std::string> splitted = utils::strings::split(message.content.substr(1), ' ');
-
-        if (splitted.empty())
-            return;
-
-        std::string command = splitted.at(0);
-        std::deque<std::string> args(splitted.begin(), splitted.end());
-        args.pop_front(); // Remove command which is the first argument
-
-        bot::handle(command, args, user, user->presence.username);
+    if (target_user->user_id == 1) {
+        utils::bot::handle(message, user);
         return;
     }
 

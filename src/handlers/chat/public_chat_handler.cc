@@ -2,11 +2,11 @@
 #include <deque>
 #include <vector>
 
-#include "../../bot/bot.hh"
 #include "../../channels/channel_manager.hh"
 #include "../../io/layouts/message/message.hh"
 #include "../../spectating/spectator_manager.hh"
 #include "../../thirdparty/loguru.hh"
+#include "../../utils/bot_utils.hh"
 #include "../../utils/string_utils.hh"
 #include "public_chat_handler.hh"
 
@@ -16,19 +16,6 @@ void shiro::handler::chat::handle_public(shiro::io::osu_packet &in, shiro::io::o
 
     message.sender = user->presence.username;
     message.sender_id = user->user_id;
-
-    if (boost::algorithm::starts_with(message.content, "!")) {
-        std::vector<std::string> splitted = utils::strings::split(message.content.substr(1), ' ');
-
-        if (splitted.empty())
-            return;
-
-        std::string command = splitted.at(0);
-        std::deque<std::string> args(splitted.begin(), splitted.end());
-        args.pop_front(); // Remove command which is the first argument
-
-        bot::handle(command, args, user, message.channel);
-    }
 
     message_buffer.send_message(message);
 
@@ -43,10 +30,10 @@ void shiro::handler::chat::handle_public(shiro::io::osu_packet &in, shiro::io::o
             spectator->queue.enqueue(message_buffer);
         }
 
-        if (host == nullptr)
-            return;
+        if (host != nullptr)
+            host->queue.enqueue(message_buffer);
 
-        host->queue.enqueue(message_buffer);
+        utils::bot::handle(message, user);
         return;
     }
 
@@ -58,4 +45,6 @@ void shiro::handler::chat::handle_public(shiro::io::osu_packet &in, shiro::io::o
 
         channel_user->queue.enqueue(message_buffer);
     }
+
+    utils::bot::handle(message, user);
 }

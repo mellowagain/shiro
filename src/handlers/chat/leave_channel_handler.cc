@@ -15,6 +15,9 @@ void shiro::handler::chat::leave::handle(shiro::io::osu_packet &in, shiro::io::o
     channels::manager::write_channels(writer, user, false);
 
     for (const std::shared_ptr<users::user> &online_user : users::manager::online_users) {
+        if (online_user->user_id == 1)
+            continue;
+
         online_user->queue.enqueue(writer);
     }
 
