@@ -7,8 +7,10 @@
 
 void shiro::users::timeout::init() {
     scheduler.Schedule(30s, [&](tsc::TaskContext ctx) {
+        std::vector<io::osu_writer> logout_queue;
+
         for (const std::shared_ptr<users::user> &user : users::manager::online_users) {
-            if (user->user_id == 1)
+            if (user == nullptr || user->user_id == 1)
                 continue;
 
             std::chrono::seconds now = std::chrono::duration_cast<std::chrono::seconds>(
@@ -27,12 +29,16 @@ void shiro::users::timeout::init() {
 
                 writer.user_quit(quit);
 
-                for (const std::shared_ptr<users::user> &online_user : users::manager::online_users) {
-                    if (online_user->user_id == user->user_id)
-                        continue;
+                logout_queue.emplace_back(writer);
+            }
+        }
 
-                    online_user->queue.enqueue(writer);
-                }
+        for (const std::shared_ptr<users::user> &user : users::manager::online_users) {
+            for (io::osu_writer writer : logout_queue) {
+                if (user == nullptr || user->user_id == 1)
+                    continue;
+
+                user->queue.enqueue(writer);
             }
         }
 
