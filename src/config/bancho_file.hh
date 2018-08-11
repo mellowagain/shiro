@@ -9,6 +9,8 @@ namespace shiro::config::bancho {
     extern int port;
     extern uint16_t concurrency;
 
+    extern std::string api_key;
+
     void parse();
 
 }

@@ -39,8 +39,8 @@ void shiro::database::setup() {
            "CREATE TABLE IF NOT EXISTS `beatmaps` "
            "(id INT PRIMARY KEY NOT NULL AUTO_INCREMENT, "
            "beatmap_id INT NOT NULL, beatmapset_id INT NOT NULL, beatmap_md5 VARCHAR(35) NOT NULL, song_name VARCHAR(128) NOT NULL, "
-           "ar FLOAT NOT NULL, od FLOAT NOT NULL, diff_std FLOAT NOT NULL, diff_taiko FLOAT NOT NULL, diff_ctb FLOAT NOT NULL, diff_mania FLOAT NOT NULL, "
-           "max_combo INT NOT NULL, hit_length INT NOT NULL, bpm INT NOT NULL, ranked TINYINT NOT NULL, last_update INT NOT NULL, "
+           "game_mode SMALLINT NOT NULL, ar FLOAT NOT NULL, od FLOAT NOT NULL, diff_std FLOAT NOT NULL, diff_taiko FLOAT NOT NULL, diff_ctb FLOAT NOT NULL, diff_mania FLOAT NOT NULL, "
+           "max_combo INT NOT NULL, hit_length INT NOT NULL, bpm INT NOT NULL, ranked_status INT NOT NULL, last_update INT NOT NULL, "
            "ranked_status_freezed BOOLEAN NOT NULL, play_count INT NOT NULL, pass_count INT NOT NULL);"
     );
 

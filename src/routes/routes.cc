@@ -2,10 +2,11 @@
 #include "../logger/route_logger.hh"
 #include "../thirdparty/loguru.hh"
 #include "impl/web/bancho_connect_route.hh"
+#include "impl/web/get_scores_route.hh"
 #include "impl/root_route.hh"
 #include "routes.hh"
 
-crow::Crow<> shiro::routes::server;
+crow::Crow<shiro::multipart::multiform_data_middleware> shiro::routes::server;
 
 void shiro::routes::init() {
     server.loglevel(crow::LogLevel::Info);
@@ -23,5 +24,7 @@ void shiro::routes::init() {
 
 void shiro::routes::init_routes() {
     CROW_ROUTE(server, "/").methods("GET"_method, "POST"_method)(root::handle);
+
     CROW_ROUTE(server, "/web/bancho_connect.php").methods("GET"_method)(web::bancho_connect::handle);
+    CROW_ROUTE(server, "/web/osu-osz2-getscores.php").methods("GET"_method)(web::get_scores::handle);
 }
