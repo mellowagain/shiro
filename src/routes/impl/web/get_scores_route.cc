@@ -91,7 +91,7 @@ void shiro::routes::web::get_scores::handle(const crow::request &request, crow::
 
     std::string res = beatmap.build_header();
 
-    if (beatmaps::helper::has_leaderboard(beatmap.ranked_status)) {
+    if (beatmaps::helper::has_leaderboard(beatmaps::helper::fix_beatmap_status(beatmap.ranked_status))) {
         scores::score top_score_user = scores::helper::fetch_top_score_user(beatmap.beatmap_md5, user);
 
         if (top_score_user.id == -1) {
