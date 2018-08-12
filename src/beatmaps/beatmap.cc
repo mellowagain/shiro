@@ -13,12 +13,18 @@
 #include "beatmap_helper.hh"
 
 void shiro::beatmaps::beatmap::fetch(bool force_peppster) {
+    if (this->beatmapset_id == -1) {
+        this->ranked_status = (int32_t) status::unsubmitted;
+        return;
+    }
+
     if (!force_peppster) {
         if (fetch_db())
             return;
     }
 
-    fetch_api();
+    if (!fetch_api())
+        this->ranked_status = (int32_t) status::unknown;
 }
 
 bool shiro::beatmaps::beatmap::fetch_db() {
@@ -127,7 +133,7 @@ bool shiro::beatmaps::beatmap::fetch_api() {
             this->play_mode = (uint8_t) boost::lexical_cast<int32_t>(std::string(part["mode"]));
             this->ar = boost::lexical_cast<float>(std::string(part["diff_approach"]));
             this->od = boost::lexical_cast<float>(std::string(part["diff_overall"]));
-            this->bpm = boost::lexical_cast<int32_t>(std::string(part["bpm"]));
+            this->bpm = static_cast<int32_t>(boost::lexical_cast<float>(std::string(part["bpm"])));
 
             switch ((utils::play_mode) this->play_mode) {
                 case utils::play_mode::standard:
@@ -144,8 +150,14 @@ bool shiro::beatmaps::beatmap::fetch_api() {
                     this->diff_mania = boost::lexical_cast<float>(std::string(part["difficultyrating"]));
                     break;
             }
+
+            // Beatmap is unranked
+            if (part["approved_date"].is_null())
+                this->ranked_status = (int32_t) status::latest_pending;
         } catch (const boost::bad_lexical_cast &ex) {
             LOG_S(ERROR) << "Unable to cast response of Bancho API to valid data types: " << ex.what() << ".";
+
+            this->ranked_status = (int32_t) status::unknown;
             return false;
         }
 

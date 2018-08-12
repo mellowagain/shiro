@@ -4,6 +4,9 @@
 #include "multipart_file.hh"
 
 void shiro::multipart::multiform_data_middleware::before_handle(crow::request &req, crow::response &res, shiro::multipart::multiform_data_middleware::context &ctx) {
+    if (req.method != crow::HTTPMethod::Post)
+        return;
+
     const std::string &content_type = req.get_header_value("Content-Type");
 
     if (content_type.empty() || content_type.find("multipart/form-data") == std::string::npos)

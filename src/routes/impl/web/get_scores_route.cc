@@ -48,11 +48,11 @@ void shiro::routes::web::get_scores::handle(const crow::request &request, crow::
     std::vector<scores::score> score_list;
 
     switch (scoreboard_type) {
-        case 0: {
+        case 1: {
             score_list = scores::helper::fetch_all_scores(md5sum);
             break;
         }
-        case 1: {
+        case 2: {
             char *mods = request.url_params.get("mods");
             int32_t mods_list;
 
@@ -74,7 +74,7 @@ void shiro::routes::web::get_scores::handle(const crow::request &request, crow::
             score_list = scores::helper::fetch_mod_scores(md5sum, mods_list);
             break;
         }
-        case 2: {
+        case 3: {
             score_list = scores::helper::fetch_friend_scores(md5sum, user);
             break;
         }
