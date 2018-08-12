@@ -6,7 +6,7 @@
 #include "../users/user.hh"
 #include "score_helper.hh"
 
-std::string shiro::scores::score::to_string() {
+std::string shiro::scores::score::to_string(std::vector<score> &scores) {
     std::stringstream stream;
     std::shared_ptr<users::user> user = users::manager::get_user_by_id(this->user_id);
 
@@ -29,7 +29,7 @@ std::string shiro::scores::score::to_string() {
     stream << (this->fc ? "True" : "False") << "|";
     stream << this->mods << "|";
     stream << this->user_id << "|";
-    stream << helper::get_scoreboard_position(*this) << "|";
+    stream << helper::get_scoreboard_position(*this, scores) << "|";
     stream << this->time << "|";
     stream << "0" << std::endl;
 

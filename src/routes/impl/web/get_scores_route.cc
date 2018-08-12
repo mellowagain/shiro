@@ -97,11 +97,11 @@ void shiro::routes::web::get_scores::handle(const crow::request &request, crow::
         if (top_score_user.id == -1) {
             res.append("\n");
         } else {
-            res.append(top_score_user.to_string());
+            res.append(top_score_user.to_string(score_list));
         }
 
         for (scores::score &submitted_score : score_list) {
-            res.append(submitted_score.to_string());
+            res.append(submitted_score.to_string(score_list));
         }
     }
 

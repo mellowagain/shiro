@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <string>
+#include <vector>
 
 #include "../utils/play_mode.hh"
 
@@ -40,7 +41,7 @@ namespace shiro::scores {
         uint8_t play_mode = (uint8_t) utils::play_mode::standard;
         int32_t time = 0;
 
-        std::string to_string();
+        std::string to_string(std::vector<score> &scores);
 
     };
 
