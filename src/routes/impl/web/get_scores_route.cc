@@ -45,6 +45,7 @@ void shiro::routes::web::get_scores::handle(const crow::request &request, crow::
 
     beatmap.fetch();
 
+    int32_t mods_list = (int32_t) utils::mods::none;
     std::vector<scores::score> score_list;
 
     switch (scoreboard_type) {
@@ -54,7 +55,6 @@ void shiro::routes::web::get_scores::handle(const crow::request &request, crow::
         }
         case 2: {
             char *mods = request.url_params.get("mods");
-            int32_t mods_list;
 
             if (mods == nullptr) {
                 response.code = 400;
@@ -97,7 +97,11 @@ void shiro::routes::web::get_scores::handle(const crow::request &request, crow::
         if (top_score_user.id == -1) {
             res.append("\n");
         } else {
-            res.append(top_score_user.to_string(score_list));
+            if (scoreboard_type == 2 && top_score_user.mods != mods_list) {
+                res.append("\n");
+            } else {
+                res.append(top_score_user.to_string(score_list));
+            }
         }
 
         for (scores::score &submitted_score : score_list) {
