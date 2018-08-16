@@ -20,4 +20,9 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
         return;
 
     utils::multipart_fields fields = parser->parse();
+
+    for (const auto &key_value : fields) {
+        LOG_F(INFO, "Name: %s - Type: %i", key_value.first.c_str(), key_value.second.multipart_type);
+    }
+
 }
