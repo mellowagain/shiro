@@ -37,6 +37,40 @@ void shiro::channels::manager::init() {
                 std::vector<std::shared_ptr<users::user>>()
         ));
     }
+
+    for (const auto &pair : channels) {
+        if (pair.first.name == "#announce")
+            return;
+    }
+
+    db(insert_into(channel_table).set(
+            channel_table.name = "#announce",
+            channel_table.description = "",
+            channel_table.auto_join = true
+    ));
+
+    result = db(select(all_of(channel_table)).from(channel_table).where(channel_table.name == "#announce"));
+    empty = is_query_empty(result);
+
+    if (empty)
+        return;
+
+    for (const auto &row : result) {
+        std::string name = row.name;
+
+        if ((int) row.id == 0)
+            LOG_S(FATAL) << "Channel " << name << " uses reserved id 0, aborting!";
+
+        if (name.find('#') == std::string::npos) {
+            LOG_F(WARNING, "Channel name of channel id %i doesn't start with #, fixing (%s -> %s).", (int) row.id, name.c_str(), ("#" + name).c_str());
+            name.insert(0, "#");
+        }
+
+        channels.insert(std::make_pair<io::layouts::channel, std::vector<std::shared_ptr<users::user>>>(
+                io::layouts::channel(row.id, row.auto_join, name, row.description, 0),
+                std::vector<std::shared_ptr<users::user>>()
+        ));
+    }
 }
 
 void shiro::channels::manager::write_channels(shiro::io::osu_writer &buf, std::shared_ptr<shiro::users::user> user, bool first) {

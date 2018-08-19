@@ -22,6 +22,10 @@ namespace shiro::scores::helper {
 
     int32_t get_scoreboard_position(const score &s, std::vector<score> scores);
 
+    std::vector<score> fetch_all_user_scores(int32_t user_id, size_t limit = std::numeric_limits<size_t>::max());
+
+    float calculate_accuracy(utils::play_mode mode, int32_t _300, int32_t _100, int32_t _50, int32_t geki, int32_t katu, int32_t miss);
+
 }
 
 #endif //SHIRO_SCORE_HELPER_HH

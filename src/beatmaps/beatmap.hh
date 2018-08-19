@@ -42,6 +42,8 @@ namespace shiro::beatmaps {
         bool fetch_db();
         bool fetch_api();
 
+        void update_play_metadata();
+
         std::string build_header();
 
     };

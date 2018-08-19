@@ -37,6 +37,7 @@ namespace shiro::users {
 
         bool init();
         void update();
+        void save_stats();
 
         bool check_password(const std::string &password);
 

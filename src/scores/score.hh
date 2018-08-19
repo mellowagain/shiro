@@ -19,8 +19,10 @@ namespace shiro::scores {
 
         int32_t id = 0;
         int32_t user_id = 0;
+        std::string hash = "";
         std::string beatmap_md5 = "";
 
+        std::string rank = "F";
         int64_t total_score = 0;
         int32_t max_combo = 0;
         float pp = 0.0f;

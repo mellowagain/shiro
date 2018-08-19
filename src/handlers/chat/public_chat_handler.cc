@@ -19,6 +19,9 @@ void shiro::handler::chat::handle_public(shiro::io::osu_packet &in, shiro::io::o
 
     message_buffer.send_message(message);
 
+    if (message.channel == "#announce")
+        return;
+
     if (message.channel == "#spectator") {
         std::vector<std::shared_ptr<users::user>> spectators = spectating::manager::get_spectators(user);
         std::shared_ptr<users::user> host = spectating::manager::get_host(user);

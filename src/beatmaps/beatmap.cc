@@ -201,6 +201,16 @@ bool shiro::beatmaps::beatmap::fetch_api() {
     return true;
 }
 
+void shiro::beatmaps::beatmap::update_play_metadata() {
+    sqlpp::mysql::connection db(db_connection->get_config());
+    const tables::beatmaps beatmaps_table {};
+
+    db(update(beatmaps_table).set(
+            beatmaps_table.play_count = this->play_count,
+            beatmaps_table.pass_count = this->pass_count
+    ).where(beatmaps_table.beatmap_md5 == this->beatmap_md5));
+}
+
 std::string shiro::beatmaps::beatmap::build_header() {
     std::stringstream result;
 

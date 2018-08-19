@@ -31,7 +31,7 @@ std::string shiro::scores::score::to_string(std::vector<score> &scores) {
     stream << this->user_id << "|";
     stream << helper::get_scoreboard_position(*this, scores) << "|";
     stream << this->time << "|";
-    stream << "0" << std::endl;
+    stream << "0" << std::endl; // has replay
 
     return stream.str();
 }

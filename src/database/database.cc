@@ -55,7 +55,8 @@ void shiro::database::setup() {
     db.execute(
            "CREATE TABLE IF NOT EXISTS `scores` "
            "(id INT PRIMARY KEY NOT NULL AUTO_INCREMENT, "
-           "beatmap_md5 VARCHAR(35) NOT NULL, user_id INT NOT NULL, score BIGINT NOT NULL, max_combo INT NOT NULL, fc BOOLEAN NOT NULL, mods INT NOT NULL, "
+           "beatmap_md5 VARCHAR(35) NOT NULL, hash VARCHAR(35) NOT NULL, user_id INT NOT NULL, rank VARCHAR(2) NOT NULL, "
+           "score BIGINT NOT NULL, max_combo INT NOT NULL, fc BOOLEAN NOT NULL, mods INT NOT NULL, "
            "300_count INT NOT NULL, 100_count INT NOT NULL, 50_count INT NOT NULL, "
            "katus_count INT NOT NULL, gekis_count INT NOT NULL, miss_count INT NOT NULL, "
            "time INT NOT NULL, play_mode TINYINT NOT NULL, passed BOOLEAN NOT NULL, accuracy FLOAT NOT NULL, pp FLOAT NOT NULL);"
@@ -70,8 +71,10 @@ void shiro::database::setup() {
            "email VARCHAR(100) NOT NULL, ip VARCHAR(39) NOT NULL, registration_date INT NOT NULL, last_seen INT NOT NULL, "
            "followers INT NOT NULL, groups INT NOT NULL, user_page TEXT NOT NULL, "
            "pp_std FLOAT NOT NULL, pp_taiko FLOAT NOT NULL, pp_ctb FLOAT NOT NULL, pp_mania FLOAT NOT NULL, "
+           "rank_std INT NOT NULL, rank_taiko INT NOT NULL, rank_ctb INT NOT NULL, rank_mania INT NOT NULL, "
            "score_std INT NOT NULL, score_taiko INT NOT NULL, score_ctb INT NOT NULL, score_mania INT NOT NULL, "
            "ranked_score_std INT NOT NULL, ranked_score_taiko INT NOT NULL, ranked_score_ctb INT NOT NULL, ranked_score_mania INT NOT NULL, "
+           "accuracy_std FLOAT NOT NULL, accuracy_taiko FLOAT NOT NULL, accuracy_ctb FLOAT NOT NULL, accuracy_mania FLOAT NOT NULL,"
            "play_count_std INT NOT NULL, play_count_taiko INT NOT NULL, play_count_ctb INT NOT NULL, play_count_mania INT NOT NULL, "
            "country VARCHAR(2) NOT NULL);"
     );

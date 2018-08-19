@@ -2,6 +2,7 @@
 #define SHIRO_PLAY_MODE_HH
 
 #include <cstdint>
+#include <string>
 
 namespace shiro::utils {
 
@@ -13,6 +14,8 @@ namespace shiro::utils {
 
     };
 
+    std::string play_mode_to_string(play_mode mode);
+
 }
 
-#endif  // SHIRO_PLAY_MODE_HH
+#endif  //SHIRO_PLAY_MODE_HH

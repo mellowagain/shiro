@@ -1,3 +1,4 @@
+#include <boost/lexical_cast.hpp>
 #include "string_utils.hh"
 
 std::vector<std::string> shiro::utils::strings::split(const std::string &input, char separator) {
@@ -17,4 +18,13 @@ std::vector<std::string> shiro::utils::strings::split(const std::string &input, 
     result.emplace_back(input.substr(prev_pos, pos - prev_pos));
 
     return result;
+}
+
+bool shiro::utils::strings::to_bool(std::string src) {
+    try {
+        return boost::lexical_cast<bool>(src);
+    } catch (const boost::bad_lexical_cast &ex) {
+        std::transform(src.begin(), src.end(), src.begin(), ::tolower);
+        return src == "true";
+    }
 }

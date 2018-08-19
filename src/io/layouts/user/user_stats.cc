@@ -1,5 +1,47 @@
+#include "../../../scores/score.hh"
+#include "../../../scores/score_helper.hh"
 #include "../../../utils/osu_string.hh"
+#include "../../../utils/play_mode.hh"
 #include "user_stats.hh"
+
+void shiro::io::layouts::user_stats::recalculate_accuracy() {
+    std::vector<scores::score> scores = scores::helper::fetch_all_user_scores(this->user_id);
+
+    switch (this->play_mode) {
+        case (uint8_t) utils::play_mode::standard: {
+            scores.erase(std::remove_if(scores.begin(), scores.end(), [&](const scores::score &s) {
+                return s.play_mode != (uint8_t) utils::play_mode::standard;
+            }), scores.end());
+            break;
+        }
+        case (uint8_t) utils::play_mode::taiko: {
+            scores.erase(std::remove_if(scores.begin(), scores.end(), [&](const scores::score &s) {
+                return s.play_mode != (uint8_t) utils::play_mode::taiko;
+            }), scores.end());
+            break;
+        }
+        case (uint8_t) utils::play_mode::fruits: {
+            scores.erase(std::remove_if(scores.begin(), scores.end(), [&](const scores::score &s) {
+                return s.play_mode != (uint8_t) utils::play_mode::fruits;
+            }), scores.end());
+            break;
+        }
+        case (uint8_t) utils::play_mode::mania: {
+            scores.erase(std::remove_if(scores.begin(), scores.end(), [&](const scores::score &s) {
+                return s.play_mode != (uint8_t) utils::play_mode::mania;
+            }), scores.end());
+            break;
+        }
+    }
+
+    float accuracy = 0.0f;
+
+    for (const scores::score &score : scores) {
+        accuracy += score.accuracy;
+    }
+
+    this->accuracy = (accuracy / scores.size()) / 100;
+}
 
 shiro::io::buffer shiro::io::layouts::user_stats::marshal() {
     std::string status_text = utils::osu_string(this->activity_desc);
