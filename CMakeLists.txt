@@ -38,6 +38,9 @@ find_package(CURL REQUIRED)
 # OpenSSL
 find_package(OpenSSL REQUIRED)
 
+# mcrypt
+find_package(Mcrypt REQUIRED)
+
 if (NOT OPENSSL_CRYPTO_LIBRARY)
     message(FATAL_ERROR "Unable to find libcrypto provided by OpenSSL.")
 endif()
@@ -71,6 +74,6 @@ elseif (UNIX) # Linux
     set(CMAKE_LINK_LIBS dl sqlpp-mysql mysqlclient crypto ${CMAKE_LINK_LIBS})
 endif()
 
-include_directories(${CURL_INCLUDE_DIRS} ${OPENSSL_INCLUDE_DIR} ${HinnantDate_INCLUDE_DIR})
+include_directories(${CURL_INCLUDE_DIRS} ${OPENSSL_INCLUDE_DIR} ${HinnantDate_INCLUDE_DIR} ${Mcrypt_INCLUDE_DIR})
 add_executable(shiro ${SRC})
-target_link_libraries(shiro Threads::Threads ${Boost_LIBRARIES} ${CURL_LIBRARIES} ${CMAKE_LINK_LIBS})
+target_link_libraries(shiro Threads::Threads ${Boost_LIBRARIES} ${CURL_LIBRARIES} ${Mcrypt_LIBS} ${CMAKE_LINK_LIBS})
