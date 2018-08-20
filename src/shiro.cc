@@ -10,7 +10,7 @@
 #include "config/db_file.hh"
 #include "geoloc/country_ids.hh"
 #include "logger/logger.hh"
-#include "replay/replay_manager.hh"
+#include "replays/replay_manager.hh"
 #include "routes/routes.hh"
 #include "signal/signal_handler.hh"
 #include "thirdparty/cli11.hh"
@@ -56,7 +56,7 @@ int shiro::init(int argc, char **argv) {
     channels::manager::init();
 
     users::timeout::init();
-    
+
     replays::init();
 
     signal_handler::install();
