@@ -63,7 +63,7 @@ void shiro::utils::bot::respond(std::string message, std::shared_ptr<shiro::user
     auto users = channels::manager::get_users_in_channel(channel);
 
     for (const std::shared_ptr<users::user> &channel_user : users) {
-        if (channel_user->user_id == user->user_id || user->user_id == 1)
+        if (channel_user == nullptr || channel_user->user_id == user->user_id || user->user_id == 1)
             continue;
 
         channel_user->queue.enqueue(buffer);

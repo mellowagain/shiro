@@ -14,6 +14,8 @@ namespace shiro::beatmaps::helper {
 
     bool has_leaderboard(int32_t status_code);
 
+    bool awards_pp(int32_t status_code);
+
     size_t callback(void *raw_data, size_t size, size_t memory, std::string *ptr);
 
     FILE *download(int32_t beatmap_id);

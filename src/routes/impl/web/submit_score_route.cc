@@ -20,7 +20,6 @@
 void shiro::routes::web::submit_score::handle(const crow::request &request, crow::response &response) {
     response.set_header("Content-Type", "text/plain; charset=UTF-8");
     response.set_header("cho-server", "shiro (https://github.com/Marc3842h/shiro)");
-    response.code = 200;
 
     const std::string &user_agent = request.get_header_value("user-agent");
 
@@ -90,7 +89,7 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
         response.code = 400;
         response.end("error: missinginfo");
 
-        LOG_S(WARNING) << "Received invalid score submission, score metadata doesn't have 18 parts.";
+        LOG_S(WARNING) << "Received invalid score submission, score metadata doesn't have 16 or more parts.";
         return;
     }
 
@@ -192,7 +191,7 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
 
     // oppai-ng for std and taiko (non-converted)
     if ((score.play_mode == (uint8_t) utils::play_mode::standard || score.play_mode == (uint8_t) utils::play_mode::taiko) &&
-        beatmap.ranked_status == (int32_t) beatmaps::status::ranked) {
+        beatmaps::helper::awards_pp(beatmap.ranked_status)) {
         struct parser parser_state;
         struct beatmap map;
 
@@ -333,7 +332,7 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
     out << "approvedDate:" << std::put_time(tm, "%F %X") << "|";
     out << "chartId:overall|";
     out << "chartName:Overall Ranking|";
-    out << "chartEndDate:|";
+    out << "chartEndDate:" << "|";
     out << "beatmapRankingBefore:" << old_scoreboard_pos << "|";
     out << "beatmapRankingAfter:" << scoreboard_position << "|";
     out << "rankedScoreBefore:" << user->stats.ranked_score - score.total_score << "|";

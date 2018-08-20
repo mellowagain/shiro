@@ -49,6 +49,11 @@ bool shiro::beatmaps::helper::has_leaderboard(int32_t status_code) {
            status_code == (int32_t) status::approved;
 }
 
+bool shiro::beatmaps::helper::awards_pp(int32_t status_code) {
+    return status_code == (int32_t) status::ranked ||
+           status_code == (int32_t) status::needs_update;
+}
+
 size_t shiro::beatmaps::helper::callback(void *raw_data, size_t size, size_t memory, std::string *ptr) {
     size_t new_length = size * memory;
     size_t old_length = ptr->size();
