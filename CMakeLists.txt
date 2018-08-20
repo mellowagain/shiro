@@ -75,5 +75,5 @@ elseif (UNIX) # Linux
 endif()
 
 include_directories(${CURL_INCLUDE_DIRS} ${OPENSSL_INCLUDE_DIR} ${HinnantDate_INCLUDE_DIR} ${Mcrypt_INCLUDE_DIR})
-add_executable(shiro ${SRC} src/replay/replay_manager.cc src/replay/replay_manager.hh)
+add_executable(shiro ${SRC})
 target_link_libraries(shiro Threads::Threads ${Boost_LIBRARIES} ${CURL_LIBRARIES} ${Mcrypt_LIBS} ${CMAKE_LINK_LIBS})
