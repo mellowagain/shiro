@@ -1,9 +1,10 @@
 #include <sstream>
 #include <memory>
 
-#include "score.hh"
-#include "../users/user_manager.hh"
+#include "../replays/replay_manager.hh"
 #include "../users/user.hh"
+#include "../users/user_manager.hh"
+#include "score.hh"
 #include "score_helper.hh"
 
 std::string shiro::scores::score::to_string(std::vector<score> &scores) {
@@ -31,7 +32,7 @@ std::string shiro::scores::score::to_string(std::vector<score> &scores) {
     stream << this->user_id << "|";
     stream << helper::get_scoreboard_position(*this, scores) << "|";
     stream << this->time << "|";
-    stream << "0" << std::endl; // has replay
+    stream << (replays::has_replay(*this) ? "1" : "0") << std::endl;
 
     return stream.str();
 }

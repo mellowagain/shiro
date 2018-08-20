@@ -3,6 +3,7 @@
 #include "../users/user_manager.hh"
 #include "../geoloc/country_ids.hh"
 #include "../thirdparty/loguru.hh"
+#include "../thirdparty/oppai.hh"
 
 shiro::scores::score shiro::scores::helper::fetch_top_score_user(std::string beatmap_md5sum, std::shared_ptr<shiro::users::user> user) {
     sqlpp::mysql::connection db(db_connection->get_config());
@@ -413,16 +414,10 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_all_user_scores(i
 float shiro::scores::helper::calculate_accuracy(utils::play_mode mode, int32_t _300, int32_t _100, int32_t _50, int32_t geki, int32_t katu, int32_t miss) {
     switch (mode) {
         case utils::play_mode::standard: {
-            int32_t total_points = (_300 * 300) + (_100 * 100) + (_50 * 50);
-            int32_t total_hits = _300 + _100 + _50 + miss;
-
-            return (total_points / (total_hits * 300)) * 100;
+            return acc_calc(_300, _100, _50, miss);
         }
         case utils::play_mode::taiko: {
-            int32_t total_points = (_300 * 100) + (_100 * 50);
-            int32_t total_hits = _300 + _100 + miss;
-
-            return (total_points / (total_hits * 100)) * 100;
+            return taiko_acc_calc(_300, _100 + _50, miss);
         }
         case utils::play_mode::fruits: {
             int32_t total_points = (_300 + _100 + _50);

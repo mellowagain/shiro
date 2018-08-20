@@ -25,6 +25,13 @@
 #include "../thirdparty/loguru.hh"
 #include "beatmap_helper.hh"
 
+static std::string dir = fs::current_path().u8string() + fs::path::preferred_separator + "maps";
+
+void shiro::beatmaps::helper::init() {
+    if (!fs::exists(dir))
+        fs::create_directories(dir);
+}
+
 int32_t shiro::beatmaps::helper::fix_beatmap_status(int32_t status_code) {
     if (status_code == (int32_t) status::needs_update)
         return (int32_t) status::ranked;
@@ -58,11 +65,6 @@ size_t shiro::beatmaps::helper::callback(void *raw_data, size_t size, size_t mem
 }
 
 FILE *shiro::beatmaps::helper::download(int32_t beatmap_id) {
-    std::string dir = fs::current_path().u8string() + fs::path::preferred_separator + "maps";
-
-    if (!fs::exists(dir))
-        fs::create_directories(dir);
-
     std::string filename = dir + fs::path::preferred_separator + std::to_string(beatmap_id) + ".osu";
 
     if (fs::exists(filename))

@@ -3,18 +3,19 @@
 #include "../../../beatmaps/beatmap.hh"
 #include "../../../beatmaps/beatmap_helper.hh"
 #include "../../../database/tables/score_table.hh"
+#include "../../../ranking/ranking_helper.hh"
+#include "../../../replays/replay_manager.hh"
 #include "../../../scores/score.hh"
 #include "../../../scores/score_helper.hh"
 #include "../../../thirdparty/loguru.hh"
+#include "../../../thirdparty/oppai.hh"
 #include "../../../users/user.hh"
 #include "../../../users/user_manager.hh"
 #include "../../../utils/bot_utils.hh"
 #include "../../../utils/crypto.hh"
 #include "../../../utils/multipart_parser.hh"
 #include "../../../utils/string_utils.hh"
-#include "../../../thirdparty/oppai.hh"
 #include "submit_score_route.hh"
-#include "../../../ranking/ranking_helper.hh"
 
 void shiro::routes::web::submit_score::handle(const crow::request &request, crow::response &response) {
     response.set_header("Content-Type", "text/plain; charset=UTF-8");
@@ -49,6 +50,30 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
     utils::multipart_fields fields = parser->parse();
     std::string key = "h89f2-890h2h89b34g-h80g134n90133";
 
+    if (fields.find("pass") == fields.end()) {
+        response.code = 403;
+        response.end("error: missinginfo");
+
+        LOG_S(WARNING) << "Received score submission without password.";
+        return;
+    }
+
+    if (fields.find("replay") == fields.end()) {
+        response.code = 400;
+        response.end("error: invalid");
+
+        LOG_S(WARNING) << "Received score without replay data.";
+        return;
+    }
+
+    if (fields.find("score") == fields.end()) {
+        response.code = 400;
+        response.end("error: invalid");
+
+        LOG_S(WARNING) << "Received score without score data.";
+        return;
+    }
+
     if (fields.find("osuver") != fields.end())
         key = "osu!-scoreburgr---------" + fields.at("osuver").content;
 
@@ -69,21 +94,13 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
         return;
     }
 
-    if (fields.find("pass") == fields.end()) {
-        response.code = 403;
-        response.end("error: missinginfo");
-
-        LOG_S(WARNING) << "Received score submission without password field.";
-        return;
-    }
-
     boost::trim_right(score_metadata.at(1));
 
     std::shared_ptr<users::user> user = users::manager::get_user_by_username(score_metadata.at(1));
 
     if (user == nullptr) {
         response.code = 403;
-        response.end("error: pass");
+        response.end("error: unknown");
 
         LOG_S(WARNING) << "Received score submission from offline user.";
         return;
@@ -96,6 +113,9 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
         LOG_F(WARNING, "Received score submission from %s with incorrect password.", user->presence.username.c_str());
         return;
     }
+
+    sqlpp::mysql::connection db(db_connection->get_config());
+    const tables::scores score_table {};
 
     scores::score score;
     score.user_id = user->user_id;
@@ -136,6 +156,17 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
             score.gekis_count, score.katus_count, score.miss_count
     );
 
+    auto db_result = db(select(all_of(score_table)).from(score_table).where(score_table.hash == score.hash));
+    bool empty = is_query_empty(db_result);
+
+    // Score has already been submitted, abort.
+    if (!empty) {
+        response.end("ok");
+
+        LOG_F(WARNING, "%s resubmitted a previously submitted score.", user->presence.username.c_str());
+        return;
+    }
+
     user->stats.play_count++;
 
     beatmaps::beatmap beatmap;
@@ -160,12 +191,15 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
     }
 
     // oppai-ng for std and taiko (non-converted)
-    if (score.play_mode == (uint8_t) utils::play_mode::standard || score.play_mode == (uint8_t) utils::play_mode::taiko) {
+    if ((score.play_mode == (uint8_t) utils::play_mode::standard || score.play_mode == (uint8_t) utils::play_mode::taiko) &&
+        beatmap.ranked_status == (int32_t) beatmaps::status::ranked) {
         struct parser parser_state;
         struct beatmap map;
 
         struct diff_calc difficulty;
         struct pp_calc pp;
+
+        struct pp_params params;
 
         p_init(&parser_state);
         p_map(&parser_state, &map, beatmaps::helper::download(beatmap.beatmap_id));
@@ -173,9 +207,28 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
         d_init(&difficulty);
         d_calc(&difficulty, &map, score.mods);
 
-        b_ppv2(&map, &pp, difficulty.aim, difficulty.speed, score.mods);
+        params.aim = difficulty.aim;
+        params.speed = difficulty.speed;
+        params.max_combo = beatmap.max_combo;
+        params.nsliders = map.nsliders;
+        params.ncircles = map.ncircles;
+        params.nobjects = map.nobjects;
+
+        params.mode = score.play_mode;
+        params.mods = score.mods;
+        params.combo = score.max_combo;
+        params.n300 = score._300_count;
+        params.n100 = score._100_count;
+        params.n50 = score._50_count;
+        params.nmiss = score.miss_count;
+        params.score_version = PP_DEFAULT_SCORING;
+
+        ppv2p(&pp, &params);
 
         score.pp = pp.total;
+
+        d_free(&difficulty);
+        p_free(&parser_state);
     } else {
         score.pp = 0;
     }
@@ -185,9 +238,6 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
 
     if (old_scoreboard_pos == -1)
         old_scoreboard_pos = 0;
-
-    sqlpp::mysql::connection db(db_connection->get_config());
-    const tables::scores score_table {};
 
     db(insert_into(score_table).set(
             score_table.user_id = score.user_id,
@@ -211,8 +261,8 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
             score_table.time = score.time
     ));
 
-    auto db_result = db(select(all_of(score_table)).from(score_table).where(score_table.hash == score.hash));
-    bool empty = is_query_empty(db_result);
+    db_result = db(select(all_of(score_table)).from(score_table).where(score_table.hash == score.hash));
+    empty = is_query_empty(db_result);
 
     if (empty) {
         response.end("error: unknown");
@@ -266,6 +316,9 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
 
     // Save again with recalculated pp
     user->save_stats();
+
+    // Save replay
+    replays::save_replay(score, fields.at("replay").content);
 
     uint32_t timestamp = static_cast<uint32_t>(beatmap.last_update);
     std::time_t time = timestamp;

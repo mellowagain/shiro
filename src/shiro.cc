@@ -4,12 +4,13 @@
 
 #include "bot/bot.hh"
 #include "channels/channel_manager.hh"
-#include "config/bot_file.hh"
 #include "config/bancho_file.hh"
+#include "config/bot_file.hh"
 #include "config/cli_args.hh"
 #include "config/db_file.hh"
 #include "geoloc/country_ids.hh"
 #include "logger/logger.hh"
+#include "replay/replay_manager.hh"
 #include "routes/routes.hh"
 #include "signal/signal_handler.hh"
 #include "thirdparty/cli11.hh"
@@ -55,6 +56,8 @@ int shiro::init(int argc, char **argv) {
     channels::manager::init();
 
     users::timeout::init();
+    
+    replays::init();
 
     signal_handler::install();
 

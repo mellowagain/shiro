@@ -8,6 +8,8 @@
 
 namespace shiro::beatmaps::helper {
 
+    void init();
+
     int32_t fix_beatmap_status(int32_t status_code);
 
     bool has_leaderboard(int32_t status_code);
