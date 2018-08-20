@@ -40,7 +40,7 @@ void shiro::io::layouts::user_stats::recalculate_accuracy() {
         accuracy += score.accuracy;
     }
 
-    this->accuracy = (accuracy / scores.size()) / 100;
+    this->accuracy = accuracy / scores.size();
 }
 
 shiro::io::buffer shiro::io::layouts::user_stats::marshal() {
