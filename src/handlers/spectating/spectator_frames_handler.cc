@@ -6,6 +6,7 @@
 
 void shiro::handler::spectating::frames::handle(shiro::io::osu_packet &in, shiro::io::osu_writer &out, std::shared_ptr<shiro::users::user> user) {
     auto spectators = shiro::spectating::manager::get_spectators(user);
+
     if (spectators.empty())
         return;
 
@@ -13,8 +14,6 @@ void shiro::handler::spectating::frames::handle(shiro::io::osu_packet &in, shiro
 
     io::osu_writer writer;
     writer.spectate_frames(frames);
-    writer.user_presence(user->presence);
-    writer.user_stats(user->stats);
 
     for (const std::shared_ptr<users::user> &spectator : spectators) {
         spectator->queue.enqueue(writer);
