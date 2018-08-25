@@ -30,7 +30,7 @@ find_package(Threads REQUIRED)
 
 # Boost
 set(Boost_USE_MULTITHREADED ON)
-find_package(Boost REQUIRED COMPONENTS system)
+find_package(Boost REQUIRED COMPONENTS system iostreams)
 
 # cURL
 find_package(CURL REQUIRED)
@@ -40,6 +40,9 @@ find_package(OpenSSL REQUIRED)
 
 # mcrypt
 find_package(Mcrypt REQUIRED)
+
+# zlib
+find_package(ZLIB REQUIRED)
 
 if (NOT OPENSSL_CRYPTO_LIBRARY)
     message(FATAL_ERROR "Unable to find libcrypto provided by OpenSSL.")
@@ -74,6 +77,6 @@ elseif (UNIX) # Linux
     set(CMAKE_LINK_LIBS dl sqlpp-mysql mysqlclient crypto stdc++fs ${CMAKE_LINK_LIBS})
 endif()
 
-include_directories(${CURL_INCLUDE_DIRS} ${OPENSSL_INCLUDE_DIR} ${HinnantDate_INCLUDE_DIR} ${Mcrypt_INCLUDE_DIR})
+include_directories(${CURL_INCLUDE_DIRS} ${OPENSSL_INCLUDE_DIR} ${HinnantDate_INCLUDE_DIR} ${Mcrypt_INCLUDE_DIR} ${ZLIB_INCLUDE_DIRS})
 add_executable(shiro ${SRC})
-target_link_libraries(shiro Threads::Threads ${Boost_LIBRARIES} ${CURL_LIBRARIES} ${Mcrypt_LIBS} ${CMAKE_LINK_LIBS})
+target_link_libraries(shiro Threads::Threads ${Boost_LIBRARIES} ${CURL_LIBRARIES} ${Mcrypt_LIBS} ${ZLIB_LIBRARIES} ${CMAKE_LINK_LIBS})

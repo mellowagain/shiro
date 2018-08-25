@@ -15,6 +15,14 @@ namespace shiro::utils::crypto {
         std::vector<unsigned char> decode(std::vector<unsigned char> iv, std::string key, std::vector<unsigned char> cipher);
     }
 
+    namespace pbkdf2_hmac_sha512 {
+        std::string hash(std::string input, std::string salt);
+    }
+
+    namespace md5 {
+        std::string hash(const std::string &input);
+    }
+
     // Anonymous utility namespace
     namespace {
         struct bio_free_all {

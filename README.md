@@ -36,6 +36,7 @@ Install the following dependencies
 * libcurl
 * OpenSSL
 * libmcrypt
+* zlib
 * [HinnantDate](https://github.com/HowardHinnant/date)
 * [sqlpp11](https://github.com/rbock/sqlpp11)
 * [sqlpp11-connector-mysql](https://github.com/rbock/sqlpp11-connector-mysql)
