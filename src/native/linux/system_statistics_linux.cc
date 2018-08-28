@@ -26,6 +26,11 @@ static clock_t last_user_cpu;
 
 static int32_t thread_count = 0; // CPU threads
 
+#if defined(__GNUC__)
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wunused-result"
+#endif
+
 void shiro::native::system_stats::init() {
     FILE *file = std::fopen("/proc/stat", "r");
     std::fscanf(file, "cpu %lu %lu %lu %lu", &last_total_user, &last_total_user_low, &last_total_sys, &last_total_idle);
@@ -47,6 +52,10 @@ void shiro::native::system_stats::init() {
 
     std::fclose(file);
 }
+
+#if defined(__GNUC__)
+    #pragma GCC diagnostic pop
+#endif
 
 uint64_t shiro::native::system_stats::get_total_memory() {
     struct sysinfo info;
@@ -148,6 +157,11 @@ uint64_t shiro::native::system_stats::get_physical_process_memory_usage() {
     return result;
 }
 
+#if defined(__GNUC__)
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wunused-result"
+#endif
+
 double shiro::native::system_stats::get_cpu_usage() {
     double percent;
 
@@ -176,6 +190,10 @@ double shiro::native::system_stats::get_cpu_usage() {
 
     return percent;
 }
+
+#if defined(__GNUC__)
+    #pragma GCC diagnostic pop
+#endif
 
 double shiro::native::system_stats::get_process_cpu_usage() {
     struct tms time_sample;

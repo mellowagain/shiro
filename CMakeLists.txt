@@ -3,9 +3,9 @@ project(shiro C CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ./bin)
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "cmake/")
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/")
 
-file(GLOB_RECURSE SRC src/*.cc src/*.hh)
+file(GLOB_RECURSE SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cc ${CMAKE_CURRENT_SOURCE_DIR}/src/*.hh)
 
 if (NOT CMAKE_BUILD_TYPE)
     message(WARNING "No build type has been selected, defaulting to Release.")
@@ -62,6 +62,14 @@ set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${CMAKE_CXX_FLAGS} -O3")
 
 # Enable logging with streams in Loguru
 add_definitions(-DLOGURU_WITH_STREAMS=1)
+
+# Resources
+file(GLOB_RECURSE RESOURCES ${CMAKE_CURRENT_SOURCE_DIR}/resources/*)
+
+foreach(RESOURCE ${RESOURCES})
+    get_filename_component(RESOURCE_BASENAME ${RESOURCE} NAME)
+    configure_file("${RESOURCE}" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${RESOURCE_BASENAME}" COPYONLY)
+endforeach()
 
 if (WIN32)
     set(CMAKE_LINK_LIBS ${CMAKE_LINK_LIBS})
