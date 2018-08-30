@@ -38,15 +38,18 @@ find_package(CURL REQUIRED)
 # OpenSSL
 find_package(OpenSSL REQUIRED)
 
+if (NOT OPENSSL_CRYPTO_LIBRARY)
+    message(FATAL_ERROR "Unable to find libcrypto provided by OpenSSL.")
+endif()
+
 # mcrypt
 find_package(Mcrypt REQUIRED)
 
 # zlib
 find_package(ZLIB REQUIRED)
 
-if (NOT OPENSSL_CRYPTO_LIBRARY)
-    message(FATAL_ERROR "Unable to find libcrypto provided by OpenSSL.")
-endif()
+# liblzma
+find_package(LibLZMA REQUIRED)
 
 # Hinnant Date (required by sqlpp11)
 find_package(HinnantDate REQUIRED)
@@ -77,6 +80,6 @@ elseif (UNIX) # Linux
     set(CMAKE_LINK_LIBS dl sqlpp-mysql mysqlclient crypto stdc++fs ${CMAKE_LINK_LIBS})
 endif()
 
-include_directories(${CURL_INCLUDE_DIRS} ${OPENSSL_INCLUDE_DIR} ${HinnantDate_INCLUDE_DIR} ${Mcrypt_INCLUDE_DIR} ${ZLIB_INCLUDE_DIRS})
+include_directories(${CURL_INCLUDE_DIRS} ${OPENSSL_INCLUDE_DIR} ${HinnantDate_INCLUDE_DIR} ${Mcrypt_INCLUDE_DIR} ${ZLIB_INCLUDE_DIRS} ${LIBLZMA_INCLUDE_DIRS})
 add_executable(shiro ${SRC})
-target_link_libraries(shiro Threads::Threads ${Boost_LIBRARIES} ${CURL_LIBRARIES} ${Mcrypt_LIBS} ${ZLIB_LIBRARIES} ${CMAKE_LINK_LIBS})
+target_link_libraries(shiro Threads::Threads ${Boost_LIBRARIES} ${CURL_LIBRARIES} ${Mcrypt_LIBS} ${ZLIB_LIBRARIES} ${LIBLZMA_LIBRARIES} ${CMAKE_LINK_LIBS})

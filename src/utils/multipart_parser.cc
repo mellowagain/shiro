@@ -82,7 +82,7 @@ shiro::utils::multipart_fields shiro::utils::multipart_parser::parse() {
 
                 std::stringstream stream;
                 for (size_t i = 4; i < lines.size(); i++) {
-                    stream << lines.at(i) << "\r\n";
+                    stream << lines.at(i);
                 }
 
                 field.content = stream.str();

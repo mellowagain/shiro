@@ -116,6 +116,12 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
     sqlpp::mysql::connection db(db_connection->get_config());
     const tables::scores score_table {};
 
+    int32_t game_version = 20131216;
+
+    score_metadata.at(17).erase(std::remove_if(score_metadata.at(17).begin(), score_metadata.at(17).end(), [](char c) {
+        return !std::isdigit(c);
+    }), score_metadata.at(17).end());
+
     scores::score score;
     score.user_id = user->user_id;
 
@@ -138,6 +144,13 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
 
         LOG_F(WARNING, "Received score submission from %s with invalid types.", user->presence.username.c_str());
         return;
+    }
+
+    try {
+        game_version = boost::lexical_cast<int32_t>(score_metadata.at(17));
+    } catch (const boost::bad_lexical_cast&) {
+        // Ignore, only needed for replay saving which we can use older version for
+        // without any problem at all
     }
 
     std::chrono::seconds seconds = std::chrono::duration_cast<std::chrono::seconds>(
@@ -317,7 +330,7 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
     user->save_stats();
 
     // Save replay
-    replays::save_replay(score, fields.at("replay").content);
+    replays::save_replay(score, game_version, fields.at("replay").content);
 
     uint32_t timestamp = static_cast<uint32_t>(beatmap.last_update);
     std::time_t time = timestamp;
@@ -330,8 +343,8 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
     out << "beatmapPlaycount:" << beatmap.play_count << "|";
     out << "beatmapPasscount:" << beatmap.pass_count << "|";
     out << "approvedDate:" << std::put_time(tm, "%F %X") << "|";
-    out << "chartId:overall|";
-    out << "chartName:Overall Ranking|";
+    out << "chartId:overall" << "|";
+    out << "chartName:Overall Ranking" << "|";
     out << "chartEndDate:" << "|";
     out << "beatmapRankingBefore:" << old_scoreboard_pos << "|";
     out << "beatmapRankingAfter:" << scoreboard_position << "|";
@@ -346,7 +359,7 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
     out << "rankAfter:" << user->stats.rank << "|";
     out << "toNextRank:" << user_above_pp - user->stats.pp << "|";
     out << "toNextRankUser:" << user_above << "|";
-    out << "achievements:" << "|";
+    out << "achievements:0" << "|";
     out << "achievements-new:" << "|";
     out << "onlineScoreId:" << score.id << "|";
 
