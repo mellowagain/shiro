@@ -75,24 +75,28 @@ void shiro::users::user::update() {
             this->stats.ranked_score = row.ranked_score_std;
             this->stats.play_count = row.play_count_std;
             this->stats.rank = row.rank_std;
+            this->stats.accuracy = row.accuracy_std;
         } else if (mode == (uint8_t) utils::play_mode::taiko) {
             this->stats.pp = row.pp_taiko;
             this->stats.total_score = row.score_taiko;
             this->stats.ranked_score = row.ranked_score_taiko;
             this->stats.play_count = row.play_count_taiko;
             this->stats.rank = row.rank_taiko;
+            this->stats.accuracy = row.accuracy_taiko;
         } else if (mode == (uint8_t) utils::play_mode::fruits) {
             this->stats.pp = row.pp_ctb;
             this->stats.total_score = row.score_ctb;
             this->stats.ranked_score = row.ranked_score_ctb;
             this->stats.play_count = row.play_count_ctb;
             this->stats.rank = row.rank_ctb;
+            this->stats.accuracy = row.accuracy_ctb;
         } else if (mode == (uint8_t) utils::play_mode::mania) {
             this->stats.pp = row.pp_mania;
             this->stats.total_score = row.score_mania;
             this->stats.ranked_score = row.ranked_score_mania;
             this->stats.play_count = row.play_count_mania;
             this->stats.rank = row.rank_mania;
+            this->stats.accuracy = row.accuracy_mania;
         }
     }
 }
@@ -108,7 +112,8 @@ void shiro::users::user::save_stats() {
                 user_table.score_std = this->stats.total_score,
                 user_table.ranked_score_std = this->stats.ranked_score,
                 user_table.play_count_std = this->stats.play_count,
-                user_table.rank_std = this->stats.rank
+                user_table.rank_std = this->stats.rank,
+                user_table.accuracy_std = this->stats.accuracy
             ).where(user_table.id == this->user_id));
             break;
         case (uint8_t) utils::play_mode::taiko:
@@ -117,7 +122,8 @@ void shiro::users::user::save_stats() {
                     user_table.score_taiko = this->stats.total_score,
                     user_table.ranked_score_taiko = this->stats.ranked_score,
                     user_table.play_count_taiko = this->stats.play_count,
-                    user_table.rank_taiko = this->stats.rank
+                    user_table.rank_taiko = this->stats.rank,
+                    user_table.accuracy_taiko = this->stats.accuracy
             ).where(user_table.id == this->user_id));
             break;
         case (uint8_t) utils::play_mode::fruits:
@@ -126,7 +132,8 @@ void shiro::users::user::save_stats() {
                     user_table.score_ctb = this->stats.total_score,
                     user_table.ranked_score_ctb = this->stats.ranked_score,
                     user_table.play_count_ctb = this->stats.play_count,
-                    user_table.rank_ctb = this->stats.rank
+                    user_table.rank_ctb = this->stats.rank,
+                    user_table.accuracy_ctb = this->stats.accuracy
             ).where(user_table.id == this->user_id));
             break;
         case (uint8_t) utils::play_mode::mania:
@@ -135,7 +142,8 @@ void shiro::users::user::save_stats() {
                     user_table.score_mania = this->stats.total_score,
                     user_table.ranked_score_mania = this->stats.ranked_score,
                     user_table.play_count_mania = this->stats.play_count,
-                    user_table.rank_mania = this->stats.rank
+                    user_table.rank_mania = this->stats.rank,
+                    user_table.accuracy_mania = this->stats.accuracy
             ).where(user_table.id == this->user_id));
             break;
     }

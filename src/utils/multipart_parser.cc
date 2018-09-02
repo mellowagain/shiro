@@ -1,7 +1,6 @@
 #include <boost/algorithm/string.hpp>
 #include <regex>
 
-#include "../thirdparty/loguru.hh"
 #include "multipart_parser.hh"
 #include "string_utils.hh"
 
@@ -74,8 +73,8 @@ shiro::utils::multipart_fields shiro::utils::multipart_parser::parse() {
                 break;
             }
             case MULTIPART_TYPE_FILE: {
-                if (name == "score")
-                    name = "replay";
+                if (fields.find(name) != fields.end())
+                    name = filename;
 
                 field.filename = filename;
                 field.content_type = content_type;

@@ -432,4 +432,6 @@ float shiro::scores::helper::calculate_accuracy(utils::play_mode mode, int32_t _
             return (total_points / (total_hits * 300)) * 100;
         }
     }
+
+    return 0.0f;
 }
