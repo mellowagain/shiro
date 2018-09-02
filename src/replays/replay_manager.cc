@@ -20,16 +20,19 @@
 
 #include <boost/iostreams/filtering_streambuf.hpp>
 #include <boost/iostreams/filter/zlib.hpp>
-#include <boost/iostreams/filter/lzma.hpp>
+#include <boost/iostreams/filter/lzma.hpp> // Segfaults: https://stackoverflow.com/questions/50071513/c-boost-and-lzma-decompression
 #include <boost/iostreams/copy.hpp>
 #include <fstream>
+#include <sstream>
+#include <string>
 
 #include "../io/osu_buffer.hh"
-#include "../users/user_manager.hh"
 #include "../thirdparty/loguru.hh"
+#include "../users/user_manager.hh"
 #include "../utils/crypto.hh"
 #include "../utils/osu_string.hh"
 #include "../utils/time_utils.hh"
+#include "replay.hh"
 #include "replay_manager.hh"
 
 static std::string dir = fs::current_path().u8string() + fs::path::preferred_separator + "replays";
@@ -50,19 +53,21 @@ void shiro::replays::save_replay(const shiro::scores::score &s, int32_t game_ver
     if (fs::exists(filename))
         fs::remove(filename);
 
-    // Build magic hash of replay
+    // Convert raw replay into full osu! replay file
+    // Reference: https://osu.ppy.sh/help/wiki/osu!_File_Formats/Osr_(file_format)
+
     char hash_buffer[1024];
 
-    std::snprintf(hash_buffer, sizeof(hash_buffer), "%ip%io%io%it%ia%ir%se%iy%so%su%li%s%i%s",
-            s._100_count, s._300_count, s._50_count, s.gekis_count, s.katus_count, s.miss_count,
+    // poot are you?
+    std::snprintf(hash_buffer, sizeof(hash_buffer), "%ip%io%io%it%ia%sr%ie%sy%so%liu%s%i%s",
+            s._100_count + s._300_count, s._50_count, s.gekis_count, s.katus_count, s.miss_count,
             s.beatmap_md5.c_str(), s.max_combo, s.fc ? "True" : "False",
             user->presence.username.c_str(), s.total_score, s.rank.c_str(), s.mods, "True");
-
-    // Convert raw replay into full osu! replay file
 
     std::string beatmap_md5 = utils::osu_string(s.beatmap_md5);
     std::string username = utils::osu_string(user->presence.username);
     std::string hash = utils::osu_string(utils::crypto::md5::hash(hash_buffer));
+    std::string diagram = utils::osu_string(calculate_diagram(s, replay), true);
 
     io::buffer buffer;
 
@@ -85,7 +90,7 @@ void shiro::replays::save_replay(const shiro::scores::score &s, int32_t game_ver
     buffer.write<uint8_t>(s.fc);
     buffer.write<int32_t>(s.mods);
 
-    buffer.write_string(utils::osu_string("15033|1,7085|1,9207|1,11394|1,13850|1,15852|1,17853|1,19993|1,22007|1,24162|1,26313|1,28466|1,30505|1,32624|1,34777|1,36922|1,39085|1,41393|1,43545|1,45691|1,47696|0.99,49698|1,52005|1,54168|1,56170|1,58320|1,60387|1,62445|1,64468|1,66773|1,68928|1,71095|0.9,73395|1,75399|1,77856|1,80316|1,82466|1,84620|0.85,86777|0.98,88932|1,90933|1,91995|1,"));
+    buffer.write_string(diagram);
     buffer.write<int64_t>(utils::time::get_current_time_ticks());
 
     buffer.write<int32_t>(replay.size());
@@ -121,6 +126,33 @@ void shiro::replays::save_replay(const shiro::scores::score &s, int32_t game_ver
 
         LOG_S(WARNING) << "Uncompressed replay was >1mb, saved replay with zlib compression.";
     }
+}
+
+std::string shiro::replays::calculate_diagram(const shiro::scores::score &s, std::string raw_replay) {
+    std::unique_ptr<replays::replay> replay = std::make_unique<replays::replay>(s, raw_replay);
+
+    replay->parse();
+
+    if (replay->get_actions().empty())
+        return "";
+
+    std::stringstream stream;
+    float last_x = 0.0f;
+
+    for (size_t i = 0; i < replay->get_actions().size(); i++) {
+        replays::action action = replay->get_actions().at(i);
+
+        if (((action.x - last_x) > 2000.0f) || (i == (replay->get_actions().size() - 1)) || (i == 0)) {
+            last_x = action.x;
+
+            char buffer[32];
+            std::snprintf(buffer, sizeof(buffer), "%.2f|%.2f,", action.x, action.y);
+
+            stream << buffer;
+        }
+    }
+
+    return stream.str();
 }
 
 bool shiro::replays::has_replay(const shiro::scores::score &s) {

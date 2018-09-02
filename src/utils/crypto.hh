@@ -23,6 +23,10 @@ namespace shiro::utils::crypto {
         std::string hash(const std::string &input);
     }
 
+    namespace lzma {
+        std::string decompress(std::string input);
+    }
+
     // Anonymous utility namespace
     namespace {
         struct bio_free_all {

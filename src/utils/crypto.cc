@@ -1,4 +1,5 @@
 #include <cstring>
+#include <lzma.h>
 #include <mcrypt.h>
 #include <memory>
 #include <openssl/evp.h>
@@ -25,16 +26,12 @@ std::vector<unsigned char> shiro::utils::crypto::base64::decode(const char *base
 }
 
 std::vector<unsigned char> shiro::utils::crypto::rijndael256::decode(std::vector<unsigned char> iv, std::string key, std::vector<unsigned char> cipher) {
-    static char algorithm[] = "rijndael-256";
-    static char mode[] = "cbc";
-
-    std::vector<char> key_vector(key.c_str(), key.c_str() + key.size() + 1);
-
-    MCRYPT td = mcrypt_module_open(algorithm, nullptr, mode, nullptr);
+    MCRYPT td = mcrypt_module_open((char*) MCRYPT_RIJNDAEL_256, nullptr, (char*) MCRYPT_CBC, nullptr);
 
     if (td == MCRYPT_FAILED)
         return {};
 
+    std::vector<char> key_vector(key.c_str(), key.c_str() + key.size() + 1);
     std::vector<unsigned char> result(cipher);
 
     mcrypt_generic_init(td, &key_vector[0], key_vector.size() - 1, &iv[0]);
@@ -71,4 +68,50 @@ std::string shiro::utils::crypto::md5::hash(const std::string &input) {
     }
 
     return std::string(output);
+}
+
+std::string shiro::utils::crypto::lzma::decompress(std::string input) {
+    lzma_stream stream = LZMA_STREAM_INIT;
+
+    lzma_ret decoder = lzma_stream_decoder(&stream, UINT64_MAX, LZMA_CONCATENATED);
+
+    if (decoder != LZMA_OK)
+        return "";
+
+    std::string output;
+    output.resize(BUFSIZ);
+
+    size_t amount = 0;
+    size_t available = output.size();
+
+    stream.next_in = reinterpret_cast<const uint8_t*>(input.data());
+    stream.avail_in = input.size();
+    stream.next_out = reinterpret_cast<uint8_t*>(&output[0]);
+    stream.avail_out = available;
+
+    while (true) {
+        decoder = lzma_code(&stream, stream.avail_in == 0 ? LZMA_FINISH : LZMA_RUN);
+        if (decoder == LZMA_STREAM_END) {
+            amount += available - stream.avail_in;
+
+            if (stream.avail_in == 0)
+                break;
+
+            output.resize(amount);
+            lzma_end(&stream);
+            return output;
+        }
+
+        if (decoder != LZMA_OK)
+            break;
+
+        if (stream.avail_out == 0) {
+            amount += available - stream.avail_out;
+            output.resize(input.size() << 1);
+            stream.next_out = reinterpret_cast<uint8_t*>(&output[0] + amount);
+            stream.avail_out = available = output.size() - amount;
+        }
+    }
+
+    return "";
 }

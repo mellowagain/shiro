@@ -10,6 +10,8 @@ namespace shiro::replays {
 
     void save_replay(const scores::score &s, int32_t game_version, std::string replay);
 
+    std::string calculate_diagram(const scores::score &s, std::string replay);
+
     bool has_replay(const scores::score &s);
 
 }
