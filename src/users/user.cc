@@ -149,6 +149,15 @@ void shiro::users::user::save_stats() {
     }
 }
 
+void shiro::users::user::refresh_stats() {
+    io::osu_writer writer;
+
+    writer.user_stats(this->stats);
+    writer.user_presence(this->presence);
+
+    this->queue.enqueue(writer);
+}
+
 bool shiro::users::user::check_password(const std::string &password) {
     if (this->password.empty() || password.empty())
         return false;

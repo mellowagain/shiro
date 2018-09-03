@@ -51,17 +51,9 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
 
     if (fields.find("pass") == fields.end()) {
         response.code = 403;
-        response.end("error: missinginfo");
+        response.end("error: pass");
 
         LOG_S(WARNING) << "Received score submission without password.";
-        return;
-    }
-
-    if (fields.find("replay") == fields.end()) {
-        response.code = 400;
-        response.end("error: invalid");
-
-        LOG_S(WARNING) << "Received score without replay data.";
         return;
     }
 
@@ -87,7 +79,7 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
 
     if (score_metadata.size() < 16) {
         response.code = 400;
-        response.end("error: missinginfo");
+        response.end("error: invalid");
 
         LOG_S(WARNING) << "Received invalid score submission, score metadata doesn't have 16 or more parts.";
         return;
@@ -97,9 +89,9 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
 
     std::shared_ptr<users::user> user = users::manager::get_user_by_username(score_metadata.at(1));
 
+    // This only occurs when the server restarted and osu submitted before being re-logged in
     if (user == nullptr) {
         response.code = 403;
-        response.end("error: unknown");
 
         LOG_S(WARNING) << "Received score submission from offline user.";
         return;
@@ -140,7 +132,8 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
         score.mods = boost::lexical_cast<int32_t>(score_metadata.at(13));
         score.play_mode = static_cast<uint8_t>(boost::lexical_cast<int32_t>(score_metadata.at(15)));
     } catch (const boost::bad_lexical_cast &ex) {
-        response.end("error: invalid");
+        response.code = 500;
+        response.end();
 
         LOG_F(WARNING, "Received score submission from %s with invalid types.", user->presence.username.c_str());
         return;
@@ -148,9 +141,8 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
 
     try {
         game_version = boost::lexical_cast<int32_t>(score_metadata.at(17));
-    } catch (const boost::bad_lexical_cast&) {
-        // Ignore, only needed for replay saving which we can use older version for
-        // without any problem at all
+    } catch (const boost::bad_lexical_cast &ex) {
+        LOG_S(WARNING) << "Unable to convert " << score_metadata.at(17) << " to game version: " << ex.what();
     }
 
     std::chrono::seconds seconds = std::chrono::duration_cast<std::chrono::seconds>(
@@ -171,9 +163,9 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
     auto db_result = db(select(all_of(score_table)).from(score_table).where(score_table.hash == score.hash));
     bool empty = is_query_empty(db_result);
 
-    // Score has already been submitted, abort.
+    // Score has already been submitted
     if (!empty) {
-        response.end("ok");
+        response.end("error: dup");
 
         LOG_F(WARNING, "%s resubmitted a previously submitted score.", user->presence.username.c_str());
         return;
@@ -184,12 +176,7 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
     beatmaps::beatmap beatmap;
     beatmap.beatmap_md5 = score.beatmap_md5;
 
-    if (!beatmap.fetch_db()) {
-        response.end("ok");
-
-        LOG_F(WARNING, "Received score submission from %s on a beatmap without leaderboard.", user->presence.username.c_str());
-        return;
-    }
+    beatmap.fetch();
 
     if (score.passed)
         beatmap.pass_count++;
@@ -198,7 +185,16 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
     beatmap.update_play_metadata();
 
     if (!score.passed) {
+        user->refresh_stats();
         response.end("ok");
+        return;
+    }
+
+    if (fields.find("replay") == fields.end()) {
+        response.code = 400;
+        response.end("error: invalid");
+
+        LOG_S(WARNING) << "Received score without replay data.";
         return;
     }
 
@@ -277,7 +273,7 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
     empty = is_query_empty(db_result);
 
     if (empty) {
-        response.end("error: unknown");
+        response.end("error: invalid");
         return;
     }
 
@@ -289,7 +285,7 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
     user->stats.total_score += score.total_score;
 
     if (!beatmaps::helper::has_leaderboard(beatmaps::helper::fix_beatmap_status(beatmap.ranked_status))) {
-        response.end("ok");
+        response.end("ok" /*"error: disabled"*/);
         return;
     }
 
@@ -363,12 +359,6 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
     out << "achievements-new:" << "|";
     out << "onlineScoreId:" << score.id << "|";
 
+    user->refresh_stats();
     response.end(out.str());
-
-    io::osu_writer writer;
-
-    writer.user_stats(user->stats);
-    writer.user_presence(user->presence);
-
-    user->queue.enqueue(writer);
 }

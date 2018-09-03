@@ -39,6 +39,9 @@ namespace shiro::users {
         void update();
         void save_stats();
 
+        // Re-sends presence and stats to the user to refresh on client-side
+        void refresh_stats();
+
         bool check_password(const std::string &password);
 
     };
