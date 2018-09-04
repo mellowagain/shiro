@@ -10,9 +10,10 @@
 #include "config/db_file.hh"
 #include "geoloc/country_ids.hh"
 #include "logger/logger.hh"
+#include "native/signal_handler.hh"
+#include "native/system_statistics.hh"
 #include "replays/replay_manager.hh"
 #include "routes/routes.hh"
-#include "signal/signal_handler.hh"
 #include "thirdparty/cli11.hh"
 #include "thirdparty/loguru.hh"
 #include "users/user_timeout.hh"
@@ -60,6 +61,9 @@ int shiro::init(int argc, char **argv) {
     replays::init();
 
     signal_handler::install();
+
+    native::system_stats::init();
+    native::signal_handler::install();
 
     LOG_F(INFO, "Welcome to shiro. Listening on http://%s:%i/.", config::bancho::host.c_str(), config::bancho::port);
     LOG_F(INFO, "Press CTRL + C to quit.");
