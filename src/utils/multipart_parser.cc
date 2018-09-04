@@ -73,8 +73,8 @@ shiro::utils::multipart_fields shiro::utils::multipart_parser::parse() {
                 break;
             }
             case MULTIPART_TYPE_FILE: {
-                if (fields.find(name) != fields.end())
-                    name = filename;
+                if (name == "score")
+                    name = "replay";
 
                 field.filename = filename;
                 field.content_type = content_type;
