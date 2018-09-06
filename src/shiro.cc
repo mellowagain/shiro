@@ -60,8 +60,6 @@ int shiro::init(int argc, char **argv) {
 
     replays::init();
 
-    signal_handler::install();
-
     native::system_stats::init();
     native::signal_handler::install();
 
