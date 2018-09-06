@@ -411,13 +411,67 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_all_user_scores(i
     return scores;
 }
 
+std::vector<shiro::scores::score> shiro::scores::helper::fetch_top100_user(shiro::utils::play_mode mode, int32_t user_id) {
+    sqlpp::mysql::connection db(db_connection->get_config());
+    const tables::scores score_table {};
+
+    auto result = db(select(all_of(score_table)).from(score_table).where(score_table.user_id == user_id and score_table.play_mode == (uint8_t) mode));
+    bool empty = is_query_empty(result);
+
+    if (empty)
+        return {};
+
+    std::vector<score> scores;
+
+    for (const auto &row : result) {
+        score s;
+
+        s.id = row.id;
+        s.user_id = row.user_id;
+        s.hash = row.hash;
+        s.beatmap_md5 = row.beatmap_md5;
+
+        s.rank = row.rank;
+        s.total_score = row.score;
+        s.max_combo = row.max_combo;
+        s.pp = row.pp;
+
+        s.accuracy = row.accuracy;
+        s.mods = row.mods;
+
+        s.fc = row.fc;
+        s.passed = row.passed;
+
+        s._300_count = row._300_count;
+        s._100_count = row._100_count;
+        s._50_count = row._50_count;
+        s.katus_count = row.katus_count;
+        s.gekis_count = row.gekis_count;
+        s.miss_count = row.miss_count;
+
+        s.play_mode = row.play_mode;
+        s.time = row.time;
+
+        scores.emplace_back(s);
+    }
+
+    std::sort(scores.begin(), scores.end(), [](const score &s_left, const score &s_right) {
+        return s_left.pp > s_right.pp;
+    });
+
+    if (scores.size() > 100)
+        scores.resize(100);
+
+    return scores;
+}
+
 float shiro::scores::helper::calculate_accuracy(utils::play_mode mode, int32_t _300, int32_t _100, int32_t _50, int32_t geki, int32_t katu, int32_t miss) {
     switch (mode) {
         case utils::play_mode::standard: {
-            return acc_calc(_300, _100, _50, miss);
+            return acc_calc(_300, _100, _50, miss) * 100;
         }
         case utils::play_mode::taiko: {
-            return taiko_acc_calc(_300, _100 + _50, miss);
+            return taiko_acc_calc(_300, _100 + _50, miss) * 100;
         }
         case utils::play_mode::fruits: {
             int32_t total_points = (_300 + _100 + _50);

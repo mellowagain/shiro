@@ -308,7 +308,8 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
     }
 
     user->stats.ranked_score += score.total_score;
-    user->stats.pp += score.pp;
+
+    user->stats.recalculate_pp();
 
     float old_acc = user->stats.accuracy;
     user->stats.recalculate_accuracy();
@@ -321,9 +322,6 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
 
     std::string user_above = ranking::helper::get_leaderboard_user(user->stats.play_mode, user->stats.rank - 1);
     int16_t user_above_pp = ranking::helper::get_pp_for_user(user->stats.play_mode, user_above);
-
-    // Save again with recalculated pp
-    user->save_stats();
 
     // Save replay
     replays::save_replay(score, game_version, fields.at("replay").content);

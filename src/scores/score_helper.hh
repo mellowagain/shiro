@@ -24,6 +24,9 @@ namespace shiro::scores::helper {
 
     std::vector<score> fetch_all_user_scores(int32_t user_id, size_t limit = std::numeric_limits<size_t>::max());
 
+    // This method sorts using the pp value instead of score (like all other methods above)
+    std::vector<score> fetch_top100_user(utils::play_mode mode, int32_t user_id);
+
     float calculate_accuracy(utils::play_mode mode, int32_t _300, int32_t _100, int32_t _50, int32_t geki, int32_t katu, int32_t miss);
 
 }

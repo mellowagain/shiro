@@ -1,3 +1,6 @@
+#include <cmath>
+
+#include "../../../thirdparty/loguru.hh"
 #include "../../../scores/score.hh"
 #include "../../../scores/score_helper.hh"
 #include "../../../utils/osu_string.hh"
@@ -5,42 +8,29 @@
 #include "user_stats.hh"
 
 void shiro::io::layouts::user_stats::recalculate_accuracy() {
-    std::vector<scores::score> scores = scores::helper::fetch_all_user_scores(this->user_id);
-
-    switch (this->play_mode) {
-        case (uint8_t) utils::play_mode::standard: {
-            scores.erase(std::remove_if(scores.begin(), scores.end(), [&](const scores::score &s) {
-                return s.play_mode != (uint8_t) utils::play_mode::standard;
-            }), scores.end());
-            break;
-        }
-        case (uint8_t) utils::play_mode::taiko: {
-            scores.erase(std::remove_if(scores.begin(), scores.end(), [&](const scores::score &s) {
-                return s.play_mode != (uint8_t) utils::play_mode::taiko;
-            }), scores.end());
-            break;
-        }
-        case (uint8_t) utils::play_mode::fruits: {
-            scores.erase(std::remove_if(scores.begin(), scores.end(), [&](const scores::score &s) {
-                return s.play_mode != (uint8_t) utils::play_mode::fruits;
-            }), scores.end());
-            break;
-        }
-        case (uint8_t) utils::play_mode::mania: {
-            scores.erase(std::remove_if(scores.begin(), scores.end(), [&](const scores::score &s) {
-                return s.play_mode != (uint8_t) utils::play_mode::mania;
-            }), scores.end());
-            break;
-        }
-    }
-
+    std::vector<scores::score> scores = scores::helper::fetch_top100_user((utils::play_mode) this->play_mode, this->user_id);
     float accuracy = 0.0f;
 
-    for (const scores::score &score : scores) {
-        accuracy += score.accuracy;
+    for (size_t i = 0; i < scores.size(); i++) {
+        scores::score score = scores.at(i);
+
+        accuracy += (score.accuracy * std::pow(0.95, i));
     }
 
     this->accuracy = accuracy / scores.size();
+}
+
+void shiro::io::layouts::user_stats::recalculate_pp() {
+    std::vector<scores::score> scores = scores::helper::fetch_top100_user((utils::play_mode) this->play_mode, this->user_id);
+    float pp = 0; // Here it is a float to keep decimal points, round it when setting final pp value
+
+    for (size_t i = 0; i < scores.size(); i++) {
+        scores::score score = scores.at(i);
+
+        pp += (score.pp * std::pow(0.95, i));
+    }
+
+    this->pp = static_cast<int16_t>(pp);
 }
 
 shiro::io::buffer shiro::io::layouts::user_stats::marshal() {
@@ -63,7 +53,7 @@ shiro::io::buffer shiro::io::layouts::user_stats::marshal() {
 
     buf.write<uint64_t>(this->ranked_score);
 
-    buf.write<float>(this->accuracy);
+    buf.write<float>(this->accuracy / 100);
     buf.write<int32_t>(this->play_count);
     buf.write<uint64_t>(this->total_score);
 
@@ -88,7 +78,7 @@ void shiro::io::layouts::user_stats::unmarshal(shiro::io::buffer &buffer) {
 
     this->ranked_score = buffer.read<uint64_t>();
 
-    this->accuracy = buffer.read<float>();
+    this->accuracy = buffer.read<float>() * 100;
     this->play_count = buffer.read<int32_t>();
     this->total_score = buffer.read<uint64_t>();
 
