@@ -9,7 +9,7 @@
 #include "country_ids.hh"
 #include "geoloc.hh"
 
-caches::fixed_sized_cache<std::string, shiro::geoloc::location_info> shiro::geoloc::location_cache(256);
+caches::fixed_sized_cache<std::string, shiro::geoloc::location_info> shiro::geoloc::location_cache(512);
 
 shiro::geoloc::location_info shiro::geoloc::get_location(const std::string &ip_address) {
     // For convenience
@@ -67,7 +67,9 @@ shiro::geoloc::location_info shiro::geoloc::get_location(const std::string &ip_a
         return invalid_location;
     }
 
-    std::vector<std::string> result = utils::strings::split(location, ',');
+    std::vector<std::string> result;
+    boost::split(result, location, boost::is_any_of(","));
+
     float latitude = 0.0f;
     float longitude = 0.0f;
 

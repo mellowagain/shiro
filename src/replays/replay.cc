@@ -1,3 +1,5 @@
+#include <boost/algorithm/string/classification.hpp>
+#include <boost/algorithm/string/split.hpp>
 #include <boost/lexical_cast.hpp>
 #include <sstream>
 #include <utility>
@@ -26,11 +28,14 @@ void shiro::replays::replay::parse() {
     if (decompressed.empty())
         return;
 
-    std::vector<std::string> parts = utils::strings::split(decompressed, ',');
+    std::vector<std::string> parts;
+    boost::split(parts, decompressed, boost::is_any_of(","));
 
     for (const std::string &part : parts) {
         action a;
-        std::vector<std::string> pieces = utils::strings::split(part, '|');
+
+        std::vector<std::string> pieces;
+        boost::split(pieces, part, boost::is_any_of("|"));
 
         if (pieces.size() < 4)
             continue;

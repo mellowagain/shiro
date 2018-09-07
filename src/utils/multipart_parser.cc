@@ -1,4 +1,6 @@
 #include <boost/algorithm/string.hpp>
+#include <boost/algorithm/string/classification.hpp>
+#include <boost/algorithm/string/split.hpp>
 #include <regex>
 
 #include "multipart_parser.hh"
@@ -37,7 +39,8 @@ shiro::utils::multipart_fields shiro::utils::multipart_parser::parse() {
         if (substr.find("Content-Disposition: form-data;") == std::string::npos)
             continue;
 
-        std::vector<std::string> lines = strings::split(substr, '\r');
+        std::vector<std::string> lines;
+        boost::split(lines, substr, boost::is_any_of("\r"));
 
         if (lines.size() < 2)
             continue;

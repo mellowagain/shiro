@@ -1,4 +1,6 @@
 #include <boost/algorithm/string.hpp>
+#include <boost/algorithm/string/classification.hpp>
+#include <boost/algorithm/string/split.hpp>
 #include <utility>
 
 #include "../bot/bot.hh"
@@ -10,7 +12,10 @@
 
 void shiro::utils::bot::handle(shiro::io::layouts::message message, std::shared_ptr<users::user> user) {
     if (boost::algorithm::starts_with(message.content, "!")) {
-        std::vector<std::string> splitted = strings::split(message.content.substr(1), ' ');
+        std::string removed_index = message.content.substr(1);
+
+        std::vector<std::string> splitted;
+        boost::split(splitted, removed_index, boost::is_any_of(" "));
 
         if (splitted.empty())
             return;

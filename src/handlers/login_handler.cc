@@ -1,3 +1,6 @@
+#include <boost/algorithm/string/classification.hpp>
+#include <boost/algorithm/string/split.hpp>
+
 #include "../channels/channel_manager.hh"
 #include "../geoloc/geoloc.hh"
 #include "../geoloc/location_info.hh"
@@ -12,14 +15,13 @@
 #include "login_handler.hh"
 
 void shiro::handler::login::handle(const crow::request &request, crow::response &response) {
-    std::string body = request.body;
-
-    if (body.empty()) {
+    if (request.body.empty()) {
         response.end();
         return;
     }
 
-    std::vector<std::string> lines = utils::strings::split(body, '\n');
+    std::vector<std::string> lines;
+    boost::split(lines, request.body, boost::is_any_of("\n"));
 
     if (lines.size() != 4) {
         response.code = 403;
@@ -31,8 +33,10 @@ void shiro::handler::login::handle(const crow::request &request, crow::response 
 
     std::string username = lines.at(0);
     std::string password_md5 = lines.at(1);
+    std::string infos = lines.at(2);
 
-    std::vector<std::string> additional_info = utils::strings::split(lines.at(2), '|');
+    std::vector<std::string> additional_info;
+    boost::split(additional_info, infos, boost::is_any_of("|"));
 
     if (additional_info.size() != 5) {
         response.code = 403;

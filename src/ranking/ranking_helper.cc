@@ -42,9 +42,9 @@ int32_t shiro::ranking::helper::get_leaderboard_position(uint8_t mode, std::stri
     });
 
     for (size_t i = 0; i < users.size(); i++) {
-        std::pair<std::string, float> pair = users.at(i);
+        const auto &[name, _] = users.at(i);
 
-        if (username == pair.first)
+        if (username == name)
             return i + 1;
     }
 

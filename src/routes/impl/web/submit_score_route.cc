@@ -1,5 +1,8 @@
 #define OPPAI_IMPLEMENTATION
 
+#include <boost/algorithm/string/classification.hpp>
+#include <boost/algorithm/string/split.hpp>
+
 #include "../../../beatmaps/beatmap.hh"
 #include "../../../beatmaps/beatmap_helper.hh"
 #include "../../../database/tables/score_table.hh"
@@ -75,7 +78,8 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
     );
     std::string result(reinterpret_cast<char*>(&decrypted[0]), decrypted.size());
 
-    std::vector<std::string> score_metadata = utils::strings::split(result, ':');
+    std::vector<std::string> score_metadata;
+    boost::split(score_metadata, result, boost::is_any_of(":"));
 
     if (score_metadata.size() < 16) {
         response.code = 400;

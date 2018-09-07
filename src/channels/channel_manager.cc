@@ -1,5 +1,5 @@
-#include <utility>
 #include <cstring>
+#include <utility>
 
 #include "../database/tables/channel_table.hh"
 #include "../thirdparty/loguru.hh"
@@ -38,8 +38,8 @@ void shiro::channels::manager::init() {
         ));
     }
 
-    for (const auto &pair : channels) {
-        if (pair.first.name == "#announce")
+    for (const auto &[channel, _] : channels) {
+        if (channel.name == "#announce")
             return;
     }
 
@@ -74,19 +74,19 @@ void shiro::channels::manager::init() {
 }
 
 void shiro::channels::manager::write_channels(shiro::io::osu_writer &buf, std::shared_ptr<shiro::users::user> user, bool first) {
-    for (auto &pair : channels) {
+    for (auto &[channel, users] : channels) {
         shiro::io::layouts::channel channel_layout;
-        channel_layout.id = pair.first.id;
-        channel_layout.auto_join = pair.first.auto_join;
-        channel_layout.name = pair.first.name;
-        channel_layout.description = pair.first.description;
-        channel_layout.user_count = pair.second.size();
+        channel_layout.id = channel.id;
+        channel_layout.auto_join = channel.auto_join;
+        channel_layout.name = channel.name;
+        channel_layout.description = channel.description;
+        channel_layout.user_count = users.size();
 
         buf.channel_available(channel_layout);
 
-        if (pair.first.auto_join && first) {
-            buf.channel_join(pair.first.name);
-            pair.second.emplace_back(user);
+        if (channel.auto_join && first) {
+            buf.channel_join(channel.name);
+            users.emplace_back(user);
         }
     }
 }
@@ -95,9 +95,9 @@ void shiro::channels::manager::join_channel(uint32_t channel_id, std::shared_ptr
     if (in_channel(channel_id, user))
         leave_channel(channel_id, std::move(user));
 
-    for (auto &pair : channels) {
-        if (pair.first.id == channel_id) {
-            pair.second.emplace_back(user);
+    for (auto &[channel, users] : channels) {
+        if (channel.id == channel_id) {
+            users.emplace_back(user);
             break;
         }
     }
@@ -107,42 +107,42 @@ void shiro::channels::manager::leave_channel(uint32_t channel_id, std::shared_pt
     if (!in_channel(channel_id, user))
         return;
 
-    for (auto &pair : channels) {
-        if (pair.first.id == channel_id) {
-            auto iterator = std::find(pair.second.begin(), pair.second.end(), user);
+    for (auto &[channel, users] : channels) {
+        if (channel.id == channel_id) {
+            auto iterator = std::find(users.begin(), users.end(), user);
 
-            if (iterator == pair.second.end())
+            if (iterator == users.end())
                 return;
 
-            ptrdiff_t index = std::distance(pair.second.begin(), iterator);
-            pair.second.erase(pair.second.begin() + index);
+            ptrdiff_t index = std::distance(users.begin(), iterator);
+            users.erase(users.begin() + index);
             break;
         }
     }
 }
 
 bool shiro::channels::manager::in_channel(uint32_t channel_id, const std::shared_ptr<shiro::users::user> &user) {
-    for (const auto &pair : channels) {
-        if (pair.first.id == channel_id)
-            return std::find(pair.second.begin(), pair.second.end(), user) != pair.second.end();
+    for (const auto &[channel, users] : channels) {
+        if (channel.id == channel_id)
+            return std::find(users.begin(), users.end(), user) != users.end();
     }
 
     return false;
 }
 
 std::vector<std::shared_ptr<shiro::users::user>> shiro::channels::manager::get_users_in_channel(const std::string &channel_name) {
-    for (const auto &pair : channels) {
-        if (pair.first.name == channel_name)
-            return pair.second;
+    for (const auto &[channel, users] : channels) {
+        if (channel.name == channel_name)
+            return users;
     }
 
     return {};
 }
 
 uint32_t shiro::channels::manager::get_channel_id(const std::string &channel_name) {
-    for (const auto &pair : channels) {
-        if (pair.first.name == channel_name)
-            return pair.first.id;
+    for (const auto &[channel, _] : channels) {
+        if (channel.name == channel_name)
+            return channel.id;
     }
 
     return 0;
