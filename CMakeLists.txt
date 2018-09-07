@@ -20,7 +20,7 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 endif()
 
 if (NOT CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wextra -Wno-unused-parameter")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wextra -Wno-unused-variable -Wno-unused-parameter")
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D_DEBUG")
 endif()
 
@@ -51,7 +51,7 @@ find_package(ZLIB REQUIRED)
 # liblzma
 find_package(LibLZMA REQUIRED)
 
-# Hinnant Date (required by sqlpp11)
+# Hinnant Date
 find_package(HinnantDate REQUIRED)
 
 # Tcmalloc
@@ -67,15 +67,15 @@ if (Tcmalloc_FOUND)
 endif()
 
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${CMAKE_CXX_FLAGS} -O0 -g3 -ggdb")
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${CMAKE_CXX_FLAGS} -O3")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${CMAKE_CXX_FLAGS} -O3 -DNDEBUG=1")
 
 # Enable logging with streams in Loguru
-add_definitions(-DLOGURU_WITH_STREAMS=1)
+add_definitions(-DLOGURU_WITH_STREAMS=1 -DLOGURU_REDEFINE_ASSERT=1)
 
 # Resources
 file(GLOB_RECURSE RESOURCES ${CMAKE_CURRENT_SOURCE_DIR}/resources/*)
 
-foreach(RESOURCE ${RESOURCES})
+foreach (RESOURCE ${RESOURCES})
     get_filename_component(RESOURCE_BASENAME ${RESOURCE} NAME)
     configure_file("${RESOURCE}" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${RESOURCE_BASENAME}" COPYONLY)
 endforeach()
