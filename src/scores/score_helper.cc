@@ -46,6 +46,9 @@ shiro::scores::score shiro::scores::helper::fetch_top_score_user(std::string bea
         s.play_mode = row.play_mode;
         s.time = row.time;
 
+        if (!s.passed)
+            continue;
+
         scores.emplace_back(s);
     }
 
@@ -96,6 +99,9 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_all_scores(std::s
 
         s.play_mode = row.play_mode;
         s.time = row.time;
+
+        if (!s.passed)
+            continue;
 
         scores.emplace_back(s);
     }
@@ -162,6 +168,9 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_country_scores(st
 
         s.play_mode = row.play_mode;
         s.time = row.time;
+
+        if (!s.passed)
+            continue;
 
         scores.emplace_back(s);
     }
@@ -230,6 +239,9 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_mod_scores(std::s
 
         s.play_mode = row.play_mode;
         s.time = row.time;
+
+        if (!s.passed)
+            continue;
 
         scores.emplace_back(s);
     }
@@ -300,6 +312,9 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_friend_scores(std
 
         s.play_mode = row.play_mode;
         s.time = row.time;
+
+        if (!s.passed)
+            continue;
 
         scores.emplace_back(s);
     }
@@ -385,6 +400,9 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_user_scores(std::
         s.play_mode = row.play_mode;
         s.time = row.time;
 
+        if (!s.passed)
+            continue;
+
         scores.emplace_back(s);
     }
 
@@ -396,21 +414,6 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_user_scores(std::
         scores.resize(limit);
 
     return scores;
-}
-
-int32_t shiro::scores::helper::get_scoreboard_position(const shiro::scores::score &s, std::vector<score> scores) {
-    std::sort(scores.begin(), scores.end(), [](const score &s_left, const score &s_right) {
-        return s_left.total_score > s_right.total_score;
-    });
-
-    for (size_t i = 0; i < scores.size(); i++) {
-        score &beatmap_score = scores.at(i);
-
-        if (beatmap_score.id == s.id)
-            return i + 1;
-    }
-
-    return -1;
 }
 
 std::vector<shiro::scores::score> shiro::scores::helper::fetch_all_user_scores(int32_t user_id, size_t limit) {
@@ -453,6 +456,9 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_all_user_scores(i
 
         s.play_mode = row.play_mode;
         s.time = row.time;
+
+        if (!s.passed)
+            continue;
 
         scores.emplace_back(s);
     }
@@ -508,6 +514,9 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_top100_user(shiro
         s.play_mode = row.play_mode;
         s.time = row.time;
 
+        if (!s.passed)
+            continue;
+
         scores.emplace_back(s);
     }
 
@@ -531,6 +540,21 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_top100_user(shiro
         scores.resize(100);
 
     return scores;
+}
+
+int32_t shiro::scores::helper::get_scoreboard_position(const shiro::scores::score &s, std::vector<score> scores) {
+    std::sort(scores.begin(), scores.end(), [](const score &s_left, const score &s_right) {
+        return s_left.total_score > s_right.total_score;
+    });
+
+    for (size_t i = 0; i < scores.size(); i++) {
+        score &beatmap_score = scores.at(i);
+
+        if (beatmap_score.id == s.id)
+            return i + 1;
+    }
+
+    return -1;
 }
 
 float shiro::scores::helper::calculate_accuracy(utils::play_mode mode, int32_t _300, int32_t _100, int32_t _50, int32_t geki, int32_t katu, int32_t miss) {

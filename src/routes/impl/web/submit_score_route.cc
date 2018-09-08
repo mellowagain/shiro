@@ -188,12 +188,6 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
     beatmap.play_count++;
     beatmap.update_play_metadata();
 
-    if (!score.passed) {
-        user->refresh_stats();
-        response.end("ok");
-        return;
-    }
-
     if (fields.find("replay") == fields.end()) {
         response.code = 400;
         response.end("error: invalid");
@@ -212,6 +206,9 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
                 overwrite = false;
         }
     }
+
+    if (!score.passed)
+        overwrite = false;
 
     // oppai-ng for std and taiko (non-converted)
     if ((score.play_mode == (uint8_t) utils::play_mode::standard || score.play_mode == (uint8_t) utils::play_mode::taiko) &&
@@ -305,6 +302,15 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
         return;
     }
 
+    // Save replay
+    replays::save_replay(score, game_version, fields.at("replay").content);
+
+    if (!score.passed) {
+        user->refresh_stats();
+        response.end("ok");
+        return;
+    }
+
     scores::score top_score = scores::helper::fetch_top_score_user(beatmap.beatmap_md5, user);
     int32_t scoreboard_position = scores::helper::get_scoreboard_position(top_score, scores::helper::fetch_all_scores(beatmap.beatmap_md5, 5));
 
@@ -339,9 +345,6 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
 
     std::string user_above = ranking::helper::get_leaderboard_user(user->stats.play_mode, user->stats.rank - 1);
     int16_t user_above_pp = ranking::helper::get_pp_for_user(user->stats.play_mode, user_above);
-
-    // Save replay
-    replays::save_replay(score, game_version, fields.at("replay").content);
 
     uint32_t timestamp = static_cast<uint32_t>(beatmap.last_update);
     std::time_t time = timestamp;
