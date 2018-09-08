@@ -1,5 +1,6 @@
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
+#include <cmath>
 
 #include "../channels/channel_manager.hh"
 #include "../geoloc/geoloc.hh"
@@ -63,6 +64,7 @@ void shiro::handler::login::handle(const crow::request &request, crow::response 
     std::string version = additional_info.at(0);
     std::string utc_offset = additional_info.at(1);
     std::string hwid = additional_info.at(3);
+    int32_t build = 20131216;
 
     if (!user->check_password(password_md5)) {
         writer.login_reply(-1);
@@ -73,12 +75,21 @@ void shiro::handler::login::handle(const crow::request &request, crow::response 
         return;
     }
 
+    try {
+        build = boost::lexical_cast<int32_t>(version.substr(1, version.find('.') - 1));
+    } catch (const boost::bad_lexical_cast &ex) {
+        LOG_S(WARNING) << "Unable to cast " << version << " to int64_t: " << ex.what();
+    } catch (const std::out_of_range &ex) {
+        LOG_S(WARNING) << "Unable to convert client version " << version << " is valid build: " << ex.what();
+    }
+
     std::chrono::seconds seconds = std::chrono::duration_cast<std::chrono::seconds>(
             std::chrono::system_clock::now().time_since_epoch()
     );
 
     user->token = sole::uuid4().str();
     user->client_version = version;
+    user->client_build = build;
     user->hwid = digestpp::sha256().absorb(hwid).hexdigest();
     user->last_ping = seconds;
 

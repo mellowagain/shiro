@@ -1,6 +1,7 @@
+#include <algorithm>
 #include <cmath>
+#include <limits>
 
-#include "../../../thirdparty/loguru.hh"
 #include "../../../scores/score.hh"
 #include "../../../scores/score_helper.hh"
 #include "../../../utils/osu_string.hh"
@@ -11,13 +12,11 @@ void shiro::io::layouts::user_stats::recalculate_accuracy() {
     std::vector<scores::score> scores = scores::helper::fetch_top100_user((utils::play_mode) this->play_mode, this->user_id);
     float accuracy = 0.0f;
 
-    for (size_t i = 0; i < scores.size(); i++) {
-        scores::score score = scores.at(i);
-
-        accuracy += (score.accuracy * std::pow(0.95, i));
+    for (const scores::score &score : scores) {
+        accuracy += score.accuracy;
     }
 
-    this->accuracy = accuracy / scores.size();
+    this->accuracy = std::clamp(accuracy / scores.size(), 0.0f, 100.0f);
 }
 
 void shiro::io::layouts::user_stats::recalculate_pp() {
@@ -30,7 +29,7 @@ void shiro::io::layouts::user_stats::recalculate_pp() {
         pp += (score.pp * std::pow(0.95, i));
     }
 
-    this->pp = static_cast<int16_t>(pp);
+    this->pp = std::clamp(static_cast<int16_t>(pp), (int16_t) 0, std::numeric_limits<int16_t>::max());
 }
 
 shiro::io::buffer shiro::io::layouts::user_stats::marshal() {
