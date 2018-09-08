@@ -202,6 +202,17 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
         return;
     }
 
+    std::vector<scores::score> previous_scores = scores::helper::fetch_user_scores(beatmap.beatmap_md5, user);
+    bool overwrite = true;
+
+    // User has previous scores on this map, enable overwriting mode
+    if (!previous_scores.empty()) {
+        for (const scores::score &s : previous_scores) {
+            if (s.total_score > score.total_score)
+                overwrite = false;
+        }
+    }
+
     // oppai-ng for std and taiko (non-converted)
     if ((score.play_mode == (uint8_t) utils::play_mode::standard || score.play_mode == (uint8_t) utils::play_mode::taiko) &&
         beatmaps::helper::awards_pp(beatmap.ranked_status)) {
@@ -286,7 +297,8 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
         score.id = row.id;
     }
 
-    user->stats.total_score += score.total_score;
+    if (overwrite)
+        user->stats.total_score += score.total_score;
 
     if (!beatmaps::helper::has_leaderboard(beatmaps::helper::fix_beatmap_status(beatmap.ranked_status))) {
         response.end("ok" /*"error: disabled"*/);
@@ -311,7 +323,8 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
         }
     }
 
-    user->stats.ranked_score += score.total_score;
+    if (overwrite)
+        user->stats.ranked_score += score.total_score;
 
     user->stats.recalculate_pp();
 

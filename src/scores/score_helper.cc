@@ -342,6 +342,62 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_friend_scores(std
     return scores;
 }
 
+std::vector<shiro::scores::score> shiro::scores::helper::fetch_user_scores(std::string beatmap_md5sum, std::shared_ptr<shiro::users::user> user, size_t limit) {
+    sqlpp::mysql::connection db(db_connection->get_config());
+    const tables::scores score_table {};
+
+    auto result = db(select(all_of(score_table)).from(score_table).where(
+            score_table.beatmap_md5 == beatmap_md5sum and score_table.user_id == user->user_id
+    ));
+    bool empty = is_query_empty(result);
+
+    if (empty)
+        return {};
+
+    std::vector<score> scores;
+
+    for (const auto &row : result) {
+        score s;
+
+        s.id = row.id;
+        s.user_id = row.user_id;
+        s.hash = row.hash;
+        s.beatmap_md5 = beatmap_md5sum;
+
+        s.rank = row.rank;
+        s.total_score = row.score;
+        s.max_combo = row.max_combo;
+        s.pp = row.pp;
+
+        s.accuracy = row.accuracy;
+        s.mods = row.mods;
+
+        s.fc = row.fc;
+        s.passed = row.passed;
+
+        s._300_count = row._300_count;
+        s._100_count = row._100_count;
+        s._50_count = row._50_count;
+        s.katus_count = row.katus_count;
+        s.gekis_count = row.gekis_count;
+        s.miss_count = row.miss_count;
+
+        s.play_mode = row.play_mode;
+        s.time = row.time;
+
+        scores.emplace_back(s);
+    }
+
+    std::sort(scores.begin(), scores.end(), [](const score &s_left, const score &s_right) {
+        return s_left.total_score > s_right.total_score;
+    });
+
+    if (scores.size() > limit)
+        scores.resize(limit);
+
+    return scores;
+}
+
 int32_t shiro::scores::helper::get_scoreboard_position(const shiro::scores::score &s, std::vector<score> scores) {
     std::sort(scores.begin(), scores.end(), [](const score &s_left, const score &s_right) {
         return s_left.total_score > s_right.total_score;
@@ -454,6 +510,18 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_top100_user(shiro
 
         scores.emplace_back(s);
     }
+
+    scores.erase(std::remove_if(scores.begin(), scores.end(), [&](const score &s) {
+        for (const score &score : scores) {
+            if (score.hash == s.hash)
+                continue;
+
+            if (score.user_id == s.user_id && score.total_score > s.total_score)
+                return true;
+        }
+
+        return false;
+    }), scores.end());
 
     std::sort(scores.begin(), scores.end(), [](const score &s_left, const score &s_right) {
         return s_left.pp > s_right.pp;
