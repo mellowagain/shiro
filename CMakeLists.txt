@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 project(shiro C CXX)
 
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ./bin)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/")
 
 file(GLOB_RECURSE SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cc ${CMAKE_CURRENT_SOURCE_DIR}/src/*.hh)
@@ -57,6 +57,16 @@ find_package(HinnantDate REQUIRED)
 # Tcmalloc
 find_package(Tcmalloc)
 
+# libosu
+#find_package(osu) -- Currently not done in libosu, manually search path below
+set(LIBOSU_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/libosu/include/")
+set(LIBOSU_LIBRARIES "")
+
+# libakame
+#find_package(akame) -- Currently not done in libakame, manually search path below
+set(AKAME_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/libakame/include/")
+set(AKAME_LIBRARIES "")
+
 if (Tcmalloc_FOUND)
     set(CMAKE_LINK_LIBS ${CMAKE_LINK_LIBS} ${Tcmalloc_LIBRARIES})
 
@@ -88,6 +98,6 @@ elseif (UNIX) # Linux
     set(CMAKE_LINK_LIBS dl sqlpp-mysql mysqlclient crypto stdc++fs ${CMAKE_LINK_LIBS})
 endif()
 
-include_directories(${CURL_INCLUDE_DIRS} ${OPENSSL_INCLUDE_DIR} ${HinnantDate_INCLUDE_DIR} ${Mcrypt_INCLUDE_DIR} ${ZLIB_INCLUDE_DIRS} ${LIBLZMA_INCLUDE_DIRS})
-add_executable(shiro ${SRC} src/users/user_activity.cc src/users/user_activity.hh)
-target_link_libraries(shiro Threads::Threads ${Boost_LIBRARIES} ${CURL_LIBRARIES} ${Mcrypt_LIBS} ${ZLIB_LIBRARIES} ${LIBLZMA_LIBRARIES} ${CMAKE_LINK_LIBS})
+include_directories(${CURL_INCLUDE_DIRS} ${OPENSSL_INCLUDE_DIR} ${HinnantDate_INCLUDE_DIR} ${Mcrypt_INCLUDE_DIR} ${ZLIB_INCLUDE_DIRS} ${LIBLZMA_INCLUDE_DIRS} ${LIBOSU_INCLUDE_DIRS} ${AKAME_INCLUDE_DIRS})
+add_executable(shiro ${SRC})
+target_link_libraries(shiro Threads::Threads ${Boost_LIBRARIES} ${CURL_LIBRARIES} ${Mcrypt_LIBS} ${ZLIB_LIBRARIES} ${LIBLZMA_LIBRARIES} ${LIBOSU_LIBRARIES} ${AKAME_LIBRARIES} ${CMAKE_LINK_LIBS})

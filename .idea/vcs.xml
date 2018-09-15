@@ -8,5 +8,8 @@
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/kuro" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/libakame" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/libosu" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/shirogane" vcs="Git" />
   </component>
 </project>

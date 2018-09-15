@@ -17,10 +17,6 @@ This server handles the following features:
 * Screenshots
 * osu!direct
 
-The web back- and frontend which handles the browser facing portion
-is available at [`Marc3842h/kuro`](https://github.com/Marc3842h/kuro).
-It is registered as submodule in this repository.
-
 ## Installation
 
 Installation of shiro is simple and can be done using a few simple steps.
@@ -74,6 +70,20 @@ you should see a similar message:
 
 shiro is now accepting connections from osu! on the address
 it's listening on.
+
+## Modules
+
+List of required and optional modules developed for Shiro:
+
+| Name | Language | Dependency | License | Description | Info |
+| ---- | -------- | ---------- | ------- | ----------- | ---- |
+| [libosu](https://github.com/cyanidee/libosu) | C++ | **Required** | GPL-3.0 | Library for writing and reading osu! packets | |
+| [libakame](https://github.com/Marc3842h/libakame) | C++ | **Required** | MIT | A osu! difficulty and pp calculator with support for all four game modes as well as converted maps | |
+| [kuro](https://github.com/Marc3842h/kuro) | TypeScript | Optional | AGPL-3.0 | Browser facing portion of shiro | While shiro can run just fine without frontend, it is recommended to have one for convenience. |
+| [kyo](https://github.com/Marc3842h/kyo) | | Optional | LGPL-3.0 | High quality and modern C++ osu! server switcher | |
+| [shirogane](https://github.com/Marc3842h/shirogane) | Rust | Optional | LGPL-3.0 | osu! Beatmap mirror developed for shiro | Required when setting beatmap mirror to `custom` in `direct.toml` config file. |
+
+All modules are submodules of this repository, even when the module is not a required dependency.
 
 ## Docker ![Docker](https://img.shields.io/docker/pulls/marc3842h/shiro.svg)
 
