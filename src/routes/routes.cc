@@ -1,3 +1,5 @@
+#include <boost/exception/diagnostic_information.hpp>
+
 #include "../config/bancho_file.hh"
 #include "../logger/route_logger.hh"
 #include "../thirdparty/loguru.hh"
@@ -10,23 +12,26 @@
 crow::Crow<> shiro::routes::server;
 
 void shiro::routes::init() {
-    server.loglevel(crow::LogLevel::Info);
     crow::logger::setHandler(std::make_shared<logging::route_logger>().get());
+    server.loglevel(crow::LogLevel::Info);
 
     init_routes();
 
     try {
         server.concurrency(config::bancho::concurrency);
-        server.bindaddr(config::bancho::host).port((uint16_t) config::bancho::port).multithreaded().run();
+        server.bindaddr(config::bancho::host);
+        server.port((uint16_t) config::bancho::port);
+
+        server.multithreaded().run();
     } catch (const boost::system::system_error &ex) {
         LOG_S(FATAL) << "Unable to start server: " << ex.what() << ".";
     }
 }
 
 void shiro::routes::init_routes() {
-    CROW_ROUTE(server, "/").methods("GET"_method, "POST"_method)(root::handle);
+    CROW_ROUTE(server, "/").methods("GET"_method, "POST"_method)(shiro_route(root::handle));
 
-    CROW_ROUTE(server, "/web/bancho_connect.php").methods("GET"_method)(web::bancho_connect::handle);
-    CROW_ROUTE(server, "/web/osu-osz2-getscores.php").methods("GET"_method)(web::get_scores::handle);
-    CROW_ROUTE(server, "/web/osu-submit-modular.php").methods("POST"_method)(web::submit_score::handle);
+    CROW_ROUTE(server, "/web/bancho_connect.php").methods("GET"_method)(shiro_route(web::bancho_connect::handle));
+    CROW_ROUTE(server, "/web/osu-osz2-getscores.php").methods("GET"_method)(shiro_route(web::get_scores::handle));
+    CROW_ROUTE(server, "/web/osu-submit-modular.php").methods("POST"_method)(shiro_route(web::submit_score::handle));
 }

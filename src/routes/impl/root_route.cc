@@ -7,7 +7,7 @@
 #include "../../users/user_manager.hh"
 #include "../../views/index_view.hh"
 #include "../../shiro.hh"
-#include "../packets/packet_router.hh"
+#include "../packet_router.hh"
 #include "root_route.hh"
 
 void shiro::routes::root::handle(const crow::request &request, crow::response &response) {
@@ -64,7 +64,7 @@ void shiro::routes::root::handle(const crow::request &request, crow::response &r
     io::osu_reader reader(request.body);
 
     for (io::osu_packet &packet : reader.parse()) {
-        routes::packets::route(packet.id, packet, writer, user);
+        route(packet.id, packet, writer, user);
     }
 
     std::string result = writer.serialize();
