@@ -211,8 +211,9 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
         overwrite = false;
 
     // oppai-ng for std and taiko (non-converted)
+    // TODO: Replace with libakame (https://github.com/Marc3842h/libakame)
     if ((score.play_mode == (uint8_t) utils::play_mode::standard || score.play_mode == (uint8_t) utils::play_mode::taiko) &&
-        beatmaps::helper::awards_pp(beatmap.ranked_status)) {
+        beatmaps::helper::awards_pp(beatmaps::helper::fix_beatmap_status(beatmap.ranked_status))) {
         struct parser parser_state;
         struct beatmap map;
 
@@ -349,14 +350,20 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
     uint32_t timestamp = static_cast<uint32_t>(beatmap.last_update);
     std::time_t time = timestamp;
 
+    int32_t to_next_rank = user_above_pp - user->stats.pp;
+
+    if (to_next_rank < 0)
+        to_next_rank = 0;
+
     struct std::tm *tm = std::gmtime(&time);
     std::stringstream out;
 
+    out << std::setprecision(12);
     out << "beatmapId:" << beatmap.beatmap_id << "|";
     out << "beatmapSetId:" << beatmap.beatmapset_id << "|";
     out << "beatmapPlaycount:" << beatmap.play_count << "|";
     out << "beatmapPasscount:" << beatmap.pass_count << "|";
-    out << "approvedDate:" << std::put_time(tm, "%F %X") << "|";
+    out << "approvedDate:" << std::put_time(tm, "%F %X") << std::endl;
     out << "chartId:overall" << "|";
     out << "chartName:Overall Ranking" << "|";
     out << "chartEndDate:" << "|";
@@ -367,15 +374,16 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
     out << "totalScoreBefore:" << user->stats.total_score - score.total_score << "|";
     out << "totalScoreAfter:" << user->stats.total_score << "|";
     out << "playCountBefore:" << user->stats.play_count << "|";
-    out << "accuracyBefore:" << old_acc << "|";
-    out << "accuracyAfter:" << user->stats.accuracy << "|";
+    out << "accuracyBefore:" << (old_acc / 100) << "|";
+    out << "accuracyAfter:" << (user->stats.accuracy / 100) << "|";
     out << "rankBefore:" << old_rank << "|";
     out << "rankAfter:" << user->stats.rank << "|";
-    out << "toNextRank:" << user_above_pp - user->stats.pp << "|";
+    out << "toNextRank:" << to_next_rank << "|";
     out << "toNextRankUser:" << user_above << "|";
-    out << "achievements:0" << "|";
+    out << "achievements:" << "|";
     out << "achievements-new:" << "|";
-    out << "onlineScoreId:" << score.id << "|";
+    out << "onlineScoreId:" << score.id;
+    out << std::endl;
 
     user->refresh_stats();
     response.end(out.str());
