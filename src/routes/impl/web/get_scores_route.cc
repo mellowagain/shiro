@@ -14,9 +14,11 @@ void shiro::routes::web::get_scores::handle(const crow::request &request, crow::
     char *md5sum = request.url_params.get("c");
     char *beatmapset_id = request.url_params.get("i");
     char *type = request.url_params.get("v");
-    char *username = request.url_params.get("us");
 
-    if (md5sum == nullptr || beatmapset_id == nullptr || type == nullptr || username == nullptr) {
+    char *username = request.url_params.get("us");
+    char *hash = request.url_params.get("ha");
+
+    if (md5sum == nullptr || beatmapset_id == nullptr || type == nullptr || username == nullptr || hash == nullptr) {
         response.code = 400;
         response.end();
         return;
@@ -27,6 +29,16 @@ void shiro::routes::web::get_scores::handle(const crow::request &request, crow::
     if (user == nullptr) {
         response.code = 400;
         response.end();
+
+        LOG_F(WARNING, "Received request for score listing from offline user.");
+        return;
+    }
+
+    if (!user->check_password(hash)) {
+        response.code = 403;
+        response.end();
+
+        LOG_F(WARNING, "Received request for score listing from %s with incorrect password.", user->presence.username.c_str());
         return;
     }
 

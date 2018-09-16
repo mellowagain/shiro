@@ -9,7 +9,7 @@ jobs:
       - run:
           name: Generate CMake file
           command: |
-            cmake .
+            cmake -DCMAKE_BUILD_TYPE=Debug .
       - run:
           name: Build
           command: |

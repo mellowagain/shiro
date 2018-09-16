@@ -52,6 +52,9 @@ shiro::scores::score shiro::scores::helper::fetch_top_score_user(std::string bea
         scores.emplace_back(s);
     }
 
+    if (scores.empty())
+        return score(-1);
+
     std::sort(scores.begin(), scores.end(), [](const score &s_left, const score &s_right) {
         return s_left.total_score > s_right.total_score;
     });

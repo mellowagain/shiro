@@ -60,6 +60,14 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
         return;
     }
 
+    if (fields.find("iv") == fields.end()) {
+        response.code = 400;
+        response.end("error: invalid");
+
+        LOG_S(WARNING) << "Received score without initialization vector.";
+        return;
+    }
+
     if (fields.find("score") == fields.end()) {
         response.code = 400;
         response.end("error: invalid");
@@ -76,12 +84,21 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
             key,
             utils::crypto::base64::decode(fields.at("score").content.c_str())
     );
+
+    if (decrypted.empty()) {
+        response.code = 400;
+        response.end("error: invalid");
+
+        LOG_S(WARNING) << "Received score without score metadata.";
+        return;
+    }
+
     std::string result(reinterpret_cast<char*>(&decrypted[0]), decrypted.size());
 
     std::vector<std::string> score_metadata;
     boost::split(score_metadata, result, boost::is_any_of(":"));
 
-    if (score_metadata.size() < 16) {
+    if (score_metadata.size() < 18) {
         response.code = 400;
         response.end("error: invalid");
 
