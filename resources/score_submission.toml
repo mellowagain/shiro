@@ -1,0 +1,71 @@
+# Score submission file for shiro
+
+# Should replays of non-passed scores be saved?
+save_failed_scores = true
+# Should replays of unranked scores be saved?
+save_unranked_scores = true
+
+[anticheat]
+# Should mismatching bmk and bml auto restrict? (Notepad hack)
+restrict_notepad_hack = true
+# Should impossible mod combinations like +EZHR, +HTDT or +RXAP auto restrict?
+restrict_impossible_mods = true
+# Should submitted scores without replays auto restrict?
+restrict_no_replay = true
+# Should scores submitted with a different client version than the one sent at login auto restrict?
+restrict_mismatching_client_version = true
+# Should scores with a combo higher than the beatmaps max combo auto restrict?
+restrict_impossible_combo = true
+# Should scores submitted with negative score, accuracy, 300 count etc. auto restrict?
+restrict_negative_values = true
+# Should scores submitted with different username auto restrict?
+restrict_mismatching_username = true
+# Auto restrict user when the play awards more pp than the value below, set to -1 to disable.
+auto_restrict_pp_std = 900
+auto_restrict_pp_taiko = 900
+auto_restrict_pp_catch = 2000
+auto_restrict_pp_mania = 3000
+
+# Ranked game modes
+[ranked_modes]
+std = true
+taiko = true
+catch = true
+mania = true
+
+# Ranked mods
+[ranked_mods]
+none = true
+no_fail = true
+easy = true
+touch_device = true
+hidden = true
+hard_rock = true
+sudden_death = true
+double_time = true
+relax = false
+half_time = true
+nightcore = true
+flashlight = true
+auto_play = false
+spun_out = true
+auto_pilot = false
+perfect = true
+fade_in = true
+random = false
+cinema = false
+target = false
+score_v2 = false
+
+# Ranked mania key mods
+[ranked_keys]
+key_1 = false
+key_2 = false
+key_3 = false
+key_4 = true
+key_5 = true
+key_6 = true
+key_7 = true
+key_8 = true
+key_9 = false
+key_coop = false
