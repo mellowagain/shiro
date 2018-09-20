@@ -6,7 +6,7 @@
 namespace shiro::config::bancho {
 
     extern std::string host;
-    extern int port;
+    extern uint16_t port;
     extern uint16_t concurrency;
 
     extern std::string api_key;

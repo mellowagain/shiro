@@ -8,6 +8,7 @@
 #include "config/bot_file.hh"
 #include "config/cli_args.hh"
 #include "config/db_file.hh"
+#include "config/score_submission_file.hh"
 #include "geoloc/country_ids.hh"
 #include "logger/logger.hh"
 #include "native/signal_handler.hh"
@@ -34,6 +35,7 @@ int shiro::init(int argc, char **argv) {
     config::bot::parse();
     config::bancho::parse();
     config::database::parse();
+    config::score_submission::parse();
 
     geoloc::init();
 

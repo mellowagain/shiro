@@ -20,7 +20,7 @@ void shiro::routes::init() {
     try {
         server.concurrency(config::bancho::concurrency);
         server.bindaddr(config::bancho::host);
-        server.port((uint16_t) config::bancho::port);
+        server.port(config::bancho::port);
 
         server.multithreaded().run();
     } catch (const boost::system::system_error &ex) {

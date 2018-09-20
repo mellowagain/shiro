@@ -3,7 +3,9 @@
 [server]
 host = "127.0.0.1"
 port = 8080
-concurrency = 64  # The more players your server has the higher set this, however also uses more ram
+# Amount of concurrent connections the server accepts.
+# Set this higher if you have more players, however also results in more RAM being used.
+concurrency = 64
 
 [api]
 key = "osu!Bancho token"

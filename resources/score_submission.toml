@@ -3,9 +3,9 @@
 # Should replays of non-passed scores be saved?
 save_failed_scores = true
 # Should replays of unranked scores be saved?
-save_unranked_scores = true
+save_unranked_scores = false
 
-[anticheat]
+[anti_cheat]
 # Should mismatching bmk and bml auto restrict? (Notepad hack)
 restrict_notepad_hack = true
 # Should impossible mod combinations like +EZHR, +HTDT or +RXAP auto restrict?
@@ -21,8 +21,8 @@ restrict_negative_values = true
 # Should scores submitted with different username auto restrict?
 restrict_mismatching_username = true
 # Auto restrict user when the play awards more pp than the value below, set to -1 to disable.
-auto_restrict_pp_std = 900
-auto_restrict_pp_taiko = 900
+auto_restrict_pp_std = 1000
+auto_restrict_pp_taiko = 1000
 auto_restrict_pp_catch = 2000
 auto_restrict_pp_mania = 3000
 

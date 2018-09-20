@@ -7,7 +7,7 @@
 
 namespace shiro::config::cli {
 
-    static ::CLI::App cli_app = CLI::App("C++ osu!Bancho re-implementation", "shiro");
+    extern CLI::App cli_app;
 
     void parse(int argc, char **argv);
 
