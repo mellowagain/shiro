@@ -1,9 +1,11 @@
-#include "score_helper.hh"
+#include "../beatmaps/beatmap.hh"
+#include "../beatmaps/beatmap_helper.hh"
 #include "../database/tables/score_table.hh"
-#include "../users/user_manager.hh"
 #include "../geoloc/country_ids.hh"
 #include "../thirdparty/loguru.hh"
 #include "../thirdparty/oppai.hh"
+#include "../users/user_manager.hh"
+#include "score_helper.hh"
 
 shiro::scores::score shiro::scores::helper::fetch_top_score_user(std::string beatmap_md5sum, std::shared_ptr<shiro::users::user> user) {
     sqlpp::mysql::connection db(db_connection->get_config());
@@ -118,6 +120,14 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_all_scores(std::s
                 return true;
         }
 
+        for (const score &score : scores) {
+            if (s.hash == score.hash || s.user_id != score.user_id)
+                continue;
+
+            if (score.total_score > s.total_score)
+                return true;
+        }
+
         return false;
     }), scores.end());
 
@@ -189,7 +199,18 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_country_scores(st
         }
 
         uint8_t user_country = geoloc::get_country_id(user->country);
-        return user_country != country;
+        if (user_country != country)
+            return true;
+
+        for (const score &score : scores) {
+            if (s.hash == score.hash || s.user_id != score.user_id)
+                continue;
+
+            if (score.total_score > s.total_score)
+                return true;
+        }
+
+        return false;
     }), scores.end());
 
     std::sort(scores.begin(), scores.end(), [](const score &s_left, const score &s_right) {
@@ -250,15 +271,14 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_mod_scores(std::s
     }
 
     scores.erase(std::remove_if(scores.begin(), scores.end(), [&](const score &s) {
-        return s.mods != mods;
-    }), scores.end());
+        if (s.mods != mods)
+            return true;
 
-    scores.erase(std::remove_if(scores.begin(), scores.end(), [&](const score &s) {
         for (const score &score : scores) {
-            if (score.hash == s.hash)
+            if (s.hash == score.hash || s.user_id != score.user_id)
                 continue;
 
-            if (score.user_id == s.user_id && score.total_score > s.total_score)
+            if (score.total_score > s.total_score)
                 return true;
         }
 
@@ -340,10 +360,10 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_friend_scores(std
 
     scores.erase(std::remove_if(scores.begin(), scores.end(), [&](const score &s) {
         for (const score &score : scores) {
-            if (score.hash == s.hash)
+            if (score.hash == s.hash || score.user_id != s.user_id)
                 continue;
 
-            if (score.user_id == s.user_id && score.total_score > s.total_score)
+            if (score.total_score > s.total_score)
                 return true;
         }
 
@@ -460,9 +480,6 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_all_user_scores(i
         s.play_mode = row.play_mode;
         s.time = row.time;
 
-        if (!s.passed)
-            continue;
-
         scores.emplace_back(s);
     }
 
@@ -524,11 +541,23 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_top100_user(shiro
     }
 
     scores.erase(std::remove_if(scores.begin(), scores.end(), [&](const score &s) {
+        beatmaps::beatmap beatmap;
+        beatmap.beatmap_md5 = s.beatmap_md5;
+
+        // How do we have a score on the beatmap without having the beatmap in the db?
+        if (!beatmap.fetch_db()) {
+            LOG_F(ERROR, "Found score for user %i without having beatmap hash %s in database.", user_id, s.beatmap_md5.c_str());
+            return true;
+        }
+
+        if (!beatmaps::helper::has_leaderboard(beatmaps::helper::fix_beatmap_status(beatmap.ranked_status)))
+            return true;
+
         for (const score &score : scores) {
-            if (score.hash == s.hash)
+            if (s.hash == score.hash || s.beatmap_md5 != score.beatmap_md5)
                 continue;
 
-            if (score.user_id == s.user_id && score.total_score > s.total_score)
+            if (score.total_score > s.total_score)
                 return true;
         }
 
