@@ -12,8 +12,10 @@
 #include "../thirdparty/uuid.hh"
 #include "../users/user.hh"
 #include "../users/user_manager.hh"
+#include "../utils/login_responses.hh"
 #include "../utils/string_utils.hh"
 #include "login_handler.hh"
+#include "../users/user_punishments.hh"
 
 void shiro::handler::login::handle(const crow::request &request, crow::response &response) {
     if (request.body.empty()) {
@@ -53,7 +55,7 @@ void shiro::handler::login::handle(const crow::request &request, crow::response 
     std::shared_ptr<users::user> user = std::make_shared<users::user>(username);
 
     if (!user->init()) {
-        writer.login_reply(-1);
+        writer.login_reply((int32_t) utils::login_responses::invalid_credentials);
 
         response.end(writer.serialize());
 
@@ -61,19 +63,28 @@ void shiro::handler::login::handle(const crow::request &request, crow::response 
         return;
     }
 
-    std::string version = additional_info.at(0);
-    std::string utc_offset = additional_info.at(1);
-    std::string hwid = additional_info.at(3);
-    int32_t build = 20131216;
-
     if (!user->check_password(password_md5)) {
-        writer.login_reply(-1);
+        writer.login_reply((int32_t) utils::login_responses::invalid_credentials);
 
         response.end(writer.serialize());
 
         LOG_F(WARNING, "%s (%s) tried to login with wrong password.", username.c_str(), request.get_header_value("X-Forwarded-For").c_str());
         return;
     }
+
+    if (users::punishments::is_banned(user->user_id)) {
+        writer.login_reply((int32_t) utils::login_responses::user_banned);
+
+        response.end(writer.serialize());
+
+        LOG_F(WARNING, "%s (%s) tried to login while being banned.", username.c_str(), request.get_header_value("X-Forwarded-For").c_str());
+        return;
+    }
+
+    std::string version = additional_info.at(0);
+    std::string utc_offset = additional_info.at(1);
+    std::string hwid = additional_info.at(3);
+    int32_t build = 20131216;
 
     try {
         build = boost::lexical_cast<int32_t>(version.substr(1, version.find('.') - 1));
@@ -123,12 +134,21 @@ void shiro::handler::login::handle(const crow::request &request, crow::response 
     io::osu_writer global_writer;
     global_writer.user_presence(user->presence);
 
+    if (users::punishments::is_silenced(user->user_id)) {
+        auto [timestamp, duration] = users::punishments::get_silence_time(user->user_id);
+
+        writer.user_ban_info((timestamp + duration) - seconds.count());
+        global_writer.user_silenced(user->user_id);
+    }
+
     for (const std::shared_ptr<users::user> &online_user : users::manager::online_users) {
         if (online_user == user)
             continue;
 
         writer.user_presence(online_user->presence);
-        online_user->queue.enqueue(global_writer);
+
+        if (!user->hidden)
+            online_user->queue.enqueue(global_writer);
     }
 
     response.end(writer.serialize());

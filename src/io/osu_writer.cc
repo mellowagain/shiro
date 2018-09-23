@@ -48,6 +48,10 @@ void shiro::io::osu_writer::user_silenced(int32_t id) {
     this->write(packet_id::out_user_silenced, serializable(id));
 }
 
+void shiro::io::osu_writer::user_ban_info(int32_t duration) {
+    this->write(packet_id::out_ban_info, serializable(duration));
+}
+
 void shiro::io::osu_writer::friend_list(std::vector<int32_t> friends) {
     this->write(packet_id::out_friends_list, serializable(std::move(friends)));
 }

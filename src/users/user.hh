@@ -3,6 +3,7 @@
 
 #include <chrono>
 
+#include "../config/bot_file.hh"
 #include "../io/layouts/user/user_presence.hh"
 #include "../io/layouts/user/user_stats.hh"
 #include "../io/layouts/user/user_status.hh"
@@ -26,6 +27,7 @@ namespace shiro::users {
         int32_t client_build = 20131216; // Fixed client build version (20160403)
         std::string hwid = ""; // SHA256
         std::chrono::seconds last_ping;
+        bool hidden = false; // If the client is hidden, e.g. restricted
 
         io::layouts::user_presence presence;
         io::layouts::user_stats stats;

@@ -18,6 +18,7 @@
 #include "thirdparty/cli11.hh"
 #include "thirdparty/loguru.hh"
 #include "users/user_activity.hh"
+#include "users/user_punishments.hh"
 #include "users/user_timeout.hh"
 #include "shiro.hh"
 
@@ -60,6 +61,7 @@ int shiro::init(int argc, char **argv) {
     channels::manager::init();
 
     users::activity::init();
+    users::punishments::init();
     users::timeout::init();
 
     replays::init();

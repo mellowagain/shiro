@@ -6,10 +6,14 @@ void shiro::handler::spectating::stop::handle(shiro::io::osu_packet &in, shiro::
         return;
 
     std::shared_ptr<users::user> host = shiro::spectating::manager::get_host(user);
+
     if (host == nullptr)
         return;
 
     shiro::spectating::manager::stop_spectating(user);
+
+    if (user->hidden)
+        return;
 
     io::osu_writer host_writer;
     host_writer.spectator_left_host(user->user_id);

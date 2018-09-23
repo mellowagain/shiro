@@ -6,6 +6,7 @@
 #include "../../io/layouts/message/message.hh"
 #include "../../spectating/spectator_manager.hh"
 #include "../../thirdparty/loguru.hh"
+#include "../../users/user_punishments.hh"
 #include "../../utils/bot_utils.hh"
 #include "../../utils/string_utils.hh"
 #include "public_chat_handler.hh"
@@ -13,6 +14,11 @@
 void shiro::handler::chat::handle_public(shiro::io::osu_packet &in, shiro::io::osu_writer &out, std::shared_ptr<shiro::users::user> user) {
     io::osu_writer message_buffer;
     io::layouts::message message = in.unmarshal<io::layouts::message>();
+
+    if (!users::punishments::can_chat(user->user_id)) {
+        utils::bot::respond("You are unable to chat while being restricted.", user, message.channel, true);
+        return;
+    }
 
     message.sender = user->presence.username;
     message.sender_id = user->user_id;

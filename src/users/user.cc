@@ -7,6 +7,7 @@
 #include "../utils/play_mode.hh"
 #include "../shiro.hh"
 #include "user.hh"
+#include "user_punishments.hh"
 
 shiro::users::user::user(int32_t user_id) : user_id(user_id) {
     // Initialized in initializer list
@@ -52,6 +53,9 @@ bool shiro::users::user::init() {
     for (const auto &row : relationship_result) {
         this->friends.emplace_back(row.target);
     }
+
+    if (users::punishments::is_restricted(this->user_id))
+        this->hidden = true;
 
     return true;
 }

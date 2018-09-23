@@ -1,4 +1,5 @@
 #include "../database/tables/user_table.hh"
+#include "../users/user_punishments.hh"
 #include "../utils/play_mode.hh"
 #include "ranking_helper.hh"
 
@@ -19,6 +20,9 @@ int32_t shiro::ranking::helper::get_leaderboard_position(uint8_t mode, std::stri
 
     for (const auto &row : result) {
         if ((int) row.id == 0)
+            continue;
+
+        if (!users::punishments::has_scores(row.id))
             continue;
 
         switch (mode) {
@@ -70,6 +74,9 @@ std::string shiro::ranking::helper::get_leaderboard_user(uint8_t mode, int32_t p
         if ((int) row.id == 0)
             continue;
 
+        if (!users::punishments::has_scores(row.id))
+            continue;
+
         switch (mode) {
             case (uint8_t) utils::play_mode::standard:
                 users.emplace_back(std::make_pair(row.username, row.pp_std));
@@ -109,6 +116,9 @@ int16_t shiro::ranking::helper::get_pp_for_user(uint8_t mode, std::string userna
 
     for (const auto &row : result) {
         if ((int) row.id == 0)
+            continue;
+
+        if (!users::punishments::has_scores(row.id))
             continue;
 
         switch (mode) {

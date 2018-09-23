@@ -9,6 +9,9 @@ void shiro::handler::spectating::cant_spectate::handle(shiro::io::osu_packet &in
     if (host == nullptr)
         return;
 
+    if (host->hidden)
+        return;
+
     io::osu_writer writer;
     writer.spectator_cant_spectate(user->user_id);
 

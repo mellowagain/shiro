@@ -6,6 +6,7 @@
 #include "../thirdparty/oppai.hh"
 #include "../users/user_manager.hh"
 #include "score_helper.hh"
+#include "../users/user_punishments.hh"
 
 shiro::scores::score shiro::scores::helper::fetch_top_score_user(std::string beatmap_md5sum, std::shared_ptr<shiro::users::user> user) {
     sqlpp::mysql::connection db(db_connection->get_config());
@@ -108,6 +109,9 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_all_scores(std::s
         if (!s.passed)
             continue;
 
+        if (!users::punishments::has_scores(s.user_id))
+            continue;
+
         scores.emplace_back(s);
     }
 
@@ -183,6 +187,9 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_country_scores(st
         s.time = row.time;
 
         if (!s.passed)
+            continue;
+
+        if (!users::punishments::has_scores(s.user_id))
             continue;
 
         scores.emplace_back(s);
@@ -267,6 +274,9 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_mod_scores(std::s
         if (!s.passed)
             continue;
 
+        if (!users::punishments::has_scores(s.user_id))
+            continue;
+
         scores.emplace_back(s);
     }
 
@@ -337,6 +347,9 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_friend_scores(std
         s.time = row.time;
 
         if (!s.passed)
+            continue;
+
+        if (!users::punishments::has_scores(s.user_id))
             continue;
 
         scores.emplace_back(s);

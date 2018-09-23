@@ -83,6 +83,14 @@ void shiro::database::setup() {
            "country VARCHAR(2) NOT NULL);"
     );
 
+    // Punishments (kicks, silences, restrictions, bans)
+    db.execute(
+            "CREATE TABLE IF NOT EXISTS `punishments` "
+            "(id INT PRIMARY KEY NOT NULL AUTO_INCREMENT, user_id INT NOT NULL, "
+            "type TINYINT UNSIGNED NOT NULL, time INT NOT NULL, duration INT DEFAULT NULL, "
+            "active BOOLEAN NOT NULL, reason VARCHAR(128) DEFAULT NULL);"
+    );
+
     // Relationships between users (friends and blocked)
     db.execute(
            "CREATE TABLE IF NOT EXISTS `relationships` (origin INT NOT NULL, target INT NOT NULL, blocked BOOLEAN NOT NULL);"

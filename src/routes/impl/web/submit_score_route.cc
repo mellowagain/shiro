@@ -5,6 +5,7 @@
 
 #include "../../../beatmaps/beatmap.hh"
 #include "../../../beatmaps/beatmap_helper.hh"
+#include "../../../config/score_submission_file.hh"
 #include "../../../database/tables/score_table.hh"
 #include "../../../ranking/ranking_helper.hh"
 #include "../../../replays/replay_manager.hh"
@@ -14,6 +15,7 @@
 #include "../../../thirdparty/oppai.hh"
 #include "../../../users/user.hh"
 #include "../../../users/user_manager.hh"
+#include "../../../users/user_punishments.hh"
 #include "../../../utils/bot_utils.hh"
 #include "../../../utils/crypto.hh"
 #include "../../../utils/multipart_parser.hh"
@@ -123,6 +125,14 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
         response.end("error: pass");
 
         LOG_F(WARNING, "Received score submission from %s with incorrect password.", user->presence.username.c_str());
+        return;
+    }
+
+    if (users::punishments::is_banned(user->user_id)) {
+        response.code = 403;
+        response.end("error: no");
+
+        LOG_F(WARNING, "Received score submission from %s while user is banned.", user->presence.username.c_str());
         return;
     }
 
@@ -332,7 +342,7 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
     scores::score top_score = scores::helper::fetch_top_score_user(beatmap.beatmap_md5, user);
     int32_t scoreboard_position = scores::helper::get_scoreboard_position(top_score, scores::helper::fetch_all_scores(beatmap.beatmap_md5, 5));
 
-    if (top_score.hash == score.hash) {
+    if (top_score.hash == score.hash && !user->hidden) {
         if (scoreboard_position == 1) {
             char buffer[1024];
             std::snprintf(
