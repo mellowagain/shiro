@@ -12,10 +12,11 @@
 #include "../thirdparty/uuid.hh"
 #include "../users/user.hh"
 #include "../users/user_manager.hh"
+#include "../users/user_punishments.hh"
+#include "../utils/bot_utils.hh"
 #include "../utils/login_responses.hh"
 #include "../utils/string_utils.hh"
 #include "login_handler.hh"
-#include "../users/user_punishments.hh"
 
 void shiro::handler::login::handle(const crow::request &request, crow::response &response) {
     if (request.body.empty()) {
@@ -141,6 +142,16 @@ void shiro::handler::login::handle(const crow::request &request, crow::response 
         global_writer.user_silenced(user->user_id);
     }
 
+    if (users::punishments::is_restricted(user->user_id)) {
+        utils::bot::respond(
+                "[https://shiro.host/u/me Your account has been restricted]. "
+                "Because of that, your profile has been hidden from the public. "
+                "If you believe this is a mistake, [https://shiro.host/support contact support] "
+                "to have your account status reviewed.",
+                user, config::bot::name, true
+        );
+    }
+
     for (const std::shared_ptr<users::user> &online_user : users::manager::online_users) {
         if (online_user == user)
             continue;
@@ -151,5 +162,10 @@ void shiro::handler::login::handle(const crow::request &request, crow::response 
             online_user->queue.enqueue(global_writer);
     }
 
-    response.end(writer.serialize());
+    std::string result = writer.serialize();
+
+    if (!user->queue.is_empty())
+        result.append(user->queue.serialize());
+
+    response.end(result);
 }
