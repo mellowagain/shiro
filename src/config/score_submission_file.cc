@@ -14,6 +14,7 @@ static std::shared_ptr<cpptoml::table> config_file = nullptr;
 
 bool shiro::config::score_submission::save_failed_scores = true;
 bool shiro::config::score_submission::save_unranked_scores = false;
+std::string shiro::config::score_submission::overwrite_factor = "pp";
 
 bool shiro::config::score_submission::restrict_notepad_hack = true;
 bool shiro::config::score_submission::restrict_impossible_mods = true;
@@ -78,6 +79,7 @@ void shiro::config::score_submission::parse() {
 
     save_failed_scores = config_file->get_qualified_as<bool>("save_failed_scores").value_or(true);
     save_unranked_scores = config_file->get_qualified_as<bool>("save_unranked_scores").value_or(false);
+    overwrite_factor = config_file->get_qualified_as<std::string>("overwrite_factor").value_or("pp");
 
     // Anti-cheat
     restrict_notepad_hack = config_file->get_qualified_as<bool>("anti_cheat.restrict_notepad_hack").value_or(true);

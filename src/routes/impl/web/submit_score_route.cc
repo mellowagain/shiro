@@ -174,6 +174,20 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
         game_version = boost::lexical_cast<int32_t>(score_metadata.at(17));
     } catch (const boost::bad_lexical_cast &ex) {
         LOG_S(WARNING) << "Unable to convert " << score_metadata.at(17) << " to game version: " << ex.what();
+
+        // Give the client a chance to resubmit so the player doesn't get restricted for a fail on our side.
+        if (config::score_submission::restrict_mismatching_client_version) {
+            response.code = 500;
+            response.end();
+            return;
+        }
+    }
+
+    if (score.play_mode > 3) {
+        response.end("error: invalid");
+
+        LOG_F(WARNING, "%s submitted a score with a invalid play mode.", user->presence.username.c_str());
+        return;
     }
 
     std::chrono::seconds seconds = std::chrono::duration_cast<std::chrono::seconds>(
@@ -219,6 +233,9 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
         response.code = 400;
         response.end("error: invalid");
 
+        if (config::score_submission::restrict_no_replay)
+            users::punishments::restrict(user->user_id, "No replay sent on score submission");
+
         LOG_S(WARNING) << "Received score without replay data.";
         return;
     }
@@ -229,7 +246,21 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
     // User has previous scores on this map, enable overwriting mode
     if (!previous_scores.empty()) {
         for (const scores::score &s : previous_scores) {
-            if (s.total_score > score.total_score)
+            double factor_score;
+            double factor_iterator;
+
+            if (config::score_submission::overwrite_factor == "score") {
+                factor_score = score.total_score;
+                factor_iterator = s.total_score;
+            } else if (config::score_submission::overwrite_factor == "accuracy") {
+                factor_score = score.accuracy;
+                factor_iterator = s.accuracy;
+            } else { // pp
+                factor_score = score.pp;
+                factor_iterator = s.pp;
+            }
+
+            if (factor_iterator > factor_score)
                 overwrite = false;
         }
     }
@@ -281,6 +312,29 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
         score.pp = 0;
     }
 
+    // Auto restriction for weird things enabled in score_submission.toml
+    auto [flagged, reason] = scores::helper::is_flagged(score, beatmap);
+
+    if (flagged)
+        users::punishments::restrict(user->user_id, reason);
+
+    // Auto restriction for bad replay submitters that submit without editing username
+    if (config::score_submission::restrict_mismatching_username && score_metadata.at(1) != user->presence.username)
+        users::punishments::restrict(user->user_id, "Mismatching username on score submission (" + score_metadata.at(1) + " != " + user->presence.username + ")");
+
+    // ...or the client build
+    if (config::score_submission::restrict_mismatching_client_version && game_version != user->client_build)
+        users::punishments::restrict(user->user_id, "Mismatching client version on score submission (" + std::to_string(game_version) + " != " + std::to_string(user->client_build) + ")");
+
+    // Auto restriction for notepad hack
+    if (config::score_submission::restrict_notepad_hack && fields.find("bmk") != fields.end() && fields.find("bml") != fields.end()) {
+        std::string bmk = fields.at("bmk").content;
+        std::string bml = fields.at("bml").content;
+
+        if (bmk != bml)
+            users::punishments::restrict(user->user_id, "Mismatching bmk and bml (notepad hack, " + bmk + " != " + bml + ")");
+    }
+
     scores::score old_top_score = scores::helper::fetch_top_score_user(beatmap.beatmap_md5, user);
     int32_t old_scoreboard_pos = scores::helper::get_scoreboard_position(old_top_score, scores::helper::fetch_all_scores(beatmap.beatmap_md5, 5));
 
@@ -325,13 +379,12 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
     if (overwrite)
         user->stats.total_score += score.total_score;
 
-    if (!beatmaps::helper::has_leaderboard(beatmaps::helper::fix_beatmap_status(beatmap.ranked_status))) {
+    replays::save_replay(score, beatmap, game_version, fields.at("replay").content);
+
+    if (!scores::helper::is_ranked(score, beatmap)) {
         response.end("ok" /*"error: disabled"*/);
         return;
     }
-
-    // Save replay
-    replays::save_replay(score, game_version, fields.at("replay").content);
 
     if (!score.passed) {
         user->refresh_stats();

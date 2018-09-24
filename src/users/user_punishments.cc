@@ -108,6 +108,9 @@ void shiro::users::punishments::kick(int32_t user_id, const std::string &reason)
 }
 
 void shiro::users::punishments::silence(int32_t user_id, uint32_t duration, const std::string &reason) {
+    if (is_silenced(user_id))
+        return;
+
     std::chrono::seconds seconds = std::chrono::duration_cast<std::chrono::seconds>(
             std::chrono::system_clock::now().time_since_epoch()
     );
@@ -155,6 +158,9 @@ void shiro::users::punishments::silence(int32_t user_id, uint32_t duration, cons
 }
 
 void shiro::users::punishments::restrict(int32_t user_id, const std::string &reason) {
+    if (is_restricted(user_id))
+        return;
+
     std::chrono::seconds seconds = std::chrono::duration_cast<std::chrono::seconds>(
             std::chrono::system_clock::now().time_since_epoch()
     );
@@ -201,12 +207,14 @@ void shiro::users::punishments::restrict(int32_t user_id, const std::string &rea
         if (online_user->user_id == user_id || online_user->user_id == 1)
             continue;
 
-        LOG_F(INFO, "Sending logout of restricted user %i to %s", user_id, online_user->presence.username.c_str());
         online_user->queue.enqueue(writer);
     }
 }
 
 void shiro::users::punishments::ban(int32_t user_id, const std::string &reason) {
+    if (is_banned(user_id))
+        return;
+
     std::chrono::seconds seconds = std::chrono::duration_cast<std::chrono::seconds>(
             std::chrono::system_clock::now().time_since_epoch()
     );

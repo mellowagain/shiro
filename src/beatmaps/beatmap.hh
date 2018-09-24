@@ -38,6 +38,8 @@ namespace shiro::beatmaps {
         int32_t play_count = 0;
         int32_t pass_count = 0;
 
+        beatmap() = default;
+
         void fetch(bool force_peppster = false);
         bool fetch_db();
 

@@ -4,6 +4,8 @@
 save_failed_scores = true
 # Should replays of unranked scores be saved?
 save_unranked_scores = false
+# Based on what factor should score overwrites occur? Valid values: "pp", "score", "accuracy"
+overwrite_factor = "pp"
 
 [anti_cheat]
 # Should mismatching bmk and bml auto restrict? (Notepad hack)

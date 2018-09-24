@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 
+#include "../beatmaps/beatmap.hh"
 #include "../users/user.hh"
 #include "score.hh"
 
@@ -28,6 +29,10 @@ namespace shiro::scores::helper {
 
     // This method sorts using the pp value instead of score (like all other methods above)
     std::vector<score> fetch_top100_user(utils::play_mode mode, int32_t user_id);
+
+    bool is_ranked(const score &score, const beatmaps::beatmap &beatmap);
+
+    std::tuple<bool, std::string> is_flagged(const score &score, const beatmaps::beatmap &beatmap);
 
     float calculate_accuracy(utils::play_mode mode, int32_t _300, int32_t _100, int32_t _50, int32_t geki, int32_t katu, int32_t miss);
 

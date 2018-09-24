@@ -3,6 +3,7 @@
 #include <cmath>
 
 #include "../channels/channel_manager.hh"
+#include "../config/score_submission_file.hh"
 #include "../geoloc/geoloc.hh"
 #include "../geoloc/location_info.hh"
 #include "../io/layouts/packets.hh"
@@ -91,8 +92,22 @@ void shiro::handler::login::handle(const crow::request &request, crow::response 
         build = boost::lexical_cast<int32_t>(version.substr(1, version.find('.') - 1));
     } catch (const boost::bad_lexical_cast &ex) {
         LOG_S(WARNING) << "Unable to cast " << version << " to int64_t: " << ex.what();
+
+        if (config::score_submission::restrict_mismatching_client_version) {
+            writer.login_reply((int32_t) utils::login_responses::server_error);
+
+            response.end(writer.serialize());
+            return;
+        }
     } catch (const std::out_of_range &ex) {
         LOG_S(WARNING) << "Unable to convert client version " << version << " is valid build: " << ex.what();
+
+        if (config::score_submission::restrict_mismatching_client_version) {
+            writer.login_reply((int32_t) utils::login_responses::server_error);
+
+            response.end(writer.serialize());
+            return;
+        }
     }
 
     std::chrono::seconds seconds = std::chrono::duration_cast<std::chrono::seconds>(

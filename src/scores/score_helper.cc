@@ -1,12 +1,14 @@
 #include "../beatmaps/beatmap.hh"
 #include "../beatmaps/beatmap_helper.hh"
+#include "../config/score_submission_file.hh"
 #include "../database/tables/score_table.hh"
 #include "../geoloc/country_ids.hh"
 #include "../thirdparty/loguru.hh"
 #include "../thirdparty/oppai.hh"
 #include "../users/user_manager.hh"
-#include "score_helper.hh"
 #include "../users/user_punishments.hh"
+#include "../utils/mods.hh"
+#include "score_helper.hh"
 
 shiro::scores::score shiro::scores::helper::fetch_top_score_user(std::string beatmap_md5sum, std::shared_ptr<shiro::users::user> user) {
     sqlpp::mysql::connection db(db_connection->get_config());
@@ -50,6 +52,9 @@ shiro::scores::score shiro::scores::helper::fetch_top_score_user(std::string bea
         s.time = row.time;
 
         if (!s.passed)
+            continue;
+
+        if (!is_ranked(s, beatmaps::beatmap()))
             continue;
 
         scores.emplace_back(s);
@@ -110,6 +115,9 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_all_scores(std::s
             continue;
 
         if (!users::punishments::has_scores(s.user_id))
+            continue;
+
+        if (!is_ranked(s, beatmaps::beatmap()))
             continue;
 
         scores.emplace_back(s);
@@ -190,6 +198,9 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_country_scores(st
             continue;
 
         if (!users::punishments::has_scores(s.user_id))
+            continue;
+
+        if (!is_ranked(s, beatmaps::beatmap()))
             continue;
 
         scores.emplace_back(s);
@@ -277,6 +288,9 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_mod_scores(std::s
         if (!users::punishments::has_scores(s.user_id))
             continue;
 
+        if (!is_ranked(s, beatmaps::beatmap()))
+            continue;
+
         scores.emplace_back(s);
     }
 
@@ -350,6 +364,9 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_friend_scores(std
             continue;
 
         if (!users::punishments::has_scores(s.user_id))
+            continue;
+
+        if (!is_ranked(s, beatmaps::beatmap()))
             continue;
 
         scores.emplace_back(s);
@@ -437,6 +454,9 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_user_scores(std::
         s.time = row.time;
 
         if (!s.passed)
+            continue;
+
+        if (!is_ranked(s, beatmaps::beatmap()))
             continue;
 
         scores.emplace_back(s);
@@ -550,6 +570,9 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_top100_user(shiro
         if (!s.passed)
             continue;
 
+        if (!is_ranked(s, beatmaps::beatmap()))
+            continue;
+
         scores.emplace_back(s);
     }
 
@@ -600,6 +623,242 @@ int32_t shiro::scores::helper::get_scoreboard_position(const shiro::scores::scor
     }
 
     return -1;
+}
+
+bool shiro::scores::helper::is_ranked(const shiro::scores::score &score, const shiro::beatmaps::beatmap &beatmap) {
+    bool ranked = true;
+    int32_t mods = score.mods;
+
+    switch ((utils::play_mode) score.play_mode) {
+        case utils::play_mode::standard:
+            ranked &= config::score_submission::std_ranked;
+            break;
+        case utils::play_mode::taiko:
+            ranked &= config::score_submission::taiko_ranked;
+            break;
+        case utils::play_mode::fruits:
+            ranked &= config::score_submission::catch_ranked;
+            break;
+        case utils::play_mode::mania:
+            ranked &= config::score_submission::mania_ranked;
+            break;
+    }
+
+    if (mods & (int32_t) utils::mods::none)
+        ranked &= config::score_submission::nomod_ranked;
+
+    if (mods & (int32_t) utils::mods::no_fail)
+        ranked &= config::score_submission::no_fail_ranked;
+
+    if (mods & (int32_t) utils::mods::easy)
+        ranked &= config::score_submission::easy_ranked;
+
+    if (mods & (int32_t) utils::mods::touch_device)
+        ranked &= config::score_submission::touch_device_ranked;
+
+    if (mods & (int32_t) utils::mods::hidden)
+        ranked &= config::score_submission::hidden_ranked;
+
+    if (mods & (int32_t) utils::mods::hard_rock)
+        ranked &= config::score_submission::hard_rock_ranked;
+
+    if (mods & (int32_t) utils::mods::sudden_death)
+        ranked &= config::score_submission::sudden_death_ranked;
+
+    if (mods & (int32_t) utils::mods::double_time)
+        ranked &= config::score_submission::double_time_ranked;
+
+    if (mods & (int32_t) utils::mods::relax)
+        ranked &= config::score_submission::relax_ranked;
+
+    if (mods & (int32_t) utils::mods::half_time)
+        ranked &= config::score_submission::half_time_ranked;
+
+    if (mods & (int32_t) utils::mods::nightcore)
+        ranked &= config::score_submission::nightcore_ranked;
+
+    if (mods & (int32_t) utils::mods::flashlight)
+        ranked &= config::score_submission::flashlight_ranked;
+
+    if (mods & (int32_t) utils::mods::auto_play)
+        ranked &= config::score_submission::auto_play_ranked;
+
+    if (mods & (int32_t) utils::mods::spun_out)
+        ranked &= config::score_submission::spun_out_ranked;
+
+    if (mods & (int32_t) utils::mods::auto_pilot)
+        ranked &= config::score_submission::auto_pilot_ranked;
+
+    if (mods & (int32_t) utils::mods::perfect)
+        ranked &= config::score_submission::perfect_ranked;
+
+    // Special mods
+
+    if (mods & (int32_t) utils::mods::fade_in)
+        ranked &= config::score_submission::fade_in_ranked;
+
+    if (mods & (int32_t) utils::mods::random)
+        ranked &= config::score_submission::random_ranked;
+
+    if (mods & (int32_t) utils::mods::cinema)
+        ranked &= config::score_submission::cinema_ranked;
+
+    if (mods & (int32_t) utils::mods::target)
+        ranked &= config::score_submission::target_ranked;
+
+    if (mods & (int32_t) utils::mods::score_v2)
+        ranked &= config::score_submission::score_v2_ranked;
+
+    // Keys
+
+    if (mods & (int32_t) utils::mods::key_1)
+        ranked &= config::score_submission::key_1_ranked;
+
+    if (mods & (int32_t) utils::mods::key_2)
+        ranked &= config::score_submission::key_2_ranked;
+
+    if (mods & (int32_t) utils::mods::key_3)
+        ranked &= config::score_submission::key_3_ranked;
+
+    if (mods & (int32_t) utils::mods::key_4)
+        ranked &= config::score_submission::key_4_ranked;
+
+    if (mods & (int32_t) utils::mods::key_5)
+        ranked &= config::score_submission::key_5_ranked;
+
+    if (mods & (int32_t) utils::mods::key_6)
+        ranked &= config::score_submission::key_6_ranked;
+
+    if (mods & (int32_t) utils::mods::key_7)
+        ranked &= config::score_submission::key_7_ranked;
+
+    if (mods & (int32_t) utils::mods::key_8)
+        ranked &= config::score_submission::key_8_ranked;
+
+    if (mods & (int32_t) utils::mods::key_9)
+        ranked &= config::score_submission::key_9_ranked;
+
+    if (mods & (int32_t) utils::mods::key_coop)
+        ranked &= config::score_submission::key_coop_ranked;
+
+    if (beatmap.id != 0)
+        ranked &= beatmaps::helper::has_leaderboard(beatmaps::helper::fix_beatmap_status(beatmap.ranked_status));
+
+    return ranked;
+}
+
+std::tuple<bool, std::string> shiro::scores::helper::is_flagged(const shiro::scores::score &score, const shiro::beatmaps::beatmap &beatmap) {
+    if (!is_ranked(score, beatmap) || !score.passed)
+        return { false, "" };
+
+    if (config::score_submission::restrict_negative_values) {
+        if (score.total_score < 0)
+            return { true, "Negative score value (total score " + std::to_string(score.total_score) + " < 0)" };
+
+        if (score.max_combo < 0)
+            return { true, "Negative score value (max combo " + std::to_string(score.max_combo) + " < 0)" };
+
+        if (score._300_count < 0)
+            return { true, "Negative score value (300 count " + std::to_string(score._300_count) + " < 0)" };
+
+        if (score._100_count < 0)
+            return { true, "Negative score value (100 count " + std::to_string(score._100_count) + " < 0)" };
+
+        if (score._50_count < 0)
+            return { true, "Negative score value (50 count " + std::to_string(score._50_count) + " < 0)" };
+
+        if (score.katus_count < 0)
+            return { true, "Negative score value (katus count " + std::to_string(score.katus_count) + " < 0)" };
+
+        if (score.gekis_count < 0)
+            return { true, "Negative score value (gekis count " + std::to_string(score.gekis_count) + " < 0)" };
+
+        if (score.miss_count < 0)
+            return { true, "Negative score value (miss count " + std::to_string(score.miss_count) + " < 0)" };
+
+        if (score.mods < 0)
+            return { true, "Negative score value (mods " + std::to_string(score.mods) + " < 0)" };
+    }
+
+    if (config::score_submission::restrict_impossible_mods) {
+        int32_t mods = score.mods;
+
+        if (mods & (int32_t) utils::mods::easy && mods & (int32_t) utils::mods::hard_rock)
+            return { true, "Impossible mod combination (EZ + HR)" };
+
+        if (mods & (int32_t) utils::mods::no_fail && mods & (int32_t) utils::mods::sudden_death)
+            return { true, "Impossible mod combination (NF + SD)" };
+
+        if (mods & (int32_t) utils::mods::no_fail && mods & (int32_t) utils::mods::perfect)
+            return { true, "Impossible mod combination (NF + PF)" };
+
+        if (mods & (int32_t) utils::mods::half_time && mods & (int32_t) utils::mods::double_time)
+            return { true, "Impossible mod combination (HT + DT)" };
+
+        if (mods & (int32_t) utils::mods::sudden_death && mods & (int32_t) utils::mods::relax)
+            return { true, "Impossible mod combination (SD + RX)" };
+
+        if (mods & (int32_t) utils::mods::sudden_death && mods & (int32_t) utils::mods::auto_pilot)
+            return { true, "Impossible mod combination (SD + AP)" };
+
+        if (mods & (int32_t) utils::mods::sudden_death && mods & (int32_t) utils::mods::auto_play)
+            return { true, "Impossible mod combination (SD + AUTO)" };
+
+        if (mods & (int32_t) utils::mods::relax && mods & (int32_t) utils::mods::no_fail)
+            return { true, "Impossible mod combination (RX + NF)" };
+
+        if (mods & (int32_t) utils::mods::relax && mods & (int32_t) utils::mods::auto_pilot)
+            return { true, "Impossible mod combination (RX + AP)" };
+
+        if (mods & (int32_t) utils::mods::relax && mods & (int32_t) utils::mods::auto_play)
+            return { true, "Impossible mod combination (RX + AUTO)" };
+
+        if (mods & (int32_t) utils::mods::auto_pilot && mods & (int32_t) utils::mods::no_fail)
+            return { true, "Impossible mod combination (AP + NF)" };
+
+        if (mods & (int32_t) utils::mods::auto_pilot && mods & (int32_t) utils::mods::spun_out)
+            return { true, "Impossible mod combination (AP + SO)" };
+
+        if (mods & (int32_t) utils::mods::auto_pilot && mods & (int32_t) utils::mods::auto_play)
+            return { true, "Impossible mod combination (AP + AUTO)" };
+
+        if (mods & (int32_t) utils::mods::spun_out && mods & (int32_t) utils::mods::auto_play)
+            return { true, "Impossible mod combination (SO + AUTO)" };
+    }
+
+    if (config::score_submission::restrict_impossible_combo && score.max_combo > beatmap.max_combo) {
+        std::string reason = "Impossible combo (" + std::to_string(score.max_combo) + " > " + std::to_string(beatmap.max_combo) + ")";
+        return { true, reason };
+    }
+
+    switch ((utils::play_mode) score.play_mode) {
+        case utils::play_mode::standard:
+            if (config::score_submission::auto_restrict_pp_std > -1 && score.pp > config::score_submission::auto_restrict_pp_std) {
+                std::string reason = "High pp gain (osu!std, " + std::to_string(score.pp) + "pp > " + std::to_string(config::score_submission::auto_restrict_pp_std) + "pp)";
+                return { true, reason };
+            }
+            break;
+        case utils::play_mode::taiko:
+            if (config::score_submission::auto_restrict_pp_taiko > -1 && score.pp > config::score_submission::auto_restrict_pp_taiko) {
+                std::string reason = "High pp gain (osu!taiko, " + std::to_string(score.pp) + "pp > " + std::to_string(config::score_submission::auto_restrict_pp_taiko) + "pp)";
+                return { true, reason };
+            }
+            break;
+        case utils::play_mode::fruits:
+            if (config::score_submission::auto_restrict_pp_catch > -1 && score.pp > config::score_submission::auto_restrict_pp_catch) {
+                std::string reason = "High pp gain (osu!catch, " + std::to_string(score.pp) + "pp > " + std::to_string(config::score_submission::auto_restrict_pp_catch) + "pp)";
+                return { true, reason };
+            }
+            break;
+        case utils::play_mode::mania:
+            if (config::score_submission::auto_restrict_pp_mania > -1 && score.pp > config::score_submission::auto_restrict_pp_mania) {
+                std::string reason = "High pp gain (osu!mania, " + std::to_string(score.pp) + "pp > " + std::to_string(config::score_submission::auto_restrict_pp_mania) + "pp)";
+                return { true, reason };
+            }
+            break;
+    }
+
+    return { false, "" };
 }
 
 float shiro::scores::helper::calculate_accuracy(utils::play_mode mode, int32_t _300, int32_t _100, int32_t _50, int32_t geki, int32_t katu, int32_t miss) {

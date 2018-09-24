@@ -2,11 +2,13 @@
 #define SHIRO_SCORE_SUBMISSION_FILE_HH
 
 #include <cstdint>
+#include <string>
 
 namespace shiro::config::score_submission {
 
     extern bool save_failed_scores;
     extern bool save_unranked_scores;
+    extern std::string overwrite_factor;
 
     extern bool restrict_notepad_hack;
     extern bool restrict_impossible_mods;

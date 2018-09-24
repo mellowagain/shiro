@@ -26,7 +26,10 @@
 #include <sstream>
 #include <string>
 
+#include "../beatmaps/beatmap_helper.hh"
+#include "../config/score_submission_file.hh"
 #include "../io/osu_buffer.hh"
+#include "../scores/score_helper.hh"
 #include "../thirdparty/loguru.hh"
 #include "../users/user_manager.hh"
 #include "../utils/crypto.hh"
@@ -42,9 +45,14 @@ void shiro::replays::init() {
         fs::create_directories(dir);
 }
 
-void shiro::replays::save_replay(const shiro::scores::score &s, int32_t game_version, std::string replay) {
-    std::string filename = dir + fs::path::preferred_separator + std::to_string(s.id) + ".osr";
+void shiro::replays::save_replay(const shiro::scores::score &s, const beatmaps::beatmap &beatmap, int32_t game_version, std::string replay) {
+    if (!s.passed && !config::score_submission::save_failed_scores)
+        return;
 
+    if (!scores::helper::is_ranked(s, beatmap) && !config::score_submission::save_unranked_scores)
+        return;
+
+    std::string filename = dir + fs::path::preferred_separator + std::to_string(s.id) + ".osr";
     std::shared_ptr<users::user> user = users::manager::get_user_by_id(s.user_id);
 
     if (user == nullptr)
