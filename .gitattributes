@@ -1,3 +1,9 @@
+# License
+*.cc                    licensefile=.githooks/license-maintainer/cpp/LICENSE.AGPL3
+*.hh                    licensefile=.githooks/license-maintainer/cpp/LICENSE.AGPL3
+src/thirdparty/**/*.cc  !licensefile
+src/thirdparty/**/*.hh  !licensefile
+
 # Source files
 *.c         text
 *.cc        text
