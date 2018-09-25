@@ -8,13 +8,17 @@
 #include "config/bot_file.hh"
 #include "config/cli_args.hh"
 #include "config/db_file.hh"
+#include "config/score_submission_file.hh"
 #include "geoloc/country_ids.hh"
 #include "logger/logger.hh"
 #include "native/signal_handler.hh"
 #include "native/system_statistics.hh"
+#include "replays/replay_manager.hh"
 #include "routes/routes.hh"
 #include "thirdparty/cli11.hh"
 #include "thirdparty/loguru.hh"
+#include "users/user_activity.hh"
+#include "users/user_punishments.hh"
 #include "users/user_timeout.hh"
 #include "shiro.hh"
 
@@ -32,6 +36,7 @@ int shiro::init(int argc, char **argv) {
     config::bot::parse();
     config::bancho::parse();
     config::database::parse();
+    config::score_submission::parse();
 
     geoloc::init();
 
@@ -55,7 +60,11 @@ int shiro::init(int argc, char **argv) {
 
     channels::manager::init();
 
+    users::activity::init();
+    users::punishments::init();
     users::timeout::init();
+
+    replays::init();
 
     native::system_stats::init();
     native::signal_handler::install();

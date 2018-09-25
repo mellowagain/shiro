@@ -89,24 +89,65 @@ bool shiro::beatmaps::beatmap::fetch_api() {
 
     if (curl != nullptr) {
         char buffer[512];
-        std::snprintf(buffer, sizeof(buffer), "https://old.ppy.sh/api/get_beatmaps?k=%s&s=%i", config::bancho::api_key.c_str(), this->beatmapset_id);
 
-        curl_easy_setopt(curl, CURLOPT_URL, buffer);
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, callback);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &output);
         curl_easy_setopt(curl, CURLOPT_USERAGENT, "Mozilla/5.0 (X11; Linux x86_64; rv:61.0) Gecko/20100101 Firefox/61.0"); // shiro (https://github.com/Marc3842h/shiro)
+
+        if (this->beatmapset_id == 0) {
+            std::snprintf(buffer, sizeof(buffer), "https://old.ppy.sh/api/get_beatmaps?k=%s&b=%i", config::bancho::api_key.c_str(), this->beatmap_id);
+            curl_easy_setopt(curl, CURLOPT_URL, buffer);
+            status_code = curl_easy_perform(curl);
+
+            if (status_code != CURLE_OK) {
+                LOG_F(ERROR, "Received invalid response from Bancho API: %s.", curl_easy_strerror(status_code));
+
+                this->ranked_status = (int32_t) status::unknown;
+                return false;
+            }
+
+            if (!boost::algorithm::starts_with(output, "[")) {
+                LOG_F(ERROR, "Received invalid response from Bancho API: %s.", output.c_str());
+
+                this->ranked_status = (int32_t) status::unknown;
+                return false;
+            }
+
+            auto result = json::parse(output);
+
+            for (auto &part : result) {
+                try {
+                    this->beatmapset_id = boost::lexical_cast<int32_t>(std::string(part["beatmapset_id"]));
+                } catch (const boost::bad_lexical_cast &ex) {
+                    LOG_S(ERROR) << "Unable to cast response of Bancho API to valid data types: " << ex.what() << ".";
+
+                    this->ranked_status = (int32_t) status::unknown;
+                    return false;
+                }
+            }
+
+            std::memset(buffer, 0, sizeof(buffer));
+        }
+
+        std::snprintf(buffer, sizeof(buffer), "https://old.ppy.sh/api/get_beatmaps?k=%s&s=%i", config::bancho::api_key.c_str(), this->beatmapset_id);
+
+        curl_easy_setopt(curl, CURLOPT_URL, buffer);
 
         status_code = curl_easy_perform(curl);
         curl_easy_cleanup(curl);
 
         if (status_code != CURLE_OK) {
             LOG_F(ERROR, "Received invalid response from Bancho API: %s.", curl_easy_strerror(status_code));
+
+            this->ranked_status = (int32_t) status::unknown;
             return false;
         }
     }
 
     if (!boost::algorithm::starts_with(output, "[")) {
         LOG_F(ERROR, "Received invalid response from Bancho API: %s.", output.c_str());
+
+        this->ranked_status = (int32_t) status::unknown;
         return false;
     }
 
@@ -199,6 +240,16 @@ bool shiro::beatmaps::beatmap::fetch_api() {
     this->beatmap_md5 = original_md5sum;
     fetch_db();
     return true;
+}
+
+void shiro::beatmaps::beatmap::update_play_metadata() {
+    sqlpp::mysql::connection db(db_connection->get_config());
+    const tables::beatmaps beatmaps_table {};
+
+    db(update(beatmaps_table).set(
+            beatmaps_table.play_count = this->play_count,
+            beatmaps_table.pass_count = this->pass_count
+    ).where(beatmaps_table.beatmap_md5 == this->beatmap_md5));
 }
 
 std::string shiro::beatmaps::beatmap::build_header() {

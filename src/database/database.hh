@@ -14,19 +14,19 @@ namespace shiro {
         std::shared_ptr<sqlpp::mysql::connection_config> config = nullptr;
 
         std::string address;
-        unsigned int port;
+        uint32_t port;
         std::string db;
 
         std::string username;
         std::string password;
 
     public:
-        database(const std::string &address, unsigned int port, const std::string &db, const std::string &username, const std::string &password);
+        database(const std::string &address, uint32_t port, const std::string &db, const std::string &username, const std::string &password);
 
         void connect();
         void setup();
 
-        bool is_connected();
+        bool is_connected(bool abort = false);
         std::shared_ptr<sqlpp::mysql::connection_config> get_config();
 
     };
@@ -34,14 +34,11 @@ namespace shiro {
 }
 
 #define is_query_empty(x) [&]() -> bool {                   \
-    bool empty = true;                                      \
-                                                            \
-    for ([[maybe_unused]] const auto &row : x) {            \
-        empty = false;                                      \
-        break;                                              \
+    for ([[maybe_unused]] const auto &_ : x) {              \
+        return false;                                       \
     }                                                       \
                                                             \
-    return empty;                                           \
+    return true;                                            \
 }();                                                        \
 
 #endif //SHIRO_DATABASE_HH

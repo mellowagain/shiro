@@ -12,10 +12,12 @@ void shiro::handler::presence::request_all::handle(shiro::io::osu_packet &in, sh
 
         std::shared_ptr<users::user> target_user = users::manager::get_user_by_id(requested_user);
 
-        out.user_presence(target_user->presence);
+        // Do not send presence for hidden users
+        if (!target_user->hidden)
+            out.user_presence(target_user->presence);
 
-        // Do not send stats for bot
-        if (requested_user != 1)
+        // Do not send stats for bot or hidden users
+        if (requested_user != 1 && !target_user->hidden)
             out.user_stats(target_user->stats);
     }
 
@@ -23,6 +25,9 @@ void shiro::handler::presence::request_all::handle(shiro::io::osu_packet &in, sh
     online_users.reserve(users::manager::online_users.size());
 
     for (const std::shared_ptr<users::user> &online_user : users::manager::online_users) {
+        if (online_user->hidden)
+            continue;
+
         online_users.emplace_back(online_user->user_id);
     }
 

@@ -3,7 +3,7 @@
 #include "../shiro.hh"
 #include "database.hh"
 
-shiro::database::database(const std::string &address, unsigned int port, const std::string &db, const std::string &username, const std::string &password)
+shiro::database::database(const std::string &address, uint32_t port, const std::string &db, const std::string &username, const std::string &password)
     : address(address)
     , port(port)
     , db(db)
@@ -25,11 +25,15 @@ void shiro::database::connect() {
     this->config->password = this->password;
     this->config->auto_reconnect = true;
 
+    #if defined(_DEBUG)
+        this->config->debug = true;
+    #endif
+
     LOG_S(INFO) << "Successfully connected to MySQL database.";
 }
 
 void shiro::database::setup() {
-    if (!this->is_connected())
+    if (!this->is_connected(true))
         return;
 
     sqlpp::mysql::connection db(this->config);
@@ -44,7 +48,7 @@ void shiro::database::setup() {
            "ranked_status_freezed BOOLEAN NOT NULL, play_count INT NOT NULL, pass_count INT NOT NULL);"
     );
 
-    // IRC channels
+    // Channels
     db.execute(
            "CREATE TABLE IF NOT EXISTS `channels` "
            "(id INT PRIMARY KEY NOT NULL AUTO_INCREMENT, "
@@ -55,7 +59,8 @@ void shiro::database::setup() {
     db.execute(
            "CREATE TABLE IF NOT EXISTS `scores` "
            "(id INT PRIMARY KEY NOT NULL AUTO_INCREMENT, "
-           "beatmap_md5 VARCHAR(35) NOT NULL, user_id INT NOT NULL, score BIGINT NOT NULL, max_combo INT NOT NULL, fc BOOLEAN NOT NULL, mods INT NOT NULL, "
+           "beatmap_md5 VARCHAR(35) NOT NULL, hash VARCHAR(35) NOT NULL, user_id INT NOT NULL, rank VARCHAR(2) NOT NULL, "
+           "score BIGINT NOT NULL, max_combo INT NOT NULL, fc BOOLEAN NOT NULL, mods INT NOT NULL, "
            "300_count INT NOT NULL, 100_count INT NOT NULL, 50_count INT NOT NULL, "
            "katus_count INT NOT NULL, gekis_count INT NOT NULL, miss_count INT NOT NULL, "
            "time INT NOT NULL, play_mode TINYINT NOT NULL, passed BOOLEAN NOT NULL, accuracy FLOAT NOT NULL, pp FLOAT NOT NULL);"
@@ -70,10 +75,20 @@ void shiro::database::setup() {
            "email VARCHAR(100) NOT NULL, ip VARCHAR(39) NOT NULL, registration_date INT NOT NULL, last_seen INT NOT NULL, "
            "followers INT NOT NULL, groups INT NOT NULL, user_page TEXT NOT NULL, "
            "pp_std FLOAT NOT NULL, pp_taiko FLOAT NOT NULL, pp_ctb FLOAT NOT NULL, pp_mania FLOAT NOT NULL, "
+           "rank_std INT NOT NULL, rank_taiko INT NOT NULL, rank_ctb INT NOT NULL, rank_mania INT NOT NULL, "
            "score_std INT NOT NULL, score_taiko INT NOT NULL, score_ctb INT NOT NULL, score_mania INT NOT NULL, "
            "ranked_score_std INT NOT NULL, ranked_score_taiko INT NOT NULL, ranked_score_ctb INT NOT NULL, ranked_score_mania INT NOT NULL, "
+           "accuracy_std FLOAT NOT NULL, accuracy_taiko FLOAT NOT NULL, accuracy_ctb FLOAT NOT NULL, accuracy_mania FLOAT NOT NULL,"
            "play_count_std INT NOT NULL, play_count_taiko INT NOT NULL, play_count_ctb INT NOT NULL, play_count_mania INT NOT NULL, "
            "country VARCHAR(2) NOT NULL);"
+    );
+
+    // Punishments (kicks, silences, restrictions, bans)
+    db.execute(
+            "CREATE TABLE IF NOT EXISTS `punishments` "
+            "(id INT PRIMARY KEY NOT NULL AUTO_INCREMENT, user_id INT NOT NULL, "
+            "type TINYINT UNSIGNED NOT NULL, time INT NOT NULL, duration INT DEFAULT NULL, "
+            "active BOOLEAN NOT NULL, reason VARCHAR(128) DEFAULT NULL);"
     );
 
     // Relationships between users (friends and blocked)
@@ -84,8 +99,22 @@ void shiro::database::setup() {
     LOG_S(INFO) << "Successfully created and structured tables in database.";
 }
 
-bool shiro::database::is_connected() {
-    return this->config != nullptr;
+bool shiro::database::is_connected(bool abort) {
+    if (this->config == nullptr)
+        return false;
+
+    try {
+        sqlpp::mysql::connection db(this->config);
+
+        return db.is_valid();
+    } catch (const sqlpp::exception &ex) {
+        if (abort)
+            LOG_S(FATAL) << "Unable to connect to database: " << ex.what();
+
+        return false;
+    }
+
+    return true;
 }
 
 std::shared_ptr<sqlpp::mysql::connection_config> shiro::database::get_config() {

@@ -22,10 +22,9 @@ void shiro::spectating::manager::stop_spectating(std::shared_ptr<shiro::users::u
         return;
 
     for (size_t i = 0; i < currently_spectating.size(); i++) {
-        const auto pair = currently_spectating.at(i);
-        std::shared_ptr<shiro::users::user> target = pair.second;
+        const auto &[host, _] = currently_spectating.at(i);
 
-        if (pair.first == user) {
+        if (host == user) {
             currently_spectating.erase(currently_spectating.begin() + i);
 
             io::osu_writer writer;
@@ -33,8 +32,8 @@ void shiro::spectating::manager::stop_spectating(std::shared_ptr<shiro::users::u
 
             user->queue.enqueue(writer);
 
-            if (get_spectators(target).empty())
-                target->queue.enqueue(writer);
+            if (get_spectators(host).empty())
+                host->queue.enqueue(writer);
 
             break;
         }
@@ -42,8 +41,8 @@ void shiro::spectating::manager::stop_spectating(std::shared_ptr<shiro::users::u
 }
 
 bool shiro::spectating::manager::is_spectating(std::shared_ptr<shiro::users::user> user) {
-    for (const auto &pair : currently_spectating) {
-        if (pair.first == user)
+    for (const auto &[host, _] : currently_spectating) {
+        if (host == user)
             return true;
     }
 
@@ -51,8 +50,8 @@ bool shiro::spectating::manager::is_spectating(std::shared_ptr<shiro::users::use
 }
 
 bool shiro::spectating::manager::is_being_spectated(std::shared_ptr<shiro::users::user> user) {
-    for (const auto &pair : currently_spectating) {
-        if (pair.second == user)
+    for (const auto &[_, spectator] : currently_spectating) {
+        if (spectator == user)
             return true;
     }
 
@@ -62,18 +61,18 @@ bool shiro::spectating::manager::is_being_spectated(std::shared_ptr<shiro::users
 std::vector<std::shared_ptr<shiro::users::user>> shiro::spectating::manager::get_spectators(std::shared_ptr<shiro::users::user> user) {
     std::vector<std::shared_ptr<shiro::users::user>> users;
 
-    for (const auto &pair : currently_spectating) {
-        if (pair.second == user)
-            users.emplace_back(pair.first);
+    for (const auto &[host, spectator] : currently_spectating) {
+        if (spectator == user)
+            users.emplace_back(host);
     }
 
     return users;
 }
 
 std::shared_ptr<shiro::users::user> shiro::spectating::manager::get_host(std::shared_ptr<shiro::users::user> user) {
-    for (const auto &pair : currently_spectating) {
-        if (pair.first == user)
-            return pair.second;
+    for (const auto &[host, spectator] : currently_spectating) {
+        if (host == user)
+            return spectator;
     }
 
     return nullptr;

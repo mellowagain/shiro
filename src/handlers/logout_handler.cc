@@ -7,6 +7,9 @@ void shiro::handler::logout::handle(shiro::io::osu_packet &in, shiro::io::osu_wr
 
     users::manager::logout_user(user);
 
+    if (user->hidden)
+        return;
+
     io::layouts::user_quit quit;
     io::osu_writer writer;
 

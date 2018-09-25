@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 project(shiro C CXX)
 
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ./bin)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/")
 
 file(GLOB_RECURSE SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cc ${CMAKE_CURRENT_SOURCE_DIR}/src/*.hh)
@@ -20,7 +20,7 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 endif()
 
 if (NOT CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wextra -Wno-unused-parameter")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wextra -Wno-unused-variable -Wno-unused-parameter")
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D_DEBUG")
 endif()
 
@@ -30,7 +30,7 @@ find_package(Threads REQUIRED)
 
 # Boost
 set(Boost_USE_MULTITHREADED ON)
-find_package(Boost REQUIRED COMPONENTS system)
+find_package(Boost REQUIRED COMPONENTS system iostreams)
 
 # cURL
 find_package(CURL REQUIRED)
@@ -42,11 +42,30 @@ if (NOT OPENSSL_CRYPTO_LIBRARY)
     message(FATAL_ERROR "Unable to find libcrypto provided by OpenSSL.")
 endif()
 
-# Hinnant Date (required by sqlpp11)
+# mcrypt
+find_package(Mcrypt REQUIRED)
+
+# zlib
+find_package(ZLIB REQUIRED)
+
+# liblzma
+find_package(LibLZMA REQUIRED)
+
+# Hinnant Date
 find_package(HinnantDate REQUIRED)
 
 # Tcmalloc
 find_package(Tcmalloc)
+
+# libosu
+#find_package(osu) -- Currently not done in libosu, manually search path below
+set(LIBOSU_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/libosu/include/")
+set(LIBOSU_LIBRARIES "")
+
+# libakame
+#find_package(akame) -- Currently not done in libakame, manually search path below
+set(AKAME_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/libakame/include/")
+set(AKAME_LIBRARIES "")
 
 if (Tcmalloc_FOUND)
     set(CMAKE_LINK_LIBS ${CMAKE_LINK_LIBS} ${Tcmalloc_LIBRARIES})
@@ -57,16 +76,16 @@ if (Tcmalloc_FOUND)
     endif()
 endif()
 
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${CMAKE_CXX_FLAGS} -Og -g3 -ggdb")
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${CMAKE_CXX_FLAGS} -O3")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${CMAKE_CXX_FLAGS} -O0 -g3 -ggdb")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${CMAKE_CXX_FLAGS} -O3 -DNDEBUG=1")
 
 # Enable logging with streams in Loguru
-add_definitions(-DLOGURU_WITH_STREAMS=1)
+add_definitions(-DLOGURU_WITH_STREAMS=1 -DLOGURU_REDEFINE_ASSERT=1)
 
 # Resources
 file(GLOB_RECURSE RESOURCES ${CMAKE_CURRENT_SOURCE_DIR}/resources/*)
 
-foreach(RESOURCE ${RESOURCES})
+foreach (RESOURCE ${RESOURCES})
     get_filename_component(RESOURCE_BASENAME ${RESOURCE} NAME)
     configure_file("${RESOURCE}" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${RESOURCE_BASENAME}" COPYONLY)
 endforeach()
@@ -74,11 +93,11 @@ endforeach()
 if (WIN32)
     set(CMAKE_LINK_LIBS ${CMAKE_LINK_LIBS})
 elseif (APPLE)
-    set(CMAKE_LINK_LIBS dl sqlpp-mysql mysqlclient crypto ${CMAKE_LINK_LIBS})
+    set(CMAKE_LINK_LIBS dl sqlpp-mysql mysqlclient crypto stdc++fs ${CMAKE_LINK_LIBS})
 elseif (UNIX) # Linux
-    set(CMAKE_LINK_LIBS dl sqlpp-mysql mysqlclient crypto ${CMAKE_LINK_LIBS})
+    set(CMAKE_LINK_LIBS dl sqlpp-mysql mysqlclient crypto stdc++fs ${CMAKE_LINK_LIBS})
 endif()
 
-include_directories(${CURL_INCLUDE_DIRS} ${OPENSSL_INCLUDE_DIR} ${HinnantDate_INCLUDE_DIR})
+include_directories(${CURL_INCLUDE_DIRS} ${OPENSSL_INCLUDE_DIR} ${HinnantDate_INCLUDE_DIR} ${Mcrypt_INCLUDE_DIR} ${ZLIB_INCLUDE_DIRS} ${LIBLZMA_INCLUDE_DIRS} ${LIBOSU_INCLUDE_DIRS} ${AKAME_INCLUDE_DIRS})
 add_executable(shiro ${SRC})
-target_link_libraries(shiro Threads::Threads ${Boost_LIBRARIES} ${CURL_LIBRARIES} ${CMAKE_LINK_LIBS})
+target_link_libraries(shiro Threads::Threads ${Boost_LIBRARIES} ${CURL_LIBRARIES} ${Mcrypt_LIBS} ${ZLIB_LIBRARIES} ${LIBLZMA_LIBRARIES} ${LIBOSU_LIBRARIES} ${AKAME_LIBRARIES} ${CMAKE_LINK_LIBS})

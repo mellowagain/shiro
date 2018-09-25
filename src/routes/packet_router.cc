@@ -1,21 +1,21 @@
-#include "../../handlers/chat/leave_channel_handler.hh"
-#include "../../handlers/chat/join_channel_handler.hh"
-#include "../../handlers/chat/private_chat_handler.hh"
-#include "../../handlers/chat/public_chat_handler.hh"
-#include "../../handlers/friends/friend_add_handler.hh"
-#include "../../handlers/friends/friend_remove_handler.hh"
-#include "../../handlers/presence/user_presence_request_handler.hh"
-#include "../../handlers/spectating/start_spectating_handler.hh"
-#include "../../handlers/spectating/stop_spectating_handler.hh"
-#include "../../handlers/spectating/spectator_frames_handler.hh"
-#include "../../handlers/spectating/cant_spectate_handler.hh"
-#include "../../handlers/logout_handler.hh"
-#include "../../handlers/ping_handler.hh"
-#include "../../handlers/user_status_handler.hh"
-#include "../../thirdparty/loguru.hh"
+#include "../handlers/chat/leave_channel_handler.hh"
+#include "../handlers/chat/join_channel_handler.hh"
+#include "../handlers/chat/private_chat_handler.hh"
+#include "../handlers/chat/public_chat_handler.hh"
+#include "../handlers/friends/friend_add_handler.hh"
+#include "../handlers/friends/friend_remove_handler.hh"
+#include "../handlers/presence/user_presence_request_handler.hh"
+#include "../handlers/spectating/start_spectating_handler.hh"
+#include "../handlers/spectating/stop_spectating_handler.hh"
+#include "../handlers/spectating/spectator_frames_handler.hh"
+#include "../handlers/spectating/cant_spectate_handler.hh"
+#include "../handlers/logout_handler.hh"
+#include "../handlers/ping_handler.hh"
+#include "../handlers/user_status_handler.hh"
+#include "../thirdparty/loguru.hh"
 #include "packet_router.hh"
 
-void shiro::routes::packets::route(shiro::io::packet_id packet_id, shiro::io::osu_packet &in, shiro::io::osu_writer &out, std::shared_ptr<users::user> user) {
+void shiro::routes::route(shiro::io::packet_id packet_id, shiro::io::osu_packet &in, shiro::io::osu_writer &out, std::shared_ptr<users::user> user) {
     switch (packet_id) {
         case io::packet_id::in_send_user_status:
             handler::user_status::handle(in, out, user);

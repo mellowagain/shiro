@@ -4,6 +4,8 @@
 static int args_count = 0;
 static char **args_vector {};
 
+CLI::App shiro::config::cli::cli_app = CLI::App("C++ osu!Bancho re-implementation", "shiro");
+
 void shiro::config::cli::parse(int argc, char **argv) {
     args_count = argc;
     args_vector = argv;

@@ -6,6 +6,7 @@
 #include "../../io/layouts/message/message.hh"
 #include "../../thirdparty/loguru.hh"
 #include "../../users/user_manager.hh"
+#include "../../users/user_punishments.hh"
 #include "../../utils/bot_utils.hh"
 #include "../../utils/string_utils.hh"
 #include "private_chat_handler.hh"
@@ -22,6 +23,11 @@ void shiro::handler::chat::handle_private(shiro::io::osu_packet &in, shiro::io::
     // Bot user
     if (target_user->user_id == 1) {
         utils::bot::handle(message, user);
+        return;
+    }
+
+    if (!users::punishments::can_chat(user->user_id)) {
+        utils::bot::respond("You are unable to chat while being restricted.", user, message.channel, true);
         return;
     }
 

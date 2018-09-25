@@ -5,7 +5,7 @@
 
 namespace shiro::utils {
 
-    enum class mods : int32_t {
+    enum class mods : uint32_t {
         none = 0 << 0,
         no_fail = 1 << 0,
         easy = 1 << 1,
@@ -42,34 +42,40 @@ namespace shiro::utils {
 
     };
 
-    constexpr int32_t key_mods = (int32_t) mods::key_1 |
-            (int32_t) mods::key_2 |
-            (int32_t) mods::key_3 |
-            (int32_t) mods::key_4 |
-            (int32_t) mods::key_5 |
-            (int32_t) mods::key_6 |
-            (int32_t) mods::key_7 |
-            (int32_t) mods::key_8 |
-            (int32_t) mods::key_9 |
-            (int32_t) mods::key_coop;
+    constexpr uint32_t key_mods = (uint32_t) mods::key_1 |
+            (uint32_t) mods::key_2 |
+            (uint32_t) mods::key_3 |
+            (uint32_t) mods::key_4 |
+            (uint32_t) mods::key_5 |
+            (uint32_t) mods::key_6 |
+            (uint32_t) mods::key_7 |
+            (uint32_t) mods::key_8 |
+            (uint32_t) mods::key_9 |
+            (uint32_t) mods::key_coop;
 
-    constexpr int32_t free_mods = (int32_t) mods::no_fail |
-            (int32_t) mods::easy |
-            (int32_t) mods::hidden |
-            (int32_t) mods::hard_rock |
-            (int32_t) mods::sudden_death |
-            (int32_t) mods::flashlight |
-            (int32_t) mods::fade_in |
-            (int32_t) mods::relax |
-            (int32_t) mods::auto_pilot |
-            (int32_t) mods::spun_out |
+    constexpr uint32_t unranked_key_mods = (uint32_t) mods::key_1 |
+            (uint32_t) mods::key_2 |
+            (uint32_t) mods::key_3 |
+            (uint32_t) mods::key_9 |
+            (uint32_t) mods::key_coop;
+
+    constexpr uint32_t free_mods = (uint32_t) mods::no_fail |
+            (uint32_t) mods::easy |
+            (uint32_t) mods::hidden |
+            (uint32_t) mods::hard_rock |
+            (uint32_t) mods::sudden_death |
+            (uint32_t) mods::flashlight |
+            (uint32_t) mods::fade_in |
+            (uint32_t) mods::relax |
+            (uint32_t) mods::auto_pilot |
+            (uint32_t) mods::spun_out |
             key_mods;
 
-    constexpr int32_t score_increase_mods = (int32_t) mods::hidden |
-            (int32_t) mods::hard_rock |
-            (int32_t) mods::double_time |
-            (int32_t) mods::flashlight |
-            (int32_t) mods::fade_in;
+    constexpr uint32_t score_increase_mods = (uint32_t) mods::hidden |
+            (uint32_t) mods::hard_rock |
+            (uint32_t) mods::double_time |
+            (uint32_t) mods::flashlight |
+            (uint32_t) mods::fade_in;
 
 }
 

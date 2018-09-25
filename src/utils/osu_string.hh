@@ -5,7 +5,7 @@
 
 namespace shiro::utils {
 
-    std::string osu_string(std::string value);
+    std::string osu_string(std::string value, bool nullable = false);
 
 }
 

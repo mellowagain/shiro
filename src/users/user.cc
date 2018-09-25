@@ -3,10 +3,11 @@
 #include "../database/tables/relationship_table.hh"
 #include "../database/tables/user_table.hh"
 #include "../thirdparty/loguru.hh"
-#include "../thirdparty/pbkdf2.hh"
+#include "../utils/crypto.hh"
 #include "../utils/play_mode.hh"
 #include "../shiro.hh"
 #include "user.hh"
+#include "user_punishments.hh"
 
 shiro::users::user::user(int32_t user_id) : user_id(user_id) {
     // Initialized in initializer list
@@ -38,9 +39,12 @@ bool shiro::users::user::init() {
         this->salt = row.salt;
         this->presence.permissions = row.groups;
         this->stats.pp = row.pp_std;
+        this->stats.accuracy = row.accuracy_std;
         this->stats.total_score = row.score_std;
         this->stats.ranked_score = row.ranked_score_std;
         this->stats.play_count = row.play_count_std;
+        this->stats.rank = row.rank_std;
+        this->presence.rank = row.rank_std;
         this->country = row.country;
     }
 
@@ -49,6 +53,9 @@ bool shiro::users::user::init() {
     for (const auto &row : relationship_result) {
         this->friends.emplace_back(row.target);
     }
+
+    if (users::punishments::is_restricted(this->user_id))
+        this->hidden = true;
 
     return true;
 }
@@ -71,40 +78,93 @@ void shiro::users::user::update() {
             this->stats.total_score = row.score_std;
             this->stats.ranked_score = row.ranked_score_std;
             this->stats.play_count = row.play_count_std;
+            this->stats.rank = row.rank_std;
+            this->stats.accuracy = row.accuracy_std;
         } else if (mode == (uint8_t) utils::play_mode::taiko) {
             this->stats.pp = row.pp_taiko;
             this->stats.total_score = row.score_taiko;
             this->stats.ranked_score = row.ranked_score_taiko;
             this->stats.play_count = row.play_count_taiko;
+            this->stats.rank = row.rank_taiko;
+            this->stats.accuracy = row.accuracy_taiko;
         } else if (mode == (uint8_t) utils::play_mode::fruits) {
             this->stats.pp = row.pp_ctb;
             this->stats.total_score = row.score_ctb;
             this->stats.ranked_score = row.ranked_score_ctb;
             this->stats.play_count = row.play_count_ctb;
+            this->stats.rank = row.rank_ctb;
+            this->stats.accuracy = row.accuracy_ctb;
         } else if (mode == (uint8_t) utils::play_mode::mania) {
             this->stats.pp = row.pp_mania;
             this->stats.total_score = row.score_mania;
             this->stats.ranked_score = row.ranked_score_mania;
             this->stats.play_count = row.play_count_mania;
+            this->stats.rank = row.rank_mania;
+            this->stats.accuracy = row.accuracy_mania;
         }
     }
+}
+
+void shiro::users::user::save_stats() {
+    sqlpp::mysql::connection db(db_connection->get_config());
+    const tables::users user_table {};
+
+    switch (this->stats.play_mode) {
+        case (uint8_t) utils::play_mode::standard:
+            db(sqlpp::update(user_table).set(
+                user_table.pp_std = this->stats.pp,
+                user_table.score_std = this->stats.total_score,
+                user_table.ranked_score_std = this->stats.ranked_score,
+                user_table.play_count_std = this->stats.play_count,
+                user_table.rank_std = this->stats.rank,
+                user_table.accuracy_std = this->stats.accuracy
+            ).where(user_table.id == this->user_id));
+            break;
+        case (uint8_t) utils::play_mode::taiko:
+            db(sqlpp::update(user_table).set(
+                    user_table.pp_taiko = this->stats.pp,
+                    user_table.score_taiko = this->stats.total_score,
+                    user_table.ranked_score_taiko = this->stats.ranked_score,
+                    user_table.play_count_taiko = this->stats.play_count,
+                    user_table.rank_taiko = this->stats.rank,
+                    user_table.accuracy_taiko = this->stats.accuracy
+            ).where(user_table.id == this->user_id));
+            break;
+        case (uint8_t) utils::play_mode::fruits:
+            db(sqlpp::update(user_table).set(
+                    user_table.pp_ctb = this->stats.pp,
+                    user_table.score_ctb = this->stats.total_score,
+                    user_table.ranked_score_ctb = this->stats.ranked_score,
+                    user_table.play_count_ctb = this->stats.play_count,
+                    user_table.rank_ctb = this->stats.rank,
+                    user_table.accuracy_ctb = this->stats.accuracy
+            ).where(user_table.id == this->user_id));
+            break;
+        case (uint8_t) utils::play_mode::mania:
+            db(sqlpp::update(user_table).set(
+                    user_table.pp_mania = this->stats.pp,
+                    user_table.score_mania = this->stats.total_score,
+                    user_table.ranked_score_mania = this->stats.ranked_score,
+                    user_table.play_count_mania = this->stats.play_count,
+                    user_table.rank_mania = this->stats.rank,
+                    user_table.accuracy_mania = this->stats.accuracy
+            ).where(user_table.id == this->user_id));
+            break;
+    }
+}
+
+void shiro::users::user::refresh_stats() {
+    io::osu_writer writer;
+
+    writer.user_stats(this->stats);
+    writer.user_presence(this->presence);
+
+    this->queue.enqueue(writer);
 }
 
 bool shiro::users::user::check_password(const std::string &password) {
     if (this->password.empty() || password.empty())
         return false;
 
-    char result[128];
-    std::memset(result, 0, sizeof(result));
-
-    uint8_t binary_result[64];
-    std::memset(binary_result, 0, sizeof(binary_result));
-
-    PBKDF2_HMAC_SHA_512(
-            password.c_str(), (int) password.length(),
-            reinterpret_cast<const unsigned char*>(this->salt.c_str()), (int) this->salt.length(),
-            4096, 64, result, binary_result
-    );
-
-    return std::string(result) == this->password;
+    return utils::crypto::pbkdf2_hmac_sha512::hash(password, this->salt) == this->password;
 }

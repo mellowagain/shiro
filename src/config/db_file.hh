@@ -6,7 +6,7 @@
 namespace shiro::config::database {
 
     extern std::string address;
-    extern unsigned int port;
+    extern uint32_t port;
     extern std::string database;
     extern std::string username;
     extern std::string password;

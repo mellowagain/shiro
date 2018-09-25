@@ -1,5 +1,36 @@
+#include <algorithm>
+#include <cmath>
+#include <limits>
+
+#include "../../../scores/score.hh"
+#include "../../../scores/score_helper.hh"
 #include "../../../utils/osu_string.hh"
+#include "../../../utils/play_mode.hh"
 #include "user_stats.hh"
+
+void shiro::io::layouts::user_stats::recalculate_accuracy() {
+    std::vector<scores::score> scores = scores::helper::fetch_top100_user((utils::play_mode) this->play_mode, this->user_id);
+    float accuracy = 0.0f;
+
+    for (const scores::score &score : scores) {
+        accuracy += score.accuracy;
+    }
+
+    this->accuracy = std::clamp(accuracy / scores.size(), 0.0f, 100.0f);
+}
+
+void shiro::io::layouts::user_stats::recalculate_pp() {
+    std::vector<scores::score> scores = scores::helper::fetch_top100_user((utils::play_mode) this->play_mode, this->user_id);
+    float pp = 0; // Here it is a float to keep decimal points, round it when setting final pp value
+
+    for (size_t i = 0; i < scores.size(); i++) {
+        scores::score score = scores.at(i);
+
+        pp += (score.pp * std::pow(0.95, i));
+    }
+
+    this->pp = std::clamp(static_cast<int16_t>(pp), (int16_t) 0, std::numeric_limits<int16_t>::max());
+}
 
 shiro::io::buffer shiro::io::layouts::user_stats::marshal() {
     std::string status_text = utils::osu_string(this->activity_desc);
@@ -21,7 +52,7 @@ shiro::io::buffer shiro::io::layouts::user_stats::marshal() {
 
     buf.write<uint64_t>(this->ranked_score);
 
-    buf.write<float>(this->accuracy);
+    buf.write<float>(this->accuracy / 100);
     buf.write<int32_t>(this->play_count);
     buf.write<uint64_t>(this->total_score);
 
@@ -46,7 +77,7 @@ void shiro::io::layouts::user_stats::unmarshal(shiro::io::buffer &buffer) {
 
     this->ranked_score = buffer.read<uint64_t>();
 
-    this->accuracy = buffer.read<float>();
+    this->accuracy = buffer.read<float>() * 100;
     this->play_count = buffer.read<int32_t>();
     this->total_score = buffer.read<uint64_t>();
 
