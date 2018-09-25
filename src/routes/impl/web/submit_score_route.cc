@@ -421,8 +421,9 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
     user->save_stats();
 
     int32_t old_rank = user->stats.rank;
-    user->stats.rank = ranking::helper::get_leaderboard_position(user->stats.play_mode, user->presence.username);
-    user->presence.rank = user->stats.rank;
+
+    if (overwrite && !user->hidden)
+        ranking::helper::recalculate_ranks(user->stats.play_mode);
 
     std::string user_above = ranking::helper::get_leaderboard_user(user->stats.play_mode, user->stats.rank - 1);
     int16_t user_above_pp = ranking::helper::get_pp_for_user(user->stats.play_mode, user_above);
