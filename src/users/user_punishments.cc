@@ -305,7 +305,15 @@ bool shiro::users::punishments::is_banned(int32_t user_id) {
 }
 
 bool shiro::users::punishments::can_chat(int32_t user_id) {
-    return !is_silenced(user_id) && !is_restricted(user_id) && !is_banned(user_id);
+    std::shared_ptr<user> user = manager::get_user_by_id(user_id);
+
+    if (user == nullptr)
+        return false;
+
+    if (user->hidden)
+        return false;
+
+    return !is_silenced(user_id);
 }
 
 bool shiro::users::punishments::has_scores(int32_t user_id) {
