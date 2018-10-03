@@ -110,6 +110,62 @@ void shiro::io::osu_writer::spectate_frames(layouts::spectate_frames frames) {
     this->write(packet_id::out_spectate_frames, std::move(frames));
 }
 
+void shiro::io::osu_writer::match_new(shiro::io::layouts::multiplayer_match match) {
+    this->write(packet_id::out_match_new, std::move(match));
+}
+
+void shiro::io::osu_writer::match_update(shiro::io::layouts::multiplayer_match match) {
+    this->write(packet_id::out_match_update, std::move(match));
+}
+
+void shiro::io::osu_writer::match_disband(int32_t match_id) {
+    this->write(packet_id::out_match_disband, serializable(match_id));
+}
+
+void shiro::io::osu_writer::match_join_success(shiro::io::layouts::multiplayer_match match) {
+    this->write(packet_id::out_match_join_success, std::move(match));
+}
+
+void shiro::io::osu_writer::match_join_fail() {
+    this->write(packet_id::out_match_join_fail);
+}
+
+void shiro::io::osu_writer::match_start(shiro::io::layouts::multiplayer_match match) {
+    this->write(packet_id::out_match_start, std::move(match));
+}
+
+void shiro::io::osu_writer::match_score_update(shiro::io::layouts::score_frame score_frame) {
+    this->write(packet_id::out_match_score_update, std::move(score_frame));
+}
+
+void shiro::io::osu_writer::match_transfer_host() {
+    this->write(packet_id::out_match_transfer_host);
+}
+
+void shiro::io::osu_writer::match_all_players_loaded() {
+    this->write(packet_id::out_match_all_players_loaded);
+}
+
+void shiro::io::osu_writer::match_player_failed(int32_t user_id) {
+    this->write(packet_id::out_match_player_failed, serializable(user_id));
+}
+
+void shiro::io::osu_writer::match_complete() {
+    this->write(packet_id::out_match_complete);
+}
+
+void shiro::io::osu_writer::match_skip() {
+    this->write(packet_id::out_match_skip);
+}
+
+void shiro::io::osu_writer::match_player_skipped(int32_t user_id) {
+    this->write(packet_id::out_match_player_skipped, serializable(user_id));
+}
+
+void shiro::io::osu_writer::match_change_password(std::string password) {
+    this->write(packet_id::out_match_change_password, serializable(std::move(password)));
+}
+
 std::string shiro::io::osu_writer::serialize() {
     return this->buf.serialize();
 }
