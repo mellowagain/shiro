@@ -40,16 +40,18 @@ shiro::io::buffer shiro::io::layouts::multiplayer_match::marshal() {
     buf.write<int32_t>(this->beatmap_id);
     buf.write_string(beatmap_checksum);
 
-    for (int i = 0; i < 16; i++) {
-        buf.write<uint8_t>(this->multi_slot_status[i]);
+    for (uint8_t status : this->multi_slot_status) {
+        buf.write<uint8_t>(status);
     }
 
-    for (int i = 0; i < 16; i++) {
-        buf.write<uint8_t>(this->multi_slot_team[i]);
+    for (uint8_t team : this->multi_slot_team) {
+        buf.write<uint8_t>(team);
     }
 
-    for (int i = 0; i < 16; i++) {
-        if ((this->multi_slot_status[i] & 0x7c) > 0)
+    for (size_t i = 0; i < this->multi_slot_status.size(); i++) {
+        int32_t status = this->multi_slot_status.at(i) & 0x7c;
+
+        if (status > 0)
             buf.write<int32_t>(this->multi_slot_id[i]);
     }
 
@@ -60,9 +62,11 @@ shiro::io::buffer shiro::io::layouts::multiplayer_match::marshal() {
     buf.write<uint8_t>(this->multi_team_type);
     buf.write<uint8_t>(this->multi_special_modes);
 
-    if ((this->multi_special_modes & 1) > 0) {
-        for (int i = 0; i < 16; i++) {
-            buf.write<int32_t>(this->multi_slot_mods[i]);
+    int32_t special_mode = this->multi_special_modes & 0x1;
+
+    if (special_mode > 0) {
+        for (int32_t mods : this->multi_slot_mods) {
+            buf.write<int32_t>(mods);
         }
     }
 
@@ -85,16 +89,18 @@ void shiro::io::layouts::multiplayer_match::unmarshal(shiro::io::buffer &buffer)
     this->beatmap_id = buffer.read<int32_t>();
     this->beatmap_checksum = buffer.read_string();
 
-    for (int i = 0; i < 16; i++) {
-        this->multi_slot_status[i] = buffer.read<uint8_t>();
+    for (uint8_t &status : this->multi_slot_status) {
+        status = buffer.read<uint8_t>();
     }
 
-    for (int i = 0; i < 16; i++) {
-        this->multi_slot_team[i] = buffer.read<uint8_t>();
+    for (uint8_t &team : this->multi_slot_team) {
+        team = buffer.read<uint8_t>();
     }
 
-    for (int i = 0; i < 16; i++) {
-        this->multi_slot_id[i] = ((this->multi_slot_status[i] & 0x7c) > 0) ? buffer.read<int32_t>() : -1;
+    for (size_t i = 0; i < this->multi_slot_status.size(); i++) {
+        int32_t status = this->multi_slot_status[i] & 0x7c;
+
+        this->multi_slot_id.at(i) = status > 0 ? buffer.read<int32_t>() : -1;
     }
 
     this->host_id = buffer.read<int32_t>();
@@ -104,9 +110,11 @@ void shiro::io::layouts::multiplayer_match::unmarshal(shiro::io::buffer &buffer)
     this->multi_team_type = buffer.read<uint8_t>();
     this->multi_special_modes = buffer.read<uint8_t>();
 
-    if ((this->multi_special_modes & 1) > 0) {
-        for (int i = 0; i < 16; i++) {
-            this->multi_slot_mods[i] = buffer.read<int32_t>();
+    int32_t special_mode = this->multi_special_modes & 0x1;
+
+    if (special_mode > 0) {
+        for (int32_t &mod : this->multi_slot_mods) {
+            mod = buffer.read<int32_t>();
         }
     }
 

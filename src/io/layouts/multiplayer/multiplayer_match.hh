@@ -19,36 +19,41 @@
 #ifndef SHIRO_MULTIPLAYER_MATCH_HH
 #define SHIRO_MULTIPLAYER_MATCH_HH
 
+#include <array>
+
+#include "../../../utils/mods.hh"
 #include "../serializable.hh"
 
 namespace shiro::io::layouts {
 
     class multiplayer_match : public serializable {
     public:
-        std::string game_name;
-        int16_t match_id;
-        uint8_t multi_type;
+        virtual ~multiplayer_match() = default;
 
-        uint8_t multi_slot_status[16];
-        int32_t multi_slot_id[16];
-        uint8_t multi_slot_team[16];
-        int32_t multi_slot_mods[16];
+        std::string game_name = "";
+        int16_t match_id = 0;
+        uint8_t multi_type = 0;
 
-        std::string beatmap_name;
-        std::string beatmap_checksum;
-        int32_t beatmap_id;
+        std::array<uint8_t, 16> multi_slot_status;
+        std::array<int32_t, 16> multi_slot_id;
+        std::array<uint8_t, 16> multi_slot_team;
+        std::array<int32_t, 16> multi_slot_mods;
 
-        bool in_progress;
-        int32_t active_mods;
-        int32_t host_id;
+        std::string beatmap_name = "";
+        std::string beatmap_checksum = "";
+        int32_t beatmap_id = 0;
 
-        uint8_t game_mode;
-        uint8_t multi_win_condition;
-        uint8_t multi_team_type;
-        uint8_t multi_special_modes;
+        bool in_progress = false;
+        int32_t active_mods = (int32_t) utils::mods::none;
+        int32_t host_id = 0;
 
-        int32_t random_seed;
-        std::string game_password;
+        uint8_t game_mode = 0;
+        uint8_t multi_win_condition = 0;
+        uint8_t multi_team_type = 0;
+        uint8_t multi_special_modes = 0;
+
+        int32_t random_seed = 0;
+        std::string game_password = "";
 
         buffer marshal() override;
         void unmarshal(shiro::io::buffer &buffer) override;
