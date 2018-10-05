@@ -40,7 +40,7 @@ void shiro::channels::manager::init() {
         db(insert_into(channel_table).set(
                 channel_table.name = "#announce",
                 channel_table.description = "",
-                channel_table.auto_join = false,
+                channel_table.auto_join = true,
                 channel_table.hidden = false
         ));
     }
