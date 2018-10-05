@@ -405,7 +405,6 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
     }
 
     if (!score.passed) {
-        user->refresh_stats();
         response.end("ok");
         return;
     }
@@ -484,6 +483,5 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
     out << "onlineScoreId:" << score.id;
     out << std::endl;
 
-    user->refresh_stats();
     response.end(out.str());
 }

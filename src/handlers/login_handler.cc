@@ -50,7 +50,7 @@ void shiro::handler::login::handle(const crow::request &request, crow::response 
         response.code = 403;
         response.end();
 
-        LOG_F(WARNING, "Received invalid login request from %s: Login body has wrong length.", request.get_header_value("X-Forwarded-For").c_str());
+        LOG_F(WARNING, "Received invalid login request from %s: Login body has wrong length (%lu != 4).", request.get_header_value("X-Forwarded-For").c_str(), lines.size());
         return;
     }
 

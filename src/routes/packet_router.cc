@@ -29,6 +29,7 @@
 #include "../handlers/spectating/cant_spectate_handler.hh"
 #include "../handlers/logout_handler.hh"
 #include "../handlers/ping_handler.hh"
+#include "../handlers/request_status_update_handler.hh"
 #include "../handlers/user_status_handler.hh"
 #include "../thirdparty/loguru.hh"
 #include "packet_router.hh"
@@ -44,7 +45,9 @@ void shiro::routes::route(shiro::io::packet_id packet_id, shiro::io::osu_packet 
         case io::packet_id::in_exit:
             handler::logout::handle(in, out, user);
             break;
-        case io::packet_id::in_request_status_update:break;
+        case io::packet_id::in_request_status_update:
+            handler::request_status_update::handle(in, out, user);
+            break;
         case io::packet_id::in_pong:
             handler::ping::handle(in, out, user);
             break;
