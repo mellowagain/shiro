@@ -49,6 +49,8 @@ int shiro::init(int argc, char **argv) {
 
     curl_global_init(CURL_GLOBAL_DEFAULT);
 
+    std::srand((uint32_t) std::time(nullptr));
+
     config::cli::parse(argc, argv);
 
     config::bot::parse();
