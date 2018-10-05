@@ -33,59 +33,46 @@ void shiro::channels::manager::init() {
     sqlpp::mysql::connection db(db_connection->get_config());
     const tables::channels channel_table {};
 
-    auto result = db(select(all_of(channel_table)).from(channel_table).unconditionally());
+    auto result = db(select(all_of(channel_table)).from(channel_table).where(channel_table.name == "#announce"));
     bool empty = is_query_empty(result);
 
-    if (empty)
-        return;
-
-    for (const auto &row : result) {
-        std::string name = row.name;
-
-        if ((int) row.id == 0)
-            LOG_S(FATAL) << "Channel " << name << " uses reserved id 0, aborting!";
-
-        if (name.find('#') == std::string::npos) {
-            LOG_F(WARNING, "Channel name of channel id %i doesn't start with #, fixing (%s -> %s).", (int) row.id, name.c_str(), ("#" + name).c_str());
-            name.insert(0, "#");
-        }
-
-        channels.insert(std::make_pair<io::layouts::channel, std::vector<std::shared_ptr<users::user>>>(
-                io::layouts::channel(row.id, row.auto_join, name, row.description, 0),
-                std::vector<std::shared_ptr<users::user>>()
+    if (empty) {
+        db(insert_into(channel_table).set(
+                channel_table.name = "#announce",
+                channel_table.description = "",
+                channel_table.auto_join = false,
+                channel_table.hidden = false
         ));
     }
 
-    for (const auto &[channel, _] : channels) {
-        if (channel.name == "#announce")
-            return;
+    result = db(select(all_of(channel_table)).from(channel_table).where(channel_table.name == "#lobby"));
+    empty = is_query_empty(result);
+
+    if (empty) {
+        db(insert_into(channel_table).set(
+                channel_table.name = "#lobby",
+                channel_table.description = "",
+                channel_table.auto_join = false,
+                channel_table.hidden = true
+        ));
     }
 
-    db(insert_into(channel_table).set(
-            channel_table.name = "#announce",
-            channel_table.description = "",
-            channel_table.auto_join = true
-    ));
-
-    result = db(select(all_of(channel_table)).from(channel_table).where(channel_table.name == "#announce"));
+    result = db(select(all_of(channel_table)).from(channel_table).unconditionally());
     empty = is_query_empty(result);
 
     if (empty)
         return;
 
     for (const auto &row : result) {
-        std::string name = row.name;
+        std::string name = row.name;;
 
-        if ((int) row.id == 0)
-            LOG_S(FATAL) << "Channel " << name << " uses reserved id 0, aborting!";
-
-        if (name.find('#') == std::string::npos) {
+        if (name.at(0) != '#') {
             LOG_F(WARNING, "Channel name of channel id %i doesn't start with #, fixing (%s -> %s).", (int) row.id, name.c_str(), ("#" + name).c_str());
             name.insert(0, "#");
         }
 
         channels.insert(std::make_pair<io::layouts::channel, std::vector<std::shared_ptr<users::user>>>(
-                io::layouts::channel(row.id, row.auto_join, name, row.description, 0),
+                io::layouts::channel(row.id, row.auto_join, row.hidden, name, row.description, 0),
                 std::vector<std::shared_ptr<users::user>>()
         ));
     }
@@ -93,6 +80,9 @@ void shiro::channels::manager::init() {
 
 void shiro::channels::manager::write_channels(shiro::io::osu_writer &buf, std::shared_ptr<shiro::users::user> user, bool first) {
     for (auto &[channel, users] : channels) {
+        if (channel.hidden)
+            continue;
+
         shiro::io::layouts::channel channel_layout;
         channel_layout.id = channel.id;
         channel_layout.auto_join = channel.auto_join;

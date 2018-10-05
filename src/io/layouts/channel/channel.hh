@@ -26,11 +26,12 @@ namespace shiro::io::layouts {
     class channel : public serializable {
     public:
         channel() = default;
-        channel(uint32_t id, bool auto_join, std::string name, std::string description, int32_t user_count);
+        channel(uint32_t id, bool auto_join, bool hidden, std::string name, std::string description, int32_t user_count);
 
         // Not written
         uint32_t id = 0;
         bool auto_join = false;
+        bool hidden = false;
 
         // Written
         std::string name = "";

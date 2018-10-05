@@ -20,6 +20,7 @@
 #include "../thirdparty/loguru.hh"
 #include "../shiro.hh"
 #include "database.hh"
+#include "tables/channel_table.hh"
 
 shiro::database::database(const std::string &address, uint32_t port, const std::string &db, const std::string &username, const std::string &password)
     : address(address)
@@ -70,7 +71,8 @@ void shiro::database::setup() {
     db.execute(
            "CREATE TABLE IF NOT EXISTS `channels` "
            "(id INT PRIMARY KEY NOT NULL AUTO_INCREMENT, "
-           "name VARCHAR(32) NOT NULL, description VARCHAR(64) NOT NULL, auto_join BOOLEAN NOT NULL);"
+           "name VARCHAR(32) NOT NULL, description VARCHAR(64) NOT NULL, "
+           "auto_join BOOLEAN NOT NULL, hidden BOOLEAN NOT NULL);"
     );
 
     // Submitted scores

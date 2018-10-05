@@ -32,11 +32,12 @@ namespace shiro::tables {
         object_struct(name, sqlpp::varchar);
         object_struct(description, sqlpp::varchar);
         object_struct(auto_join, sqlpp::boolean);
+        object_struct(hidden, sqlpp::boolean);
     };
 
     struct channels : sqlpp::table_t<channels, channel_objects::id,
             channel_objects::name, channel_objects::description,
-            channel_objects::auto_join> {
+            channel_objects::auto_join, channel_objects::hidden> {
         using _value_type = sqlpp::no_value_t;
         struct _alias_t {
             static constexpr const char _literal[] = "channels";
