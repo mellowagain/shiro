@@ -63,7 +63,7 @@ void shiro::routes::root::handle(const crow::request &request, crow::response &r
     response.set_header("cho-protocol", std::to_string(shiro::io::cho_protocol));
     response.set_header("cho-token", "");
 
-    if (request.get_header_value("osu-token").length() <= 0) {
+    if (request.get_header_value("osu-token").empty()) {
         handler::login::handle(request, response);
         return;
     }
