@@ -94,13 +94,15 @@ void shiro::database::setup() {
            "password VARCHAR(128) NOT NULL, salt VARCHAR(64) NOT NULL,"
            "email VARCHAR(100) NOT NULL, ip VARCHAR(39) NOT NULL, registration_date INT NOT NULL, last_seen INT NOT NULL, "
            "followers INT NOT NULL, groups INT NOT NULL, user_page TEXT NOT NULL, "
-           "pp_std FLOAT NOT NULL, pp_taiko FLOAT NOT NULL, pp_ctb FLOAT NOT NULL, pp_mania FLOAT NOT NULL, "
-           "rank_std INT NOT NULL, rank_taiko INT NOT NULL, rank_ctb INT NOT NULL, rank_mania INT NOT NULL, "
-           "score_std INT NOT NULL, score_taiko INT NOT NULL, score_ctb INT NOT NULL, score_mania INT NOT NULL, "
-           "ranked_score_std INT NOT NULL, ranked_score_taiko INT NOT NULL, ranked_score_ctb INT NOT NULL, ranked_score_mania INT NOT NULL, "
-           "accuracy_std FLOAT NOT NULL, accuracy_taiko FLOAT NOT NULL, accuracy_ctb FLOAT NOT NULL, accuracy_mania FLOAT NOT NULL,"
-           "play_count_std INT NOT NULL, play_count_taiko INT NOT NULL, play_count_ctb INT NOT NULL, play_count_mania INT NOT NULL, "
-           "country VARCHAR(2) NOT NULL);"
+           "pp_std FLOAT NOT NULL DEFAULT 0, pp_taiko FLOAT NOT NULL DEFAULT 0, pp_ctb FLOAT NOT NULL DEFAULT 0, "
+           "pp_mania FLOAT NOT NULL DEFAULT 0, rank_std INT NOT NULL DEFAULT 0, rank_taiko INT NOT NULL DEFAULT 0, "
+           "rank_ctb INT NOT NULL DEFAULT 0, rank_mania INT NOT NULL DEFAULT 0, score_std INT NOT NULL DEFAULT 0, "
+           "score_taiko INT NOT NULL DEFAULT 0, score_ctb INT NOT NULL DEFAULT 0, score_mania INT NOT NULL DEFAULT 0, "
+           "ranked_score_std INT NOT NULL DEFAULT 0, ranked_score_taiko INT NOT NULL DEFAULT 0, "
+           "ranked_score_ctb INT NOT NULL DEFAULT 0, ranked_score_mania INT NOT NULL DEFAULT 0, "
+           "accuracy_std FLOAT NOT NULL DEFAULT 0, accuracy_taiko FLOAT NOT NULL DEFAULT 0, accuracy_ctb FLOAT NOT NULL DEFAULT 0, "
+           "accuracy_mania FLOAT NOT NULL DEFAULT 0, play_count_std INT NOT NULL DEFAULT 0, play_count_taiko INT NOT NULL DEFAULT 0, "
+           "play_count_ctb INT NOT NULL DEFAULT 0, play_count_mania INT NOT NULL DEFAULT 0, country VARCHAR(2) NOT NULL);"
     );
 
     // Punishments (kicks, silences, restrictions, bans)
