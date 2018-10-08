@@ -38,8 +38,6 @@ namespace shiro::io {
     public:
         buffer() = default;
         buffer(const buffer &buf);
-
-        buffer(buffer &buf);
         explicit buffer(std::string data);
 
         void append(std::string data);

@@ -40,12 +40,6 @@ shiro::io::buffer::buffer(const buffer &buf) {
     }
 }
 
-shiro::io::buffer::buffer(buffer &buf) {
-    for (uint8_t byte : buf.bytes) {
-        this->write<uint8_t>(byte);
-    }
-}
-
 shiro::io::buffer::buffer(std::string data) {
     for (const char &c : data) {
         this->write<uint8_t>(c);
