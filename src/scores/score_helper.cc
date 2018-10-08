@@ -98,6 +98,14 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_all_scores(std::s
     if (empty)
         return {};
 
+    beatmaps::beatmap map;
+    map.beatmap_md5 = beatmap_md5sum;
+
+    if (!map.fetch_db()) {
+        LOG_F(ERROR, "Tried to fetch scores for beatmap hash %s without it being in database.", beatmap_md5sum.c_str());
+        return {};
+    }
+
     std::vector<score> scores;
 
     for (const auto &row : result) {
@@ -136,6 +144,9 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_all_scores(std::s
             continue;
 
         if (!is_ranked(s, beatmaps::beatmap()))
+            continue;
+
+        if (map.last_update > s.time)
             continue;
 
         scores.emplace_back(s);
@@ -181,6 +192,14 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_country_scores(st
     if (empty)
         return {};
 
+    beatmaps::beatmap map;
+    map.beatmap_md5 = beatmap_md5sum;
+
+    if (!map.fetch_db()) {
+        LOG_F(ERROR, "Tried to fetch scores for beatmap hash %s without it being in database.", beatmap_md5sum.c_str());
+        return {};
+    }
+
     std::vector<score> scores;
 
     for (const auto &row : result) {
@@ -219,6 +238,9 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_country_scores(st
             continue;
 
         if (!is_ranked(s, beatmaps::beatmap()))
+            continue;
+
+        if (map.last_update > s.time)
             continue;
 
         scores.emplace_back(s);
@@ -269,6 +291,14 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_mod_scores(std::s
     if (empty)
         return {};
 
+    beatmaps::beatmap map;
+    map.beatmap_md5 = beatmap_md5sum;
+
+    if (!map.fetch_db()) {
+        LOG_F(ERROR, "Tried to fetch scores for beatmap hash %s without it being in database.", beatmap_md5sum.c_str());
+        return {};
+    }
+
     std::vector<score> scores;
 
     for (const auto &row : result) {
@@ -307,6 +337,9 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_mod_scores(std::s
             continue;
 
         if (!is_ranked(s, beatmaps::beatmap()))
+            continue;
+
+        if (map.last_update > s.time)
             continue;
 
         scores.emplace_back(s);
@@ -347,6 +380,14 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_friend_scores(std
     if (empty)
         return {};
 
+    beatmaps::beatmap map;
+    map.beatmap_md5 = beatmap_md5sum;
+
+    if (!map.fetch_db()) {
+        LOG_F(ERROR, "Tried to fetch scores for beatmap hash %s without it being in database.", beatmap_md5sum.c_str());
+        return {};
+    }
+
     std::vector<score> scores;
 
     for (const auto &row : result) {
@@ -385,6 +426,9 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_friend_scores(std
             continue;
 
         if (!is_ranked(s, beatmaps::beatmap()))
+            continue;
+
+        if (map.last_update > s.time)
             continue;
 
         scores.emplace_back(s);
@@ -440,6 +484,14 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_user_scores(std::
     if (empty)
         return {};
 
+    beatmaps::beatmap map;
+    map.beatmap_md5 = beatmap_md5sum;
+
+    if (!map.fetch_db()) {
+        LOG_F(ERROR, "Tried to fetch scores for beatmap hash %s without it being in database.", beatmap_md5sum.c_str());
+        return {};
+    }
+
     std::vector<score> scores;
 
     for (const auto &row : result) {
@@ -475,6 +527,9 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_user_scores(std::
             continue;
 
         if (!is_ranked(s, beatmaps::beatmap()))
+            continue;
+
+        if (map.last_update > s.time)
             continue;
 
         scores.emplace_back(s);
