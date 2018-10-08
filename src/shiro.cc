@@ -20,6 +20,7 @@
 #include <curl/curl.h>
 #include <thread>
 
+#include "beatmaps/beatmap_helper.hh"
 #include "bot/bot.hh"
 #include "channels/channel_manager.hh"
 #include "config/bancho_file.hh"
@@ -59,6 +60,8 @@ int shiro::init(int argc, char **argv) {
     config::score_submission::parse();
 
     geoloc::init();
+
+    beatmaps::helper::init();
 
     db_connection = std::make_shared<database>(
             config::database::address, config::database::port, config::database::database,
