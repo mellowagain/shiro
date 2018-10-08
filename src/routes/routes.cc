@@ -22,6 +22,7 @@
 #include "../logger/route_logger.hh"
 #include "../thirdparty/loguru.hh"
 #include "impl/web/bancho_connect_route.hh"
+#include "impl/web/get_replay_route.hh"
 #include "impl/web/get_scores_route.hh"
 #include "impl/web/submit_score_route.hh"
 #include "impl/root_route.hh"
@@ -51,5 +52,6 @@ void shiro::routes::init_routes() {
 
     CROW_ROUTE(server, "/web/bancho_connect.php").methods("GET"_method)(shiro_route(web::bancho_connect::handle));
     CROW_ROUTE(server, "/web/osu-osz2-getscores.php").methods("GET"_method)(shiro_route(web::get_scores::handle));
+    CROW_ROUTE(server, "/web/osu-getreplay.php").methods("GET"_method)(shiro_route(web::get_replay::handle));
     CROW_ROUTE(server, "/web/osu-submit-modular.php").methods("POST"_method)(shiro_route(web::submit_score::handle));
 }
