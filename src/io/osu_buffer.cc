@@ -128,6 +128,14 @@ void shiro::io::buffer::clear() {
     this->position = 0;
 }
 
+void shiro::io::buffer::seek(size_t position) {
+    this->position = position;
+}
+
+void shiro::io::buffer::advance(size_t amount) {
+    this->position += amount;
+}
+
 size_t shiro::io::buffer::get_size() {
     return this->written_size;
 }

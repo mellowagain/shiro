@@ -70,7 +70,10 @@ namespace shiro::io {
 
         bool can_read(size_t amount);
         bool is_empty();
+
         void clear();
+        void seek(size_t position);
+        void advance(size_t amount);
 
         size_t get_size();
 

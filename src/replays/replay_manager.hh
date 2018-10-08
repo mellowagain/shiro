@@ -32,6 +32,8 @@ namespace shiro::replays {
 
     std::string calculate_diagram(const scores::score &s, std::string replay);
 
+    std::string get_replay(const scores::score &s);
+
     bool has_replay(const scores::score &s);
 
 }
