@@ -21,22 +21,32 @@
 
 #include <string>
 #include <map>
+#include <vector>
 
 namespace shiro::utils {
 
-    constexpr uint32_t MULTIPART_TYPE_NONE = 0;
-    constexpr uint32_t MULTIPART_TYPE_TEXT = 1;
-    constexpr uint32_t MULTIPART_TYPE_FILE = 2;
-
-    class multipart_field {
-    public:
-        std::string filename;
-        std::string content;
-        std::string content_type;
-        uint32_t multipart_type = MULTIPART_TYPE_NONE;
+    enum class multipart_field_type {
+        none = 0,
+        text = 1,
+        file = 2
     };
 
-    using multipart_fields = std::map<std::string, multipart_field>;
+    class multipart_form_part {
+    public:
+        std::map<std::string, std::string> headers;
+        std::string body;
+    };
+
+    class multipart_form_field {
+    public:
+        std::string name;
+        std::string content_type;
+        std::string body;
+        multipart_field_type type = multipart_field_type::none;
+    };
+
+    using multipart_form_parts = std::vector<multipart_form_part>;
+    using multipart_form_fields = std::map<std::string, multipart_form_field>;
 
     class multipart_parser {
     private:
@@ -47,11 +57,10 @@ namespace shiro::utils {
         multipart_parser(const std::string &body, const std::string &content_type);
         ~multipart_parser() = default;
 
-        multipart_fields parse();
+        multipart_form_parts parse();
+        multipart_form_fields parse_fields();
 
     };
-
-    std::string get_field(std::string field_name, const std::string &body);
 
 }
 

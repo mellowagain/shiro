@@ -21,6 +21,7 @@
 #include <boost/algorithm/string/split.hpp>
 #include <regex>
 
+#include "../thirdparty/multipartparser.hh"
 #include "multipart_parser.hh"
 #include "string_utils.hh"
 
@@ -30,7 +31,7 @@ shiro::utils::multipart_parser::multipart_parser(const std::string &body, const 
     // Initialized in initializer list
 }
 
-shiro::utils::multipart_fields shiro::utils::multipart_parser::parse() {
+shiro::utils::multipart_form_parts shiro::utils::multipart_parser::parse() {
     if (this->content_type.find("multipart/form-data") == std::string::npos)
         return {};
 
@@ -40,106 +41,125 @@ shiro::utils::multipart_fields shiro::utils::multipart_parser::parse() {
         return {};
 
     std::string boundary = this->content_type.substr(boundary_pos + 9);
-    std::string dash_boundary = "--" + boundary;
 
-    std::string::size_type prev_pos = 0;
-    std::string::size_type pos = 0;
+    bool body_begin_called = false;
+    bool body_end_called = false;
 
-    multipart_fields fields;
+    std::string header_name = "";
+    std::string header_value = "";
 
-    while ((pos = this->body.find(dash_boundary, pos)) != std::string::npos) {
-        std::string substr = this->body.substr(prev_pos, pos - prev_pos);
-        prev_pos = ++pos;
+    multipart_form_parts parts {};
 
-        if (substr.length() < dash_boundary.length())
+    const auto on_body_begin = [&](multipartparser *parser) -> int {
+        body_begin_called = true;
+        return 0;
+    };
+    const auto on_part_begin = [&](multipartparser *parser) -> int {
+        parts.emplace_back(multipart_form_part {});
+        return 0;
+    };
+    const auto on_header_done = [&]() -> int {
+        parts.back().headers[header_name] = header_value;
+
+        header_name.clear();
+        header_value.clear();
+
+        return 0;
+    };
+    const auto on_header_field = [&](multipartparser *parser, const char *data, size_t size) -> int {
+        if (!header_value.empty())
+            on_header_done();
+
+        header_name.append(data, size);
+        return 0;
+    };
+    const auto on_header_value = [&](multipartparser *parser, const char *data, size_t size) -> int {
+        header_value.append(data, size);
+        return 0;
+    };
+    const auto on_headers_complete = [&](multipartparser *parser) -> int {
+        if (!header_value.empty())
+            on_header_done();
+
+        return 0;
+    };
+    const auto on_data = [&](multipartparser *parser, const char *data, size_t size) -> int {
+        parts.back().body.append(data, size);
+        return 0;
+    };
+    const auto on_part_end = [&](multipartparser *parser) -> int {
+        return 0;
+    };
+    const auto on_body_end = [&](multipartparser *parser) -> int {
+        body_end_called = true;
+        return 0;
+    };
+
+    multipartparser parser {};
+    multipartparser_callbacks callbacks {};
+
+    multipartparser_callbacks_init(&callbacks);
+
+    callbacks.on_body_begin = on_body_begin;
+    callbacks.on_part_begin = on_part_begin;
+    callbacks.on_header_field = on_header_field;
+    callbacks.on_header_value = on_header_value;
+    callbacks.on_headers_complete = on_headers_complete;
+    callbacks.on_data = on_data;
+    callbacks.on_part_end = on_part_end;
+    callbacks.on_body_end = on_body_end;
+
+    multipartparser_init(&parser, boundary.c_str());
+    size_t result = multipartparser_execute(&parser, &callbacks, this->body.c_str(), this->body.size());
+
+    if (result != this->body.size())
+        return {};
+
+    return parts;
+}
+
+shiro::utils::multipart_form_fields shiro::utils::multipart_parser::parse_fields() {
+    multipart_form_parts parts = this->parse();
+    multipart_form_fields fields {};
+
+    for (const multipart_form_part &part : parts) {
+        if (part.headers.find("Content-Disposition") == part.headers.end())
             continue;
 
-        if (substr.find("Content-Disposition: form-data;") == std::string::npos)
-            continue;
+        static const std::regex field_name_regex(".+name=\"(.+)\"");
+        static const std::regex field_filename_regex(".+filename=\"(.+)\"");
 
-        std::vector<std::string> lines;
-        boost::split(lines, substr, boost::is_any_of("\r"));
+        std::smatch field_name_regex_match, field_filename_regex_match;
 
-        if (lines.size() < 2)
-            continue;
+        if (part.headers.find("Content-Type") != part.headers.end()) {
+            if (std::regex_match(part.headers.at("Content-Disposition"), field_filename_regex_match, field_filename_regex)) {
+                std::string field_name = field_filename_regex_match[1];
+                multipart_form_field field;
 
-        for (std::string &line : lines) {
-            boost::replace_all(line, "\n", "");
-        }
+                // workaround for peppy's gay
+                if (field_filename_regex_match[1] == "score")
+                    field_name = "replay-bin";
 
-        multipart_field field;
-        field.multipart_type = MULTIPART_TYPE_TEXT;
+                field.body = part.body;
+                field.content_type = part.headers.at("Content-Type");
+                field.name = field_name;
+                field.type = multipart_field_type::file;
 
-        std::string name = get_field("name", lines.at(1));
-        std::string filename = get_field("filename", lines.at(1));
-        std::string content_type;
-
-        if (!filename.empty())
-            field.multipart_type = MULTIPART_TYPE_FILE;
-
-        if (lines.size() < (field.multipart_type == MULTIPART_TYPE_TEXT ? 3 : 4))
-            continue;
-
-        if (field.multipart_type == MULTIPART_TYPE_FILE) {
-            content_type = lines.at(2);
-            boost::replace_all(content_type, "Content-Type: ", "");
-
-            if (content_type.empty())
-                continue;
-        }
-
-        switch (field.multipart_type) {
-            case MULTIPART_TYPE_TEXT: {
-                field.content = lines.at(3);
-                break;
+                fields.insert({ field_name, field });
             }
-            case MULTIPART_TYPE_FILE: {
-                if (name == "score")
-                    name = "replay";
+        } else {
+            if (std::regex_match(part.headers.at("Content-Disposition"), field_name_regex_match, field_name_regex)) {
+                multipart_form_field field;
 
-                field.filename = filename;
-                field.content_type = content_type;
+                field.body = part.body;
+                field.content_type = "text/plain";
+                field.name = field_name_regex_match[1];
+                field.type = multipart_field_type::text;
 
-                std::stringstream stream;
-                for (size_t i = 4; i < lines.size(); i++) {
-                    stream << lines.at(i);
-                }
-
-                field.content = stream.str();
-                break;
-            }
-            default: {
-                continue;
+                fields.insert({ field_name_regex_match[1], field });
             }
         }
-
-        fields.insert(std::make_pair(name, field));
     }
 
     return fields;
-}
-
-std::string shiro::utils::get_field(std::string field_name, const std::string &body) {
-    field_name = field_name + "=\"";
-
-    std::string::size_type pos = body.find(field_name);
-
-    if (pos == std::string::npos)
-        return "";
-
-    std::string substr = body.substr(pos);
-
-    static std::regex regex(R"((["'])(?:(?=(\\?))\2.)*?\1)");
-    std::smatch match;
-
-    if (!std::regex_search(substr, match, regex))
-        return "";
-
-    if (match.empty())
-        return "";
-
-    std::string matched = match.str(0);
-    boost::replace_all(matched, "\"", "");
-
-    return matched;
 }

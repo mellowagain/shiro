@@ -69,7 +69,7 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
     if (parser == nullptr)
         return;
 
-    utils::multipart_fields fields = parser->parse();
+    utils::multipart_form_fields fields = parser->parse_fields();
     std::string key = "h89f2-890h2h89b34g-h80g134n90133";
 
     if (fields.find("pass") == fields.end()) {
@@ -97,12 +97,12 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
     }
 
     if (fields.find("osuver") != fields.end())
-        key = "osu!-scoreburgr---------" + fields.at("osuver").content;
+        key = "osu!-scoreburgr---------" + fields.at("osuver").body;
 
     std::vector<unsigned char> decrypted = utils::crypto::rijndael256::decode(
-            utils::crypto::base64::decode(fields.at("iv").content.c_str()),
+            utils::crypto::base64::decode(fields.at("iv").body.c_str()),
             key,
-            utils::crypto::base64::decode(fields.at("score").content.c_str())
+            utils::crypto::base64::decode(fields.at("score").body.c_str())
     );
 
     if (decrypted.empty()) {
@@ -138,7 +138,7 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
         return;
     }
 
-    if (!user->check_password(fields.at("pass").content)) {
+    if (!user->check_password(fields.at("pass").body)) {
         response.code = 403;
         response.end("error: pass");
 
@@ -247,7 +247,7 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
     beatmap.play_count++;
     beatmap.update_play_metadata();
 
-    if (fields.find("replay") == fields.end()) {
+    if (fields.find("replay-bin") == fields.end()) {
         response.code = 400;
         response.end("error: invalid");
 
@@ -346,8 +346,8 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
 
     // Auto restriction for notepad hack
     if (config::score_submission::restrict_notepad_hack && fields.find("bmk") != fields.end() && fields.find("bml") != fields.end()) {
-        std::string bmk = fields.at("bmk").content;
-        std::string bml = fields.at("bml").content;
+        std::string bmk = fields.at("bmk").body;
+        std::string bml = fields.at("bml").body;
 
         if (bmk != bml)
             users::punishments::restrict(user->user_id, "Mismatching bmk and bml (notepad hack, " + bmk + " != " + bml + ")");
@@ -397,7 +397,7 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
     if (overwrite)
         user->stats.total_score += score.total_score;
 
-    replays::save_replay(score, beatmap, game_version, fields.at("replay").content);
+    replays::save_replay(score, beatmap, game_version, fields.at("replay-bin").body);
 
     if (!scores::helper::is_ranked(score, beatmap)) {
         response.end("ok" /*"error: disabled"*/);
