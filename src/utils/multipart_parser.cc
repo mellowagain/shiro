@@ -32,8 +32,6 @@ shiro::utils::multipart_parser::multipart_parser(const std::string &body, const 
 }
 
 shiro::utils::multipart_form_parts shiro::utils::multipart_parser::parse() {
-    // filter out the multipart boundary
-
     if (this->content_type.find("multipart/form-data") == std::string::npos)
         return {};
 
@@ -44,8 +42,6 @@ shiro::utils::multipart_form_parts shiro::utils::multipart_parser::parse() {
 
     std::string boundary = this->content_type.substr(boundary_pos + 9);
 
-    // define temporary variables
-
     bool body_begin_called = false;
     bool body_end_called = false;
 
@@ -53,8 +49,6 @@ shiro::utils::multipart_form_parts shiro::utils::multipart_parser::parse() {
     std::string header_value = "";
 
     multipart_form_parts parts {};
-
-    // multipart parser callbacks
 
     const auto on_body_begin = [&](multipartparser *parser) -> int {
         body_begin_called = true;
@@ -100,8 +94,6 @@ shiro::utils::multipart_form_parts shiro::utils::multipart_parser::parse() {
         body_end_called = true;
         return 0;
     };
-
-    // initialize the parser and start parsing
 
     multipartparser parser {};
     multipartparser_callbacks callbacks {};

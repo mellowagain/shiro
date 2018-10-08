@@ -1,7 +1,14 @@
-#ifndef MULTIPARTPARSER_H
-#define MULTIPARTPARSER_H
+#ifndef SHIRO_MULTIPARTPARSER_H
+#define SHIRO_MULTIPARTPARSER_H
 
 #include <functional>
+
+// Disable all warnings from gcc/clang:
+#if defined(__clang__)
+#pragma clang system_header
+#elif defined(__GNUC__)
+#pragma GCC system_header
+#endif
 
 typedef struct multipartparser multipartparser;
 typedef struct multipartparser_callbacks multipartparser_callbacks;
@@ -51,4 +58,4 @@ size_t multipartparser_execute(multipartparser* parser,
 #ifdef __cplusplus
 }
 #endif
-#endif // MULTIPARTPARSER_H
+#endif // SHIRO_MULTIPARTPARSER_H
