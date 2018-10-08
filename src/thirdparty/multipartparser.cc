@@ -159,7 +159,7 @@ reexecute:
                     break;
                 }
                 parser->state = s_header_field;
-                // fallthrough;
+                [[fallthrough]];
 
             case s_header_field:
                 mark = p;
@@ -186,7 +186,7 @@ reexecute:
                     break;
                 }
                 parser->state = s_header_value;
-                // fallthrough;
+                [[fallthrough]];
 
             case s_header_value:
                 mark = p;
@@ -263,7 +263,7 @@ reexecute:
             case s_data_boundary_start:
                 parser->index = 0;
                 parser->state = s_data_boundary;
-                // fallthrough;
+                [[fallthrough]];
 
             case s_data_boundary:
                 if (parser->index == parser->boundary_length) {
