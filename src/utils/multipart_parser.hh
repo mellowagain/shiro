@@ -31,12 +31,14 @@ namespace shiro::utils {
         file = 2
     };
 
-    struct multipart_form_part {
+    class multipart_form_part {
+    public:
         std::map<std::string, std::string> headers;
         std::string body;
     };
 
-    struct multipart_form_field {
+    class multipart_form_field {
+    public:
         std::string name;
         std::string content_type;
         std::string body;
