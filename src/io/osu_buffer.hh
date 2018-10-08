@@ -79,4 +79,3 @@ namespace shiro::io {
 }
 
 #endif //SHIRO_OSU_BUFFER_HH
-

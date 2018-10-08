@@ -131,4 +131,3 @@ void shiro::io::buffer::clear() {
 size_t shiro::io::buffer::get_size() {
     return this->written_size;
 }
-
