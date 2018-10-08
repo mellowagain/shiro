@@ -16,26 +16,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef SHIRO_REPLAY_MANAGER_HH
-#define SHIRO_REPLAY_MANAGER_HH
+#ifndef SHIRO_GET_REPLAY_ROUTE_HH
+#define SHIRO_GET_REPLAY_ROUTE_HH
 
-#include <string>
+#include "../../../thirdparty/crow.hh"
 
-#include "../beatmaps/beatmap.hh"
-#include "../scores/score.hh"
+namespace shiro::routes::web::get_replay {
 
-namespace shiro::replays {
-
-    void init();
-
-    void save_replay(const scores::score &s, const beatmaps::beatmap &beatmap, int32_t game_version, std::string replay);
-
-    std::string calculate_diagram(const scores::score &s, std::string replay);
-
-    std::string get_replay(const scores::score &s);
-
-    bool has_replay(const scores::score &s);
+    void handle(const crow::request &request, crow::response &response);
 
 }
 
-#endif //SHIRO_REPLAY_MANAGER_HH
+#endif //SHIRO_GET_REPLAY_ROUTE_HH

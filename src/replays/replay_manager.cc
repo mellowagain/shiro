@@ -181,6 +181,41 @@ std::string shiro::replays::calculate_diagram(const shiro::scores::score &s, std
     return stream.str();
 }
 
+std::string shiro::replays::get_replay(const shiro::scores::score &s) {
+    if (!has_replay(s))
+        return "";
+
+    std::string filename = dir + fs::path::preferred_separator + std::to_string(s.id) + ".osr.zz";
+    std::stringstream result;
+
+    if (fs::exists(filename)) {
+        std::ifstream stream = std::ifstream(filename);
+
+        std::stringstream original;
+        std::stringstream decompressed;
+
+        original << stream.rdbuf();
+
+        stream.close();
+
+        boost::iostreams::filtering_streambuf<boost::iostreams::input> output;
+        output.push(boost::iostreams::zlib_decompressor());
+        output.push(original);
+
+        boost::iostreams::copy(output, result);
+
+    } else {
+        filename = dir + fs::path::preferred_separator + std::to_string(s.id) + ".osr";
+        std::ifstream stream = std::ifstream(filename);
+
+        result << stream.rdbuf();
+
+        stream.close();
+    }
+
+    return result.str();
+}
+
 bool shiro::replays::has_replay(const shiro::scores::score &s) {
     if (fs::exists(dir + fs::path::preferred_separator + std::to_string(s.id) + ".osr"))
         return true;

@@ -83,7 +83,8 @@ void shiro::database::setup() {
            "score BIGINT NOT NULL, max_combo INT NOT NULL, fc BOOLEAN NOT NULL, mods INT NOT NULL, "
            "300_count INT NOT NULL, 100_count INT NOT NULL, 50_count INT NOT NULL, "
            "katus_count INT NOT NULL, gekis_count INT NOT NULL, miss_count INT NOT NULL, "
-           "time INT NOT NULL, play_mode TINYINT NOT NULL, passed BOOLEAN NOT NULL, accuracy FLOAT NOT NULL, pp FLOAT NOT NULL);"
+           "time INT NOT NULL, play_mode TINYINT NOT NULL, passed BOOLEAN NOT NULL, "
+           "accuracy FLOAT NOT NULL, pp FLOAT NOT NULL, times_watched INT NOT NULL DEFAULT 0);"
     );
 
     // Registered users and their stats
