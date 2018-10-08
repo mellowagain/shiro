@@ -16,13 +16,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "../../../database/tables/score_table.hh"
+#include "../../../replays/replay_manager.hh"
+#include "../../../scores/score.hh"
+#include "../../../scores/score_helper.hh"
 #include "../../../thirdparty/loguru.hh"
 #include "../../../users/user.hh"
 #include "get_replay_route.hh"
-#include "../../../scores/score.hh"
-#include "../../../scores/score_helper.hh"
-#include "../../../replays/replay_manager.hh"
-#include "../../../database/tables/score_table.hh"
 
 void shiro::routes::web::get_replay::handle(const crow::request &request, crow::response &response) {
     response.set_header("Content-Type", "text/plain; charset=UTF-8");
