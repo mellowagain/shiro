@@ -49,7 +49,7 @@ shiro::utils::crypto::rijndael256::decode(std::vector<unsigned char> iv, std::st
     using namespace cppcrypto;
 
     std::unique_ptr<cbc> decryptor = std::make_unique<cbc>(rijndael256_256());
-    decryptor->init((unsigned char *) key.c_str(), key.size(), &iv[0], iv.size(), block_cipher::direction::decryption);
+    decryptor->init((unsigned char*) key.c_str(), key.size(), &iv[0], iv.size(), block_cipher::direction::decryption);
 
     std::vector<unsigned char> result;
     decryptor->decrypt_update(&cipher[0], cipher.size(), result);
