@@ -23,8 +23,12 @@ endif()
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wl,--no-undefined")
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -s -DNO_OPTIMIZED_VERSIONS")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -s")
 endif()
+
+# Disable use of avx2 in cppcrypto algorithms
+add_definitions(-DNO_OPTIMIZED_VERSIONS)
+
 # Threading library (Win32 threads, pthreads)
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
