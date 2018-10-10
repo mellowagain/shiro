@@ -60,7 +60,7 @@ shiro::utils::crypto::rijndael256::decode(std::vector<unsigned char> iv, std::st
 
 std::string shiro::utils::crypto::pbkdf2_hmac_sha512::hash(std::string input, std::string salt) {
     unsigned char result[64];
-    char output[128];
+    char output[256];
 
     PKCS5_PBKDF2_HMAC(input.c_str(), input.length(), reinterpret_cast<const unsigned char*>(salt.c_str()), salt.size(), 4096, EVP_sha512(), 64, result);
 
