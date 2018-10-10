@@ -18,12 +18,13 @@
 
 #include <cstring>
 #include <lzma.h>
-#include <mcrypt.h>
 #include <memory>
 #include <openssl/evp.h>
 #include <openssl/md5.h>
 #include <openssl/sha.h>
 
+#include "../thirdparty/cppcrypto/cbc.hh"
+#include "../thirdparty/cppcrypto/rijndael.hh"
 #include "crypto.hh"
 
 std::vector<unsigned char> shiro::utils::crypto::base64::decode(const char *base64) {
@@ -43,21 +44,16 @@ std::vector<unsigned char> shiro::utils::crypto::base64::decode(const char *base
     return result;
 }
 
-std::vector<unsigned char> shiro::utils::crypto::rijndael256::decode(std::vector<unsigned char> iv, std::string key, std::vector<unsigned char> cipher) {
-    MCRYPT td = mcrypt_module_open((char*) MCRYPT_RIJNDAEL_256, nullptr, (char*) MCRYPT_CBC, nullptr);
+std::vector<unsigned char>
+shiro::utils::crypto::rijndael256::decode(std::vector<unsigned char> iv, std::string key, std::vector<unsigned char> cipher) {
+    using namespace cppcrypto;
 
-    if (td == MCRYPT_FAILED)
-        return {};
+    std::unique_ptr<cbc> decryptor = std::make_unique<cbc>(rijndael256_256());
+    decryptor->init((unsigned char*) key.c_str(), key.size(), &iv[0], iv.size(), block_cipher::direction::decryption);
 
-    std::vector<char> key_vector(key.c_str(), key.c_str() + key.size() + 1);
-    std::vector<unsigned char> result(cipher);
-
-    mcrypt_generic_init(td, &key_vector[0], key_vector.size() - 1, &iv[0]);
-
-    mdecrypt_generic(td, &result[0], result.size());
-
-    mcrypt_generic_deinit(td);
-    mcrypt_module_close(td);
+    std::vector<unsigned char> result;
+    decryptor->decrypt_update(&cipher[0], cipher.size(), result);
+    decryptor->decrypt_final(result);
 
     return result;
 }
