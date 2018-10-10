@@ -507,3 +507,9 @@ __pycache__/
 
 
 # End of https://www.gitignore.io/api/c++,xcode,linux,macos,cmake,windows,jetbrains,visualstudio
+
+# windows build external
+external/
+
+# vscode config
+.vscode/
