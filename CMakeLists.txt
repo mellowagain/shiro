@@ -42,9 +42,6 @@ if (NOT OPENSSL_CRYPTO_LIBRARY)
     message(FATAL_ERROR "Unable to find libcrypto provided by OpenSSL.")
 endif()
 
-# mcrypt
-find_package(Mcrypt REQUIRED)
-
 # zlib
 find_package(ZLIB REQUIRED)
 
