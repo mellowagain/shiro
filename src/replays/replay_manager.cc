@@ -16,25 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#if defined(__has_include)
-    #if __has_include(<filesystem>)
-        #include <filesystem>
-
-        #if defined(_WIN32)
-            // Workaround for Windows: https://docs.microsoft.com/en-us/cpp/standard-library/filesystem
-            namespace fs = std::experimental::filesystem::v1;
-        #else
-            namespace fs = std::filesystem;
-        #endif
-    #else
-        #include <experimental/filesystem>
-        namespace fs = std::experimental::filesystem;
-    #endif
-#else
-    // Compiler doesn't support C++17 __has_include so we can expect filesystem is in experimental state
-    #include <experimental/filesystem>
-    namespace fs = std::experimental::filesystem;
-#endif
+#include "../utils/filesystem.hh"
 
 #include <boost/iostreams/filtering_streambuf.hpp>
 #include <boost/iostreams/filter/zlib.hpp>
@@ -56,7 +38,7 @@
 #include "replay.hh"
 #include "replay_manager.hh"
 
-static std::string dir = fs::current_path().u8string() + fs::path::preferred_separator + "replays";
+static std::string dir = fs::current_path().u8string() + shiro::utils::filesystem::preferred_separator + "replays";
 
 void shiro::replays::init() {
     if (!fs::exists(dir))
@@ -70,8 +52,8 @@ void shiro::replays::save_replay(const shiro::scores::score &s, const beatmaps::
     if (!scores::helper::is_ranked(s, beatmap) && !config::score_submission::save_unranked_scores)
         return;
 
-    std::string filename = dir + fs::path::preferred_separator + std::to_string(s.id) + ".osr";
-    std::shared_ptr<users::user> user = users::manager::get_user_by_id(s.user_id);
+    std::string                  filename = dir + shiro::utils::filesystem::preferred_separator + std::to_string(s.id) + ".osr";
+    std::shared_ptr<users::user> user     = users::manager::get_user_by_id(s.user_id);
 
     if (user == nullptr)
         return;
@@ -133,7 +115,7 @@ void shiro::replays::save_replay(const shiro::scores::score &s, const beatmaps::
     if (fs::file_size(filename) >= 1048576) {
         fs::remove(filename);
 
-        filename = dir + fs::path::preferred_separator + std::to_string(s.id) + ".osr.zz";
+        filename = dir + shiro::utils::filesystem::preferred_separator + std::to_string(s.id) + ".osr.zz";
 
         std::stringstream original;
         std::stringstream compressed;
@@ -217,8 +199,8 @@ std::string shiro::replays::get_replay(const shiro::scores::score &s) {
 }
 
 bool shiro::replays::has_replay(const shiro::scores::score &s) {
-    if (fs::exists(dir + fs::path::preferred_separator + std::to_string(s.id) + ".osr"))
+    if (fs::exists(dir + shiro::utils::filesystem::preferred_separator + std::to_string(s.id) + ".osr"))
         return true;
 
-    return fs::exists(dir + fs::path::preferred_separator + std::to_string(s.id) + ".osr.zz");
+    return fs::exists(dir + shiro::utils::filesystem::preferred_separator + std::to_string(s.id) + ".osr.zz");
 }

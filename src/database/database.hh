@@ -51,12 +51,12 @@ namespace shiro {
 
 }
 
-#define is_query_empty(x) [&]() -> bool {                   \
-    for ([[maybe_unused]] const auto &_ : x) {              \
-        return false;                                       \
-    }                                                       \
-                                                            \
-    return true;                                            \
-}();                                                        \
+#define is_query_empty(x)         \
+    [&x]() -> bool {              \
+        for (const auto &r : x) { \
+            return false;         \
+        }                         \
+        return true;              \
+    }();
 
 #endif //SHIRO_DATABASE_HH
