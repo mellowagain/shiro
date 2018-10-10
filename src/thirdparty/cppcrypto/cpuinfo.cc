@@ -7,7 +7,7 @@ This code is released under Simplified BSD License (see license.txt).
 #include <string>
 #include "cpuinfo.hh"
 #ifndef _MSC_VER
-#include "cpuid.hh"
+#include "cpuid.h"
 #else
 #include <intrin.h>
 #endif
