@@ -101,12 +101,7 @@ void shiro::bot::init() {
 
     users::manager::login_user(bot_user);
 
-    scheduler.Schedule(30s, [&](tsc::TaskContext ctx) {
-        if (bot_user == nullptr) {
-            ctx.Repeat(150s);
-            return;
-        }
-
+    scheduler.Schedule(30s, [bot_user](tsc::TaskContext ctx) {
         bot_user->queue.clear();
 
         ctx.Repeat(30s);
