@@ -273,7 +273,18 @@ void shiro::beatmaps::beatmap::update_play_metadata() {
 std::string shiro::beatmaps::beatmap::build_header() {
     std::stringstream result;
 
-    result << helper::fix_beatmap_status(this->ranked_status) << "|false|" << this->beatmap_id << "|" << this->beatmapset_id << "|" << this->play_count << std::endl;
+    result << helper::fix_beatmap_status(this->ranked_status) << "|false|" << this->beatmap_id << "|" << this->beatmapset_id << "|" << this->pass_count << std::endl;
+    result << "0" << std::endl;
+    result << this->song_name << std::endl;
+    result << "10.0" << std::endl;
+
+    return result.str();
+}
+
+std::string shiro::beatmaps::beatmap::build_header(const std::vector<scores::score> &scores) {
+    std::stringstream result;
+
+    result << helper::fix_beatmap_status(this->ranked_status) << "|false|" << this->beatmap_id << "|" << this->beatmapset_id << "|" << scores.size() << std::endl;
     result << "0" << std::endl;
     result << this->song_name << std::endl;
     result << "10.0" << std::endl;

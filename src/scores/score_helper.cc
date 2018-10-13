@@ -161,14 +161,6 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_all_scores(std::s
                 return true;
         }
 
-        for (const score &score : scores) {
-            if (s.hash == score.hash || s.user_id != score.user_id)
-                continue;
-
-            if (score.total_score > s.total_score)
-                return true;
-        }
-
         return false;
     }), scores.end());
 
