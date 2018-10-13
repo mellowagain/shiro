@@ -68,7 +68,7 @@ size_t shiro::beatmaps::helper::callback(void *raw_data, size_t size, size_t mem
 }
 
 FILE *shiro::beatmaps::helper::download(int32_t beatmap_id) {
-    std::string filename = dir + fs::path::preferred_separator + std::to_string(beatmap_id) + ".osu";
+    std::string filename = dir + shiro::utils::filesystem::preferred_separator + std::to_string(beatmap_id) + ".osu";
 
     if (fs::exists(filename))
         return fopen(filename.c_str(), "r");
