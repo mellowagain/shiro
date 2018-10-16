@@ -106,8 +106,6 @@ void shiro::handler::login::handle(const crow::request &request, crow::response 
     std::string hwid = additional_info.at(3);
     int32_t build = 20131216;
 
-    LOG_F(INFO, "Client version: %s", version.c_str());
-
     try {
         build = boost::lexical_cast<int32_t>(version.substr(1, version.find('.') - 1));
     } catch (const boost::bad_lexical_cast &ex) {
@@ -120,7 +118,7 @@ void shiro::handler::login::handle(const crow::request &request, crow::response 
             return;
         }
     } catch (const std::out_of_range &ex) {
-        LOG_S(WARNING) << "Unable to convert client version " << version << " is valid build: " << ex.what();
+        LOG_S(WARNING) << "Unable to convert client version " << version << " to valid build: " << ex.what();
 
         if (config::score_submission::restrict_mismatching_client_version) {
             writer.login_reply((int32_t) utils::login_responses::server_error);
@@ -129,6 +127,8 @@ void shiro::handler::login::handle(const crow::request &request, crow::response 
             return;
         }
     }
+
+    user->client_type = utils::parse_client(version, build);
 
     std::chrono::seconds seconds = std::chrono::duration_cast<std::chrono::seconds>(
             std::chrono::system_clock::now().time_since_epoch()

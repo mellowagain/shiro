@@ -113,6 +113,7 @@ void shiro::bot::init() {
 void shiro::bot::init_commands() {
     commands_map.insert(std::make_pair("announce", commands::announce));
     commands_map.insert(std::make_pair("clear", commands::clear));
+    commands_map.insert(std::make_pair("clients", commands::clients));
     commands_map.insert(std::make_pair("help", commands::help));
     commands_map.insert(std::make_pair("pp", commands::pp));
     commands_map.insert(std::make_pair("rank", commands::rank));

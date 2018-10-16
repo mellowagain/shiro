@@ -16,17 +16,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef SHIRO_COMMANDS_HH
-#define SHIRO_COMMANDS_HH
+#ifndef SHIRO_CLIENTS_COMMAND_HH
+#define SHIRO_CLIENTS_COMMAND_HH
 
-#include "public/help_command.hh"
-#include "public/pp_command.hh"
-#include "public/rank_command.hh"
-#include "public/roll_command.hh"
+#include <deque>
+#include <string>
 
-#include "staff/announce_command.hh"
-#include "staff/clear_command.hh"
-#include "staff/clients_command.hh"
-#include "staff/rtx_command.hh"
+#include "../../../users/user.hh"
 
-#endif  // SHIRO_COMMANDS_HH
+namespace shiro::bot::commands {
+
+    bool clients(std::deque<std::string> &args, std::shared_ptr<users::user> user, std::string channel);
+
+}
+
+#endif //SHIRO_CLIENTS_COMMAND_HH
