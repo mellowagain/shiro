@@ -106,6 +106,8 @@ void shiro::handler::login::handle(const crow::request &request, crow::response 
     std::string hwid = additional_info.at(3);
     int32_t build = 20131216;
 
+    LOG_F(INFO, "Client version: %s", version.c_str());
+
     try {
         build = boost::lexical_cast<int32_t>(version.substr(1, version.find('.') - 1));
     } catch (const boost::bad_lexical_cast &ex) {
