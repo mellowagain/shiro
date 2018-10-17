@@ -58,8 +58,29 @@ namespace shiro::utils {
         if (client_version.find('.', client_version.find('.') + 1) != std::string::npos)
             return osu_client::lazer;
 
+        if (client_version.find("beta") != std::string::npos)
+            return osu_client::beta;
+
+        if (client_version.find("cuttingedge") != std::string::npos)
+            return osu_client::cutting_edge;
+
+        if (client_version.find("tourney") != std::string::npos)
+            return osu_client::tournament;
+
+        // All checks below are suspicious as they can't be obtained legit from the osu! website
+        if (client_version.find("dev") != std::string::npos)
+            return osu_client::dev;
+
+        if (client_version.find("public_test") != std::string::npos)
+            return osu_client::public_test;
+
+        if (client_version.find("noxna") != std::string::npos)
+            return osu_client::no_xna;
+
         std::string subversion = client_version.substr(1);
-        subversion.erase(subversion.find('.'));
+
+        if (subversion.find('.') != std::string::npos)
+            subversion.erase(subversion.find('.'));
 
         subversion.erase(std::remove_if(subversion.begin(), subversion.end(), [](char c) {
             return std::isdigit(c);
@@ -68,27 +89,7 @@ namespace shiro::utils {
         if (subversion.empty())
             return osu_client::stable;
 
-        if (subversion == "beta")
-            return osu_client::beta;
-
-        if (subversion == "cuttingedge")
-            return osu_client::cutting_edge;
-
-        if (subversion == "tourney")
-            return osu_client::tournament;
-
-        // All checks below are suspicious as they can't be obtained legit from the osu! website
-        if (subversion == "dev")
-            return osu_client::dev;
-
-        if (subversion == "public_test")
-            return osu_client::public_test;
-
-        if (subversion == "noxna")
-            return osu_client::no_xna;
-
-        LOG_F(INFO, "Tried to process osu! version with unknown subversion: %s (%i)", client_version.c_str(), client_build);
-        LOG_F(INFO, "Subversion: %s", subversion.c_str());
+        LOG_F(INFO, "Tried to process osu! version with unknown subversion: %s (%i -> '%s`)", client_version.c_str(), client_build, subversion.c_str());
 
         return osu_client::unknown;
     }
