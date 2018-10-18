@@ -26,7 +26,6 @@
 #include "../io/layouts/user/user_stats.hh"
 #include "../io/layouts/user/user_status.hh"
 #include "../io/queue.hh"
-#include "../utils/osu_client.hh"
 #include "../shiro.hh"
 
 namespace shiro::users {
@@ -48,7 +47,7 @@ namespace shiro::users {
 
         std::string client_version = ""; // Full client version string sent on login (b20160403.6)
         int32_t client_build = 20131216; // Fixed client build version (20160403)
-        utils::osu_client client_type = utils::osu_client::unknown;
+        uint32_t client_type = 0;
 
         io::layouts::user_presence presence;
         io::layouts::user_stats stats;

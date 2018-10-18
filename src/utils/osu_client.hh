@@ -19,14 +19,17 @@
 #ifndef SHIRO_OSU_CLIENT_HH
 #define SHIRO_OSU_CLIENT_HH
 
-#include <cstdint>
 #include <string>
-#include <algorithm>
+#include <vector>
+
+#include "../thirdparty/enum.hh"
 #include "../thirdparty/loguru.hh"
+#include "../users/user.hh"
 
-namespace shiro::utils {
+namespace shiro::utils::clients {
 
-    enum class osu_client : uint32_t {
+    BETTER_ENUM(osu_client, uint32_t,
+        // Parsing was unable to be parsed or wasn't send at all
         unknown = 0,
 
         // Official osu! clients
@@ -40,59 +43,35 @@ namespace shiro::utils {
         lazer = 8,
         tournament = 9,
 
+        // Bots
+        aschente = 10,
+
         // Third party osu! clients
-        osu_fx = 10,
-        banana_client = 11,
-        tsuki = 12,
+        osu_fx = 11,
+        banana_client = 12,
+        tsuki = 13
+    );
 
-    };
+    osu_client parse_version(const std::string &client_version, const int32_t &client_build);
 
-    // This method only parses the client version of the official osu!
-    // clients. Third party clients are detected at a later point after
-    // the login has been successfully processed.
-    inline osu_client parse_client(const std::string &client_version, const int32_t &client_build) {
-        if (client_build <= 20160403)
-            return osu_client::fallback;
+    // Checks whenever a client is a official osu! client
+    // available for download on the official osu! website
+    bool is_official(const osu_client &client);
 
-        // osu!lazer contains two dots in their version number, unlike stable clients
-        if (client_version.find('.', client_version.find('.') + 1) != std::string::npos)
-            return osu_client::lazer;
+    // Checks whenever a client is a widespread third party
+    // client. These clients are *most* of the times based on
+    // osu!fallback's leaked source code and may contain modifications.
+    bool is_thirdparty(const osu_client &client);
 
-        if (client_version.find("beta") != std::string::npos)
-            return osu_client::beta;
+    // Checks whenever a client is suspicious. This includes
+    // official client versions which are *unable* for download
+    // on the official osu! website, third party clients which are
+    // known to have malicious features or if the client is unknown.
+    bool is_suspicious(const osu_client &client);
 
-        if (client_version.find("cuttingedge") != std::string::npos)
-            return osu_client::cutting_edge;
+    std::vector<std::shared_ptr<users::user>> get_users(const osu_client &client);
 
-        if (client_version.find("tourney") != std::string::npos)
-            return osu_client::tournament;
-
-        // All checks below are suspicious as they can't be obtained legit from the osu! website
-        if (client_version.find("dev") != std::string::npos)
-            return osu_client::dev;
-
-        if (client_version.find("public_test") != std::string::npos)
-            return osu_client::public_test;
-
-        if (client_version.find("noxna") != std::string::npos)
-            return osu_client::no_xna;
-
-        std::string subversion = client_version.substr(1);
-
-        if (subversion.find('.') != std::string::npos)
-            subversion.erase(subversion.find('.'));
-
-        subversion.erase(std::remove_if(subversion.begin(), subversion.end(), [](char c) {
-            return std::isdigit(c);
-        }), subversion.end());
-
-        if (subversion.empty())
-            return osu_client::stable;
-
-        LOG_F(INFO, "Tried to process osu! version with unknown subversion: %s (%i -> '%s`)", client_version.c_str(), client_build, subversion.c_str());
-
-        return osu_client::unknown;
-    }
+    std::string to_pretty_string(const osu_client &client);
 
 }
 

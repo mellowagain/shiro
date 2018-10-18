@@ -17,58 +17,59 @@
  */
 
 #include "../../../users/user_manager.hh"
-#include "clients_command.hh"
 #include "../../../utils/bot_utils.hh"
-
-std::tuple<std::string, std::string> to_string(const shiro::utils::osu_client &client) {
-    switch (client) {
-        case shiro::utils::osu_client::unknown:
-            return { "[!]", "Unknown" };
-        case shiro::utils::osu_client::stable:
-            return { "", "osu!Stable" };
-        case shiro::utils::osu_client::beta:
-            return { "", "osu!Beta" };
-        case shiro::utils::osu_client::cutting_edge:
-            return { "", "osu!cutting edge" };
-        case shiro::utils::osu_client::fallback:
-            return { "", "osu!fallback" };
-        case shiro::utils::osu_client::dev:
-            return { "[!]", "osu!dev" };
-        case shiro::utils::osu_client::public_test:
-            return { "[!]", "osu!public testing" };
-        case shiro::utils::osu_client::no_xna:
-            return { "[!]", "osu!no xna" };
-        case shiro::utils::osu_client::lazer:
-            return { "", "osu!lazer" };
-        case shiro::utils::osu_client::tournament:
-            return { "", "osu!tournament" };
-        case shiro::utils::osu_client::osu_fx:
-            return { "[3rd]", "osu!fx" };
-        case shiro::utils::osu_client::banana_client:
-            return { "[3rd]", "Banana client" };
-        case shiro::utils::osu_client::tsuki:
-            return { "[3rd]", "tsuki" };
-    }
-
-    return { "[!]", "Unknown" };
-}
+#include "../../../utils/osu_client.hh"
+#include "clients_command.hh"
 
 bool shiro::bot::commands::clients(std::deque<std::string> &args, std::shared_ptr<shiro::users::user> user, std::string channel) {
-    utils::bot::respond("List of online users and their client:", user, channel, true);
-    utils::bot::respond("[Prefix] Client - Username (Sent version -> Parsed version)", user, channel, true);
+    if (args.size() >= 2) {
+        utils::bot::respond("Usage: !clients [user]", user, channel, true);
+        return false;
+    }
 
-    for (const std::shared_ptr<users::user> &online_user : users::manager::online_users) {
-        auto [prefix, client] = to_string(user->client_type);
+    if (args.size() == 1) {
+        std::shared_ptr<users::user> target = users::manager::get_user_by_username(args.at(0));
 
-        if (online_user->user_id == 1) {
-            prefix = "[S]";
-            client = "Aschente";
+        if (target == nullptr) {
+            utils::bot::respond(args.at(1) + " is currently not online or does not exist.", user, channel, true);
+            return false;
         }
 
-        std::string begin = prefix.empty() ? client : prefix.append(" ").append(client);
-        std::string msg = begin + " - " + online_user->presence.username + " (" + online_user->client_version + " -> " + std::to_string(online_user->client_build) + ")";
+        char buffer[256];
+        std::snprintf(
+                buffer, sizeof(buffer),
+                "%s is using %s. (%s -> %i)",
+                target->presence.username.c_str(),
+                utils::clients::to_pretty_string(utils::clients::osu_client::_from_integral(target->client_type)).c_str(),
+                target->client_version.c_str(),
+                target->client_build
+        );
 
-        utils::bot::respond(msg, user, channel, true);
+        utils::bot::respond(buffer, user, channel, true);
+        return true;
+    }
+
+    std::vector<std::string> lines;
+
+    for (const utils::clients::osu_client &client : utils::clients::osu_client::_values()) {
+        std::vector<std::shared_ptr<users::user>> users = utils::clients::get_users(client);
+
+        if (users.empty()) {
+            lines.emplace_back(utils::clients::to_pretty_string(client) + " (0):");
+            continue;
+        }
+
+        std::string line = utils::clients::to_pretty_string(client) + " (" + std::to_string(users.size()) + "): ";
+
+        for (const std::shared_ptr<users::user> &client_user : users) {
+            line += client_user->presence.username + ", ";
+        }
+
+        lines.emplace_back(line.substr(0, line.size() - 2));
+    }
+
+    for (const std::string &line : lines) {
+        utils::bot::respond(line, user, channel, true);
     }
 
     return true;

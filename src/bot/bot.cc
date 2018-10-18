@@ -31,6 +31,7 @@
 #include "../thirdparty/uuid.hh"
 #include "../users/user_manager.hh"
 #include "../utils/escaper.hh"
+#include "../utils/osu_client.hh"
 #include "commands/commands.hh"
 #include "bot.hh"
 
@@ -90,9 +91,12 @@ void shiro::bot::init() {
     );
 
     bot_user->token = sole::uuid4().str();
-    bot_user->client_version = "b19700101.01";
     bot_user->hwid = digestpp::sha256().absorb(config::bot::name).hexdigest();
     bot_user->last_ping = seconds;
+
+    bot_user->client_version = "b19700101.01";
+    bot_user->client_build = 19700101;
+    bot_user->client_type = utils::clients::osu_client::aschente;
 
     bot_user->presence.country_id = (uint8_t) geoloc::country_id::JP;
     bot_user->presence.time_zone = 9;

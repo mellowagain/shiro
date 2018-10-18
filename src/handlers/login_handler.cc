@@ -34,6 +34,7 @@
 #include "../users/user_punishments.hh"
 #include "../utils/bot_utils.hh"
 #include "../utils/login_responses.hh"
+#include "../utils/osu_client.hh"
 #include "../utils/string_utils.hh"
 #include "login_handler.hh"
 
@@ -128,7 +129,7 @@ void shiro::handler::login::handle(const crow::request &request, crow::response 
         }
     }
 
-    user->client_type = utils::parse_client(version, build);
+    user->client_type = utils::clients::parse_version(version, build);
 
     std::chrono::seconds seconds = std::chrono::duration_cast<std::chrono::seconds>(
             std::chrono::system_clock::now().time_since_epoch()
