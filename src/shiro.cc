@@ -59,8 +59,6 @@ int shiro::init(int argc, char **argv) {
     config::database::parse();
     config::score_submission::parse();
 
-    geoloc::init();
-
     beatmaps::helper::init();
 
     db_connection = std::make_shared<database>(
