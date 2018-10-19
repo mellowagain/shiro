@@ -20,6 +20,20 @@
 #include "osu_client.hh"
 
 shiro::utils::clients::osu_client shiro::utils::clients::parse_version(const std::string &client_version, const int32_t &client_build) {
+    // 3rd party osu! clients
+    if (client_build == 20161205 && client_version.find("cuttingedge"))
+        return osu_client::osu_fx;
+
+    if (client_build == 20181018 && client_version.find("noxna") != std::string::npos)
+        return osu_client::banana_client;
+
+    if (client_version.find("banana") != std::string::npos)
+        return osu_client::banana_client;
+
+    if (client_version.find("version") != std::string::npos)
+        return osu_client::tsuki;
+
+    // osu!fallback and very outdated versions
     if (client_build <= 20160403)
         return osu_client::fallback;
 
@@ -27,6 +41,7 @@ shiro::utils::clients::osu_client shiro::utils::clients::parse_version(const std
     if (client_version.find('.', client_version.find('.') + 1) != std::string::npos)
         return osu_client::lazer;
 
+    // Official osu! clients available for download on the osu! website
     if (client_version.find("beta") != std::string::npos)
         return osu_client::beta;
 
@@ -36,7 +51,7 @@ shiro::utils::clients::osu_client shiro::utils::clients::parse_version(const std
     if (client_version.find("tourney") != std::string::npos)
         return osu_client::tournament;
 
-    // All checks below are suspicious as they can't be obtained legit from the osu! website
+    // Suspicious clients as these can't be obtained legit from the osu! website
     if (client_version.find("dev") != std::string::npos)
         return osu_client::dev;
 
@@ -46,6 +61,7 @@ shiro::utils::clients::osu_client shiro::utils::clients::parse_version(const std
     if (client_version.find("noxna") != std::string::npos)
         return osu_client::no_xna;
 
+    // osu!Stable
     std::string subversion = client_version.substr(1);
 
     if (subversion.find('.') != std::string::npos)
@@ -58,7 +74,7 @@ shiro::utils::clients::osu_client shiro::utils::clients::parse_version(const std
     if (subversion.empty())
         return osu_client::stable;
 
-    LOG_F(INFO, "Tried to process osu! version with unknown subversion: %s (%i -> '%s`)", client_version.c_str(), client_build, subversion.c_str());
+    LOG_F(INFO, "Tried to process osu! version with unknown version: %s (%i -> %s)", client_version.c_str(), client_build, subversion.c_str());
 
     return osu_client::unknown;
 }
