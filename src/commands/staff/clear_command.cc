@@ -16,12 +16,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "../../../config/bot_file.hh"
-#include "../../../users/user_manager.hh"
-#include "../../../utils/bot_utils.hh"
+#include "../../config/bot_file.hh"
+#include "../../users/user_manager.hh"
+#include "../../utils/bot_utils.hh"
 #include "clear_command.hh"
 
-bool shiro::bot::commands::clear(std::deque<std::string> &args, std::shared_ptr<shiro::users::user> user, std::string channel) {
+bool shiro::commands::clear(std::deque<std::string> &args, std::shared_ptr<shiro::users::user> user, std::string channel) {
     std::shared_ptr<users::user> target = nullptr;
 
     if (args.size() >= 2) {

@@ -222,7 +222,7 @@ bool shiro::beatmaps::beatmap::fetch_api() {
 
         std::string last_update = part["last_update"];
 
-        std::tm time = {};
+        std::tm time {};
         std::stringstream stream(last_update);
         stream >> std::get_time(&time, "%Y-%m-%d %H:%M:%S");
         std::chrono::time_point time_point = std::chrono::system_clock::from_time_t(std::mktime(&time));

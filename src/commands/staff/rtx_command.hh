@@ -16,18 +16,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef SHIRO_CLIENTS_COMMAND_HH
-#define SHIRO_CLIENTS_COMMAND_HH
+#ifndef SHIRO_RTX_COMMAND_HH
+#define SHIRO_RTX_COMMAND_HH
 
 #include <deque>
 #include <string>
 
-#include "../../../users/user.hh"
+#include "../../users/user.hh"
 
-namespace shiro::bot::commands {
+namespace shiro::commands {
 
-    bool clients(std::deque<std::string> &args, std::shared_ptr<users::user> user, std::string channel);
+    bool rtx(std::deque<std::string> &args, std::shared_ptr<users::user> user, std::string channel);
 
 }
 
-#endif //SHIRO_CLIENTS_COMMAND_HH
+#endif //SHIRO_RTX_COMMAND_HH

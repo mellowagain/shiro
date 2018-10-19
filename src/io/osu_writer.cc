@@ -82,6 +82,10 @@ void shiro::io::osu_writer::send_message(shiro::io::layouts::message message) {
     this->write(packet_id::out_send_message, std::move(message));
 }
 
+void shiro::io::osu_writer::get_attention() {
+    this->write(packet_id::out_get_attention);
+}
+
 void shiro::io::osu_writer::rtx(std::string rtx) {
     this->write(packet_id::out_rtx, serializable(std::move(rtx)));
 }

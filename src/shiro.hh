@@ -19,10 +19,6 @@
 #ifndef SHIRO_SHIRO_HH
 #define SHIRO_SHIRO_HH
 
-#if defined(_WIN32)
-    #define NOMINMAX
-#endif
-
 #include <chrono>
 #include <ctime>
 #include <memory>

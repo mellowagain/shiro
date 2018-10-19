@@ -20,18 +20,18 @@
 #define SHIRO_COMMON_TABLES_HH
 
 #define object_detailed_struct(name, var, type)                             \
-struct var {                                                               \
+struct var {                                                                \
 struct _alias_t {                                                           \
-    static constexpr const char _literal[] = name;                         \
+    static constexpr const char _literal[] = name;                          \
     using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;  \
     template <typename T>                                                   \
     struct _member_t {                                                      \
-        T var;                                                             \
+        T var;                                                              \
         T &operator()() {                                                   \
-            return var;                                                    \
+            return var;                                                     \
         }                                                                   \
         const T &operator()() const {                                       \
-            return var;                                                    \
+            return var;                                                     \
         }                                                                   \
     };                                                                      \
 };                                                                          \

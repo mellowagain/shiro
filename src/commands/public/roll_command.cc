@@ -19,13 +19,13 @@
 #include <boost/lexical_cast.hpp>
 #include <random>
 
-#include "../../../utils/bot_utils.hh"
+#include "../../utils/bot_utils.hh"
 #include "roll_command.hh"
 
 static std::random_device random_device;
 static std::mt19937 engine(random_device());
 
-bool shiro::bot::commands::roll(std::deque<std::string> &args, std::shared_ptr<shiro::users::user> user, std::string channel) {
+bool shiro::commands::roll(std::deque<std::string> &args, std::shared_ptr<shiro::users::user> user, std::string channel) {
     uint32_t max = 100;
 
     if (!args.empty()) {

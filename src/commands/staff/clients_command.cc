@@ -16,12 +16,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "../../../users/user_manager.hh"
-#include "../../../utils/bot_utils.hh"
-#include "../../../utils/osu_client.hh"
+#include "../../users/user_manager.hh"
+#include "../../utils/bot_utils.hh"
+#include "../../utils/osu_client.hh"
 #include "clients_command.hh"
 
-bool shiro::bot::commands::clients(std::deque<std::string> &args, std::shared_ptr<shiro::users::user> user, std::string channel) {
+bool shiro::commands::clients(std::deque<std::string> &args, std::shared_ptr<shiro::users::user> user, std::string channel) {
     if (args.size() >= 2) {
         utils::bot::respond("Usage: !clients [user]", user, channel, true);
         return false;

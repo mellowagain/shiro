@@ -90,7 +90,7 @@ int shiro::init(int argc, char **argv) {
     native::system_stats::init();
     native::signal_handler::install();
 
-    LOG_F(INFO, "Welcome to shiro. Listening on http://%s:%i/.", config::bancho::host.c_str(), config::bancho::port);
+    LOG_F(INFO, "Welcome to Shiro. Listening on http://%s:%i/.", config::bancho::host.c_str(), config::bancho::port);
     LOG_F(INFO, "Press CTRL + C to quit.");
 
     routes::init();
