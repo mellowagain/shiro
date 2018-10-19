@@ -6413,8 +6413,9 @@ constexpr crow::HTTPMethod operator "" _method(const char* str, size_t /*len*/)
 #pragma once
 
 #include <boost/asio.hpp>
-
-
+#include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string/classification.hpp>
+#include <regex>
 
 
 
@@ -6444,6 +6445,7 @@ namespace crow
         query_string url_params;
         ci_map headers;
         std::string body;
+        std::string original_ip_address;
 
         void* middleware_context{};
         boost::asio::io_service* io_service{};
@@ -6478,6 +6480,40 @@ namespace crow
         void dispatch(CompletionHandler handler)
         {
             io_service->dispatch(handler);
+        }
+
+        std::string get_ip_address() const
+        {
+            std::string cf_connecting_ip = get_header_value("CF-Connecting-IP");
+
+            if (!cf_connecting_ip.empty())
+                return cf_connecting_ip;
+
+            std::string real_ip = get_header_value("X-Real-IP");
+
+            if (!real_ip.empty())
+                return real_ip;
+
+            std::string forwarded_for = get_header_value("X-Forwarded-For");
+
+            if (!forwarded_for.empty()) {
+                if (forwarded_for.find(',') == std::string::npos)
+                    return forwarded_for;
+
+                std::vector<std::string> splitted;
+                boost::split(splitted, forwarded_for, boost::is_any_of(","));
+
+                for (const std::string &part : splitted) {
+                    static std::regex regexp(R"(^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$)");
+                    std::smatch match;
+
+                    // Return the first one which is in correct format
+                    if (std::regex_match(part, match, regexp))
+                        return part;
+                }
+            }
+
+            return original_ip_address;
         }
 
     };
@@ -8880,6 +8916,8 @@ namespace crow
 
             req_ = std::move(parser_.to_request());
             request& req = req_;
+
+            req.original_ip_address = adaptor_.remote_endpoint().address().to_string();
 
             if (parser_.check_version(1, 0))
             {

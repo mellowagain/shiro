@@ -50,7 +50,7 @@ void shiro::handler::login::handle(const crow::request &request, crow::response 
         response.code = 403;
         response.end();
 
-        LOG_F(WARNING, "Received invalid login request from %s: Login body has wrong length (%lu != 4).", request.get_header_value("X-Forwarded-For").c_str(), lines.size());
+        LOG_F(WARNING, "Received invalid login request from %s: Login body has wrong length (%lu != 4).", request.get_ip_address().c_str(), lines.size());
         return;
     }
 
@@ -65,7 +65,7 @@ void shiro::handler::login::handle(const crow::request &request, crow::response 
         response.code = 403;
         response.end();
 
-        LOG_F(WARNING, "Received invalid login request from %s: Additional info has wrong length.", request.get_header_value("X-Forwarded-For").c_str());
+        LOG_F(WARNING, "Received invalid login request from %s: Additional info has wrong length.", request.get_ip_address().c_str());
         return;
     }
 
@@ -79,7 +79,7 @@ void shiro::handler::login::handle(const crow::request &request, crow::response 
 
         response.end(writer.serialize());
 
-        LOG_F(WARNING, "%s (%s) tried to login as non-existent user.", username.c_str(), request.get_header_value("X-Forwarded-For").c_str());
+        LOG_F(WARNING, "%s (%s) tried to login as non-existent user.", username.c_str(), request.get_ip_address().c_str());
         return;
     }
 
@@ -88,7 +88,7 @@ void shiro::handler::login::handle(const crow::request &request, crow::response 
 
         response.end(writer.serialize());
 
-        LOG_F(WARNING, "%s (%s) tried to login with wrong password.", username.c_str(), request.get_header_value("X-Forwarded-For").c_str());
+        LOG_F(WARNING, "%s (%s) tried to login with wrong password.", username.c_str(), request.get_ip_address().c_str());
         return;
     }
 
@@ -97,7 +97,7 @@ void shiro::handler::login::handle(const crow::request &request, crow::response 
 
         response.end(writer.serialize());
 
-        LOG_F(WARNING, "%s (%s) tried to login while being banned.", username.c_str(), request.get_header_value("X-Forwarded-For").c_str());
+        LOG_F(WARNING, "%s (%s) tried to login while being banned.", username.c_str(), request.get_ip_address().c_str());
         return;
     }
 
@@ -146,7 +146,7 @@ void shiro::handler::login::handle(const crow::request &request, crow::response 
         LOG_S(WARNING) << "Unable to cast " << utc_offset << " to uint8_t: " << ex.what() << ".";
     }
 
-    geoloc::location_info info = geoloc::get_location(request.get_header_value("X-Forwarded-For"));
+    geoloc::location_info info = geoloc::get_location(request.get_ip_address());
     user->presence.country_id = info.country;
     user->presence.time_zone = time_zone;
     user->presence.latitude = info.latitude;
