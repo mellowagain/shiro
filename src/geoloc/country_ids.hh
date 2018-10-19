@@ -24,10 +24,6 @@
 
 #include "../thirdparty/enum.hh"
 
-#if defined(_WIN32)
-	#undef IN
-#endif
-
 namespace shiro::geoloc {
 
     BETTER_ENUM(country_id, uint8_t,
