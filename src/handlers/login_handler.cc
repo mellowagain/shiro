@@ -71,7 +71,7 @@ void shiro::handler::login::handle(const crow::request &request, crow::response 
     }
 
     io::osu_writer writer;
-    writer.protocol_negotiation(shiro::io::cho_protocol);
+    writer.protocol_negotiation(io::cho_protocol);
 
     std::shared_ptr<users::user> user = std::make_shared<users::user>(username);
 
@@ -110,7 +110,7 @@ void shiro::handler::login::handle(const crow::request &request, crow::response 
     try {
         build = boost::lexical_cast<int32_t>(version.substr(1, version.find('.') - 1));
     } catch (const boost::bad_lexical_cast &ex) {
-        LOG_S(WARNING) << "Unable to cast " << version << " to int64_t: " << ex.what();
+        LOG_S(WARNING) << "Unable to cast " << version << " to int32_t: " << ex.what();
 
         if (config::score_submission::restrict_mismatching_client_version) {
             writer.login_reply((int32_t) utils::login_responses::server_error);

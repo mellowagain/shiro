@@ -44,8 +44,7 @@ std::vector<unsigned char> shiro::utils::crypto::base64::decode(const char *base
     return result;
 }
 
-std::vector<unsigned char>
-shiro::utils::crypto::rijndael256::decode(std::vector<unsigned char> iv, std::string key, std::vector<unsigned char> cipher) {
+std::vector<unsigned char> shiro::utils::crypto::rijndael256::decode(std::vector<unsigned char> iv, std::string key, std::vector<unsigned char> cipher) {
     using namespace cppcrypto;
 
     std::unique_ptr<cbc> decryptor = std::make_unique<cbc>(rijndael256_256());

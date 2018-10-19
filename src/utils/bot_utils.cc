@@ -29,21 +29,22 @@
 #include "string_utils.hh"
 
 void shiro::utils::bot::handle(shiro::io::layouts::message message, std::shared_ptr<users::user> user) {
-    if (boost::algorithm::starts_with(message.content, "!")) {
-        std::string removed_index = message.content.substr(1);
+    if (!boost::algorithm::starts_with(message.content, "!"))
+        return;
 
-        std::vector<std::string> splitted;
-        boost::split(splitted, removed_index, boost::is_any_of(" "));
+    std::string removed_index = message.content.substr(1);
 
-        if (splitted.empty())
-            return;
+    std::vector<std::string> splitted;
+    boost::split(splitted, removed_index, boost::is_any_of(" "));
 
-        std::string command = splitted.at(0);
-        std::deque<std::string> args(splitted.begin(), splitted.end());
-        args.pop_front(); // Remove command which is the first argument
+    if (splitted.empty())
+        return;
 
-        shiro::bot::handle(command, args, std::move(user), message.channel);
-    }
+    std::string command = splitted.at(0);
+    std::deque<std::string> args(splitted.begin(), splitted.end());
+    args.pop_front(); // Remove command which is the first argument
+
+    shiro::bot::handle(command, args, std::move(user), message.channel);
 }
 
 void shiro::utils::bot::respond(std::string message, std::shared_ptr<shiro::users::user> user, std::string channel, bool only_user) {
@@ -57,7 +58,9 @@ void shiro::utils::bot::respond(std::string message, std::shared_ptr<shiro::user
     response.content = message;
 
     buffer.send_message(response);
-    user->queue.enqueue(buffer);
+
+    if (user != nullptr)
+        user->queue.enqueue(buffer);
 
     if (!boost::algorithm::starts_with(channel, "#"))
         return;
@@ -83,7 +86,7 @@ void shiro::utils::bot::respond(std::string message, std::shared_ptr<shiro::user
         return;
     }
 
-    auto users = channels::manager::get_users_in_channel(channel);
+    std::vector<std::shared_ptr<users::user>> users = channels::manager::get_users_in_channel(channel);
 
     for (const std::shared_ptr<users::user> &channel_user : users) {
         if (channel_user == nullptr || channel_user->user_id == user->user_id || user->user_id == 1)
