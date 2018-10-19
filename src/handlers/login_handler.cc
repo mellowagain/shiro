@@ -34,6 +34,7 @@
 #include "../users/user_punishments.hh"
 #include "../utils/bot_utils.hh"
 #include "../utils/login_responses.hh"
+#include "../utils/osu_client.hh"
 #include "../utils/string_utils.hh"
 #include "login_handler.hh"
 
@@ -118,7 +119,7 @@ void shiro::handler::login::handle(const crow::request &request, crow::response 
             return;
         }
     } catch (const std::out_of_range &ex) {
-        LOG_S(WARNING) << "Unable to convert client version " << version << " is valid build: " << ex.what();
+        LOG_S(WARNING) << "Unable to convert client version " << version << " to valid build: " << ex.what();
 
         if (config::score_submission::restrict_mismatching_client_version) {
             writer.login_reply((int32_t) utils::login_responses::server_error);
@@ -127,6 +128,8 @@ void shiro::handler::login::handle(const crow::request &request, crow::response 
             return;
         }
     }
+
+    user->client_type = utils::clients::parse_version(version, build);
 
     std::chrono::seconds seconds = std::chrono::duration_cast<std::chrono::seconds>(
             std::chrono::system_clock::now().time_since_epoch()

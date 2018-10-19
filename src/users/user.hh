@@ -41,11 +41,13 @@ namespace shiro::users {
 
         // Session info
         std::string token = ""; // UUID v4
-        std::string client_version = ""; // Full client version string sent on login (b20160403.6)
-        int32_t client_build = 20131216; // Fixed client build version (20160403)
         std::string hwid = ""; // SHA256
         std::chrono::seconds last_ping;
         bool hidden = false; // If the client is hidden, e.g. restricted
+
+        std::string client_version = ""; // Full client version string sent on login (b20160403.6)
+        int32_t client_build = 20131216; // Fixed client build version (20160403)
+        uint32_t client_type = 0;
 
         io::layouts::user_presence presence;
         io::layouts::user_stats stats;
