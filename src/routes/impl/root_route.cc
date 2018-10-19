@@ -55,7 +55,7 @@ void shiro::routes::root::handle(const crow::request &request, crow::response &r
         response.code = 403;
         response.end();
 
-        LOG_F(WARNING, "Received POST from %s without osu! user agent.", request.get_header_value("X-Forwarded-For").c_str());
+        LOG_F(WARNING, "Received POST from %s without osu! user agent.", request.get_ip_address().c_str());
         return;
     }
 
@@ -74,7 +74,7 @@ void shiro::routes::root::handle(const crow::request &request, crow::response &r
         response.code = 403;
         response.end();
 
-        LOG_F(WARNING, "%s sent a request with a invalid osu token.", request.get_header_value("X-Forwarded-For").c_str());
+        LOG_F(WARNING, "%s sent a request with a invalid osu token.", request.get_ip_address().c_str());
         return;
     }
 

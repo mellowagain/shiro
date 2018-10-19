@@ -50,7 +50,7 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
         response.code = 403;
         response.end();
 
-        LOG_F(WARNING, "Received score submission from %s without osu! user agent.", request.get_header_value("X-Forwarded-For").c_str());
+        LOG_F(WARNING, "Received score submission from %s without osu! user agent.", request.get_ip_address().c_str());
         return;
     }
 
