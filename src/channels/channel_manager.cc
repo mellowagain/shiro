@@ -64,11 +64,15 @@ void shiro::channels::manager::init() {
         return;
 
     for (const auto &row : result) {
-        std::string name = row.name;;
+        std::string name = row.name;
 
         if (name.at(0) != '#') {
             LOG_F(WARNING, "Channel name of channel id %i doesn't start with #, fixing (%s -> %s).", (int) row.id, name.c_str(), ("#" + name).c_str());
             name.insert(0, "#");
+
+            db(update(channel_table).set(
+                    channel_table.name = name
+            ).where(channel_table.id == row.id));
         }
 
         channels.insert(std::make_pair<io::layouts::channel, std::vector<std::shared_ptr<users::user>>>(
