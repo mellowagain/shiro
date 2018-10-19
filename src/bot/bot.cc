@@ -21,6 +21,12 @@
 #include <utility>
 #include <memory>
 
+#include "../commands/public/help_command.hh"
+#include "../commands/public/roll_command.hh"
+#include "../commands/staff/announce_command.hh"
+#include "../commands/staff/clear_command.hh"
+#include "../commands/staff/clients_command.hh"
+#include "../commands/staff/rtx_command.hh"
 #include "../config/bot_file.hh"
 #include "../config/db_file.hh"
 #include "../database/tables/user_table.hh"
@@ -32,14 +38,13 @@
 #include "../users/user_manager.hh"
 #include "../utils/escaper.hh"
 #include "../utils/osu_client.hh"
-#include "commands/commands.hh"
 #include "bot.hh"
 
 static std::unordered_map<std::string, std::function<bool(std::deque<std::string>&, std::shared_ptr<shiro::users::user>, std::string)>> commands_map;
 
 void shiro::bot::init() {
     sqlpp::mysql::connection db(db_connection->get_config());
-    const tables::users user_table{};
+    const tables::users user_table {};
 
     auto result = db(select(all_of(user_table)).from(user_table).where(user_table.id == 1));
     bool empty = is_query_empty(result);
@@ -119,8 +124,6 @@ void shiro::bot::init_commands() {
     commands_map.insert(std::make_pair("clear", commands::clear));
     commands_map.insert(std::make_pair("clients", commands::clients));
     commands_map.insert(std::make_pair("help", commands::help));
-    commands_map.insert(std::make_pair("pp", commands::pp));
-    commands_map.insert(std::make_pair("rank", commands::rank));
     commands_map.insert(std::make_pair("roll", commands::roll));
     commands_map.insert(std::make_pair("rtx", commands::rtx));
 

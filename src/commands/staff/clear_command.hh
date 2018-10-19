@@ -16,19 +16,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef SHIRO_ROLL_COMMAND_HH
-#define SHIRO_ROLL_COMMAND_HH
+#ifndef SHIRO_CLEAR_COMMAND_HH
+#define SHIRO_CLEAR_COMMAND_HH
 
 #include <deque>
 #include <string>
 
-#include "../../../users/user.hh"
+#include "../../users/user.hh"
 
-namespace shiro::bot::commands {
+namespace shiro::commands {
 
-    bool roll(std::deque<std::string> &args, std::shared_ptr<users::user> user, std::string channel);
+    bool clear(std::deque<std::string> &args, std::shared_ptr<users::user> user, std::string channel);
 
 }
 
-
-#endif //SHIRO_ROLL_COMMAND_HH
+#endif //SHIRO_CLEAR_COMMAND_HH
