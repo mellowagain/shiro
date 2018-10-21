@@ -21,6 +21,12 @@
 #include <utility>
 #include <memory>
 
+#include "../commands/public/help_command.hh"
+#include "../commands/public/roll_command.hh"
+#include "../commands/staff/announce_command.hh"
+#include "../commands/staff/clear_command.hh"
+#include "../commands/staff/clients_command.hh"
+#include "../commands/staff/rtx_command.hh"
 #include "../config/bot_file.hh"
 #include "../config/db_file.hh"
 #include "../database/tables/user_table.hh"
@@ -31,14 +37,14 @@
 #include "../thirdparty/uuid.hh"
 #include "../users/user_manager.hh"
 #include "../utils/escaper.hh"
-#include "commands/commands.hh"
+#include "../utils/osu_client.hh"
 #include "bot.hh"
 
 static std::unordered_map<std::string, std::function<bool(std::deque<std::string>&, std::shared_ptr<shiro::users::user>, std::string)>> commands_map;
 
 void shiro::bot::init() {
     sqlpp::mysql::connection db(db_connection->get_config());
-    const tables::users user_table{};
+    const tables::users user_table {};
 
     auto result = db(select(all_of(user_table)).from(user_table).where(user_table.id == 1));
     bool empty = is_query_empty(result);
@@ -90,9 +96,12 @@ void shiro::bot::init() {
     );
 
     bot_user->token = sole::uuid4().str();
-    bot_user->client_version = "b19700101.01";
     bot_user->hwid = digestpp::sha256().absorb(config::bot::name).hexdigest();
     bot_user->last_ping = seconds;
+
+    bot_user->client_version = "b19700101.01";
+    bot_user->client_build = 19700101;
+    bot_user->client_type = utils::clients::osu_client::aschente;
 
     bot_user->presence.country_id = (uint8_t) geoloc::country_id::JP;
     bot_user->presence.time_zone = 9;
@@ -113,9 +122,8 @@ void shiro::bot::init() {
 void shiro::bot::init_commands() {
     commands_map.insert(std::make_pair("announce", commands::announce));
     commands_map.insert(std::make_pair("clear", commands::clear));
+    commands_map.insert(std::make_pair("clients", commands::clients));
     commands_map.insert(std::make_pair("help", commands::help));
-    commands_map.insert(std::make_pair("pp", commands::pp));
-    commands_map.insert(std::make_pair("rank", commands::rank));
     commands_map.insert(std::make_pair("roll", commands::roll));
     commands_map.insert(std::make_pair("rtx", commands::rtx));
 

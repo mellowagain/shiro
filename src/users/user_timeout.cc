@@ -24,7 +24,7 @@
 #include "user_manager.hh"
 
 void shiro::users::timeout::init() {
-    scheduler.Schedule(30s, [&](tsc::TaskContext ctx) {
+    scheduler.Schedule(30s, [](tsc::TaskContext ctx) {
         std::vector<io::osu_writer> logout_queue;
 
         for (const std::shared_ptr<users::user> &user : users::manager::online_users) {

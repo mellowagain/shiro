@@ -16,10 +16,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "rank_command.hh"
+#ifndef SHIRO_HELP_COMMAND_HH
+#define SHIRO_HELP_COMMAND_HH
 
-bool shiro::bot::commands::rank(std::deque<std::string> &args, std::shared_ptr<shiro::users::user> user, std::string channel) {
-    // TODO: Implement as soon as ranking is implemented
+#include <deque>
+#include <string>
 
-    return false;
+#include "../../users/user.hh"
+
+namespace shiro::commands {
+
+    bool help(std::deque<std::string> &args, std::shared_ptr<users::user> user, std::string channel);
+
 }
+
+#endif //SHIRO_HELP_COMMAND_HH

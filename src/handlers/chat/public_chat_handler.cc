@@ -64,7 +64,7 @@ void shiro::handler::chat::handle_public(shiro::io::osu_packet &in, shiro::io::o
         return;
     }
 
-    auto users = channels::manager::get_users_in_channel(message.channel);
+    std::vector<std::shared_ptr<users::user>> users = channels::manager::get_users_in_channel(message.channel);
 
     for (const std::shared_ptr<users::user> &channel_user : users) {
         if (user->user_id == channel_user->user_id || user->user_id == 1)

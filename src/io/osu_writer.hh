@@ -82,6 +82,7 @@ namespace shiro::io {
         void users_list(std::vector<int32_t> users);
 
         void send_message(layouts::message message);
+        void get_attention();
 
         void rtx(std::string rtx);
 

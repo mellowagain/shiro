@@ -26,7 +26,7 @@
 #include "user_punishments.hh"
 
 void shiro::users::punishments::init() {
-    scheduler.Schedule(1min, [&](tsc::TaskContext ctx) {
+    scheduler.Schedule(1min, [](tsc::TaskContext ctx) {
         sqlpp::mysql::connection db(db_connection->get_config());
         const tables::punishments punishments_table {};
 

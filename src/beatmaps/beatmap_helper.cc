@@ -59,7 +59,7 @@ size_t shiro::beatmaps::helper::callback(void *raw_data, size_t size, size_t mem
     try {
         ptr->resize(old_length + new_length);
     } catch (const std::bad_alloc &ex) {
-        LOG_F(ERROR, "Unable to allocate new memory for callback of geo location service: %s.", ex.what());
+        LOG_F(ERROR, "Unable to allocate new memory for callback of beatmap helper: %s.", ex.what());
         return 0;
     }
 

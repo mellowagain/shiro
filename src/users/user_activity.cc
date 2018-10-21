@@ -25,7 +25,7 @@
 #include "user_manager.hh"
 
 void shiro::users::activity::init() {
-    scheduler.Schedule(1min, [&](tsc::TaskContext ctx) {
+    scheduler.Schedule(1min, [](tsc::TaskContext ctx) {
         sqlpp::mysql::connection db(db_connection->get_config());
         const tables::users user_table {};
 

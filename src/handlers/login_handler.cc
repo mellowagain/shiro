@@ -34,6 +34,7 @@
 #include "../users/user_punishments.hh"
 #include "../utils/bot_utils.hh"
 #include "../utils/login_responses.hh"
+#include "../utils/osu_client.hh"
 #include "../utils/string_utils.hh"
 #include "login_handler.hh"
 
@@ -50,7 +51,7 @@ void shiro::handler::login::handle(const crow::request &request, crow::response 
         response.code = 403;
         response.end();
 
-        LOG_F(WARNING, "Received invalid login request from %s: Login body has wrong length (%lu != 4).", request.get_header_value("X-Forwarded-For").c_str(), lines.size());
+        LOG_F(WARNING, "Received invalid login request from %s: Login body has wrong length (%lu != 4).", request.get_ip_address().c_str(), lines.size());
         return;
     }
 
@@ -65,12 +66,12 @@ void shiro::handler::login::handle(const crow::request &request, crow::response 
         response.code = 403;
         response.end();
 
-        LOG_F(WARNING, "Received invalid login request from %s: Additional info has wrong length.", request.get_header_value("X-Forwarded-For").c_str());
+        LOG_F(WARNING, "Received invalid login request from %s: Additional info has wrong length.", request.get_ip_address().c_str());
         return;
     }
 
     io::osu_writer writer;
-    writer.protocol_negotiation(shiro::io::cho_protocol);
+    writer.protocol_negotiation(io::cho_protocol);
 
     std::shared_ptr<users::user> user = std::make_shared<users::user>(username);
 
@@ -79,7 +80,7 @@ void shiro::handler::login::handle(const crow::request &request, crow::response 
 
         response.end(writer.serialize());
 
-        LOG_F(WARNING, "%s (%s) tried to login as non-existent user.", username.c_str(), request.get_header_value("X-Forwarded-For").c_str());
+        LOG_F(WARNING, "%s (%s) tried to login as non-existent user.", username.c_str(), request.get_ip_address().c_str());
         return;
     }
 
@@ -88,7 +89,7 @@ void shiro::handler::login::handle(const crow::request &request, crow::response 
 
         response.end(writer.serialize());
 
-        LOG_F(WARNING, "%s (%s) tried to login with wrong password.", username.c_str(), request.get_header_value("X-Forwarded-For").c_str());
+        LOG_F(WARNING, "%s (%s) tried to login with wrong password.", username.c_str(), request.get_ip_address().c_str());
         return;
     }
 
@@ -97,7 +98,7 @@ void shiro::handler::login::handle(const crow::request &request, crow::response 
 
         response.end(writer.serialize());
 
-        LOG_F(WARNING, "%s (%s) tried to login while being banned.", username.c_str(), request.get_header_value("X-Forwarded-For").c_str());
+        LOG_F(WARNING, "%s (%s) tried to login while being banned.", username.c_str(), request.get_ip_address().c_str());
         return;
     }
 
@@ -109,7 +110,7 @@ void shiro::handler::login::handle(const crow::request &request, crow::response 
     try {
         build = boost::lexical_cast<int32_t>(version.substr(1, version.find('.') - 1));
     } catch (const boost::bad_lexical_cast &ex) {
-        LOG_S(WARNING) << "Unable to cast " << version << " to int64_t: " << ex.what();
+        LOG_S(WARNING) << "Unable to cast " << version << " to int32_t: " << ex.what();
 
         if (config::score_submission::restrict_mismatching_client_version) {
             writer.login_reply((int32_t) utils::login_responses::server_error);
@@ -118,7 +119,7 @@ void shiro::handler::login::handle(const crow::request &request, crow::response 
             return;
         }
     } catch (const std::out_of_range &ex) {
-        LOG_S(WARNING) << "Unable to convert client version " << version << " is valid build: " << ex.what();
+        LOG_S(WARNING) << "Unable to convert client version " << version << " to valid build: " << ex.what();
 
         if (config::score_submission::restrict_mismatching_client_version) {
             writer.login_reply((int32_t) utils::login_responses::server_error);
@@ -127,6 +128,8 @@ void shiro::handler::login::handle(const crow::request &request, crow::response 
             return;
         }
     }
+
+    user->client_type = utils::clients::parse_version(version, build);
 
     std::chrono::seconds seconds = std::chrono::duration_cast<std::chrono::seconds>(
             std::chrono::system_clock::now().time_since_epoch()
@@ -146,7 +149,7 @@ void shiro::handler::login::handle(const crow::request &request, crow::response 
         LOG_S(WARNING) << "Unable to cast " << utc_offset << " to uint8_t: " << ex.what() << ".";
     }
 
-    geoloc::location_info info = geoloc::get_location(request.get_header_value("X-Forwarded-For"));
+    geoloc::location_info info = geoloc::get_location(request.get_ip_address());
     user->presence.country_id = info.country;
     user->presence.time_zone = time_zone;
     user->presence.latitude = info.latitude;

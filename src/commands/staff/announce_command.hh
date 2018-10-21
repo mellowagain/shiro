@@ -16,18 +16,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef SHIRO_RANK_COMMAND_HH
-#define SHIRO_RANK_COMMAND_HH
+#ifndef SHIRO_ANNOUNCE_COMMAND_HH
+#define SHIRO_ANNOUNCE_COMMAND_HH
 
 #include <deque>
 #include <string>
 
-#include "../../../users/user.hh"
+#include "../../users/user.hh"
 
-namespace shiro::bot::commands {
+namespace shiro::commands {
 
-    bool rank(std::deque<std::string> &args, std::shared_ptr<users::user> user, std::string channel);
+    bool announce(std::deque<std::string> &args, std::shared_ptr<users::user> user, std::string channel);
 
 }
 
-#endif //SHIRO_RANK_COMMAND_HH
+#endif //SHIRO_ANNOUNCE_COMMAND_HH

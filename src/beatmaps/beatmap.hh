@@ -22,6 +22,7 @@
 #include <cstdint>
 #include <string>
 
+#include "../scores/score.hh"
 #include "../utils/play_mode.hh"
 
 namespace shiro::beatmaps {
@@ -65,7 +66,11 @@ namespace shiro::beatmaps {
 
         void update_play_metadata();
 
+        // Builds beatmap header with default pass count of beatmap
         std::string build_header();
+
+        // Builds beatmap with score count instead of default pass count
+        std::string build_header(const std::vector<scores::score> &scores);
 
     };
 

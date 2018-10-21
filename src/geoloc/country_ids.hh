@@ -21,17 +21,12 @@
 
 #include <cstdint>
 #include <string>
-#include <unordered_map>
 
-#if defined(_WIN32)
-	#undef IN
-#endif
+#include "../thirdparty/enum.hh"
 
 namespace shiro::geoloc {
 
-    extern std::unordered_map<std::string, uint8_t> countries;
-
-    enum class country_id : uint8_t {
+    BETTER_ENUM(country_id, uint8_t,
         BL = 0,
         AD = 3,
         AF = 5,
@@ -246,11 +241,8 @@ namespace shiro::geoloc {
         GG = 248,
         IM = 249,
         JE = 250,
-        MF = 252,
-
-    };
-
-    void init();
+        MF = 252
+    );
 
     uint8_t get_country_id(const std::string &country_code);
 
