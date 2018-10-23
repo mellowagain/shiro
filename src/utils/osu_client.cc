@@ -37,8 +37,10 @@ shiro::utils::clients::osu_client shiro::utils::clients::parse_version(const std
     if (client_build <= 20160403)
         return osu_client::fallback;
 
+    std::string::size_type first_dot = client_version.find('.');
+
     // osu!lazer contains two dots in their version number, unlike stable clients
-    if (client_version.find('.', client_version.find('.') + 1) != std::string::npos)
+    if (first_dot != std::string::npos && client_version.find('.', first_dot + 1) != std::string::npos)
         return osu_client::lazer;
 
     // Official osu! clients available for download on the osu! website

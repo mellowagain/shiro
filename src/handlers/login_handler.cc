@@ -107,8 +107,21 @@ void shiro::handler::login::handle(const crow::request &request, crow::response 
     std::string hwid = additional_info.at(3);
     int32_t build = 20131216;
 
+    std::string parseable_version;
+    std::string::size_type dot_index = version.find('.');
+
+    if (dot_index != std::string::npos) {
+        parseable_version = version.substr(1, dot_index - 1);
+    } else {
+        parseable_version = version;
+
+        parseable_version.erase(std::remove_if(parseable_version.begin(), parseable_version.end(), [](char c) {
+            return !std::isdigit(c);
+        }), parseable_version.end());
+    }
+
     try {
-        build = boost::lexical_cast<int32_t>(version.substr(1, version.find('.') - 1));
+        build = boost::lexical_cast<int32_t>(parseable_version);
     } catch (const boost::bad_lexical_cast &ex) {
         LOG_S(WARNING) << "Unable to cast " << version << " to int32_t: " << ex.what();
 

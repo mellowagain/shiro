@@ -50,15 +50,15 @@ shiro::utils::multipart_form_parts shiro::utils::multipart_parser::parse() {
 
     multipart_form_parts parts {};
 
-    const auto on_body_begin = [&body_begin_called](multipartparser *parser) -> int {
+    const auto on_body_begin = [&](multipartparser *parser) -> int {
         body_begin_called = true;
         return 0;
     };
-    const auto on_part_begin = [&parts](multipartparser *parser) -> int {
+    const auto on_part_begin = [&](multipartparser *parser) -> int {
         parts.emplace_back(multipart_form_part {});
         return 0;
     };
-    const auto on_header_done = [&parts, &header_name, &header_value]() -> int {
+    const auto on_header_done = [&]() -> int {
         parts.back().headers[header_name] = header_value;
 
         header_name.clear();
@@ -66,31 +66,31 @@ shiro::utils::multipart_form_parts shiro::utils::multipart_parser::parse() {
 
         return 0;
     };
-    const auto on_header_field = [header_value, &header_name, &on_header_done](multipartparser *parser, const char *data, size_t size) -> int {
+    const auto on_header_field = [&](multipartparser *parser, const char *data, size_t size) -> int {
         if (!header_value.empty())
             on_header_done();
 
         header_name.append(data, size);
         return 0;
     };
-    const auto on_header_value = [&header_value](multipartparser *parser, const char *data, size_t size) -> int {
+    const auto on_header_value = [&](multipartparser *parser, const char *data, size_t size) -> int {
         header_value.append(data, size);
         return 0;
     };
-    const auto on_headers_complete = [header_value, &on_header_done](multipartparser *parser) -> int {
+    const auto on_headers_complete = [&](multipartparser *parser) -> int {
         if (!header_value.empty())
             on_header_done();
 
         return 0;
     };
-    const auto on_data = [&parts](multipartparser *parser, const char *data, size_t size) -> int {
+    const auto on_data = [&](multipartparser *parser, const char *data, size_t size) -> int {
         parts.back().body.append(data, size);
         return 0;
     };
     const auto on_part_end = [](multipartparser *parser) -> int {
         return 0;
     };
-    const auto on_body_end = [&body_end_called](multipartparser *parser) -> int {
+    const auto on_body_end = [&](multipartparser *parser) -> int {
         body_end_called = true;
         return 0;
     };
