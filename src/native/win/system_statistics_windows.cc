@@ -81,7 +81,7 @@ uint64_t shiro::native::system_stats::get_memory_usage() {
 uint64_t shiro::native::system_stats::get_process_memory_usage() {
     PROCESS_MEMORY_COUNTERS_EX process_memory_counters;
 
-    GetProcessMemoryInfo(GetCurrentProcess(), (PPROCESS_MEMORY_COUNTERS)&process_memory_counters, sizeof(PROCESS_MEMORY_COUNTERS_EX));
+    GetProcessMemoryInfo(GetCurrentProcess(), (PPROCESS_MEMORY_COUNTERS) &process_memory_counters, sizeof(PROCESS_MEMORY_COUNTERS_EX));
 
     return process_memory_counters.PrivateUsage;
 }
@@ -107,7 +107,7 @@ uint64_t shiro::native::system_stats::get_physical_memory_usage() {
 uint64_t shiro::native::system_stats::get_physical_process_memory_usage() {
     PROCESS_MEMORY_COUNTERS_EX process_memory_counters;
 
-    GetProcessMemoryInfo(GetCurrentProcess(), (PPROCESS_MEMORY_COUNTERS)&process_memory_counters, sizeof(PROCESS_MEMORY_COUNTERS_EX));
+    GetProcessMemoryInfo(GetCurrentProcess(), (PPROCESS_MEMORY_COUNTERS) &process_memory_counters, sizeof(PROCESS_MEMORY_COUNTERS_EX));
 
     return process_memory_counters.WorkingSetSize;
 }

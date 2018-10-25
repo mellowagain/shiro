@@ -43,8 +43,10 @@
 // clang-format on
 
 namespace shiro::utils::filesystem {
+
     // Fix for MSVC's stl prefering wchar_t over char
     inline constexpr char preferred_separator = (char) fs::path::preferred_separator;
+
 }
 
 #endif
