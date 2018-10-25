@@ -38,7 +38,7 @@
 #include "replay.hh"
 #include "replay_manager.hh"
 
-static std::string dir = fs::current_path().u8string() + utils::filesystem::preferred_separator + "replays";
+static std::string dir = fs::current_path().u8string() + shiro::utils::filesystem::preferred_separator + "replays";
 
 void shiro::replays::init() {
     if (!fs::exists(dir))
