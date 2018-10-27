@@ -17,6 +17,7 @@
  */
 
 #include <algorithm>
+#include <cctype>
 
 #include "escaper.hh"
 

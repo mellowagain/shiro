@@ -38,8 +38,8 @@ static int32_t thread_count = 0; // CPU threads
 static HANDLE self_handle;
 
 void shiro::native::system_stats::init() {
-    PdhOpenQuery(nullptr, nullptr, &cpu_query);
-    PdhAddEnglishCounter(cpu_query, L"\\Processor(_Total)\\% Processor Time", nullptr, &cpu_total);
+    PdhOpenQuery(nullptr, 0, &cpu_query);
+    PdhAddEnglishCounter(cpu_query, "\\Processor(_Total)\\% Processor Time", 0, &cpu_total);
     PdhCollectQueryData(cpu_query);
 
     SYSTEM_INFO sys_info;
@@ -81,7 +81,7 @@ uint64_t shiro::native::system_stats::get_memory_usage() {
 uint64_t shiro::native::system_stats::get_process_memory_usage() {
     PROCESS_MEMORY_COUNTERS_EX process_memory_counters;
 
-    GetProcessMemoryInfo(GetCurrentProcess(), &process_memory_counters, sizeof(PROCESS_MEMORY_COUNTERS_EX));
+    GetProcessMemoryInfo(GetCurrentProcess(), (PPROCESS_MEMORY_COUNTERS) &process_memory_counters, sizeof(PROCESS_MEMORY_COUNTERS_EX));
 
     return process_memory_counters.PrivateUsage;
 }
@@ -107,7 +107,7 @@ uint64_t shiro::native::system_stats::get_physical_memory_usage() {
 uint64_t shiro::native::system_stats::get_physical_process_memory_usage() {
     PROCESS_MEMORY_COUNTERS_EX process_memory_counters;
 
-    GetProcessMemoryInfo(GetCurrentProcess(), &process_memory_counters, sizeof(PROCESS_MEMORY_COUNTERS_EX));
+    GetProcessMemoryInfo(GetCurrentProcess(), (PPROCESS_MEMORY_COUNTERS) &process_memory_counters, sizeof(PROCESS_MEMORY_COUNTERS_EX));
 
     return process_memory_counters.WorkingSetSize;
 }
@@ -133,7 +133,7 @@ double shiro::native::system_stats::get_process_cpu_usage() {
     GetSystemTimeAsFileTime(&file_time);
     std::memcpy(&now, &file_time, sizeof(FILETIME));
 
-    GetProcessTimes(self, &file_time, &file_time, &sys_time, &user_time);
+    GetProcessTimes(GetCurrentProcess(), &file_time, &file_time, &sys_time, &user_time);
     std::memcpy(&sys, &sys_time, sizeof(FILETIME));
     std::memcpy(&user, &user_time, sizeof(FILETIME));
 

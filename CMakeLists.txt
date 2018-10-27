@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 project(shiro C CXX)
 
 set(CMAKE_CXX_STANDARD 17)
+
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/")
 
@@ -26,6 +27,20 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -s")
 endif()
 
+if (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+    # these should already be setup from the "windows_setup_build" script
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /DNOMINMAX")
+    include_directories("external/sqlpp11/include")
+    include_directories("external/sqlpp11-connector-mysql/include")
+    
+    find_path(MYSQL_INCLUDE_DIR NAMES mysql.h PATH_SUFFIXES mysql)
+    include_directories("${MYSQL_INCLUDE_DIR}")
+
+    find_path(MYSQL_LIB_DIR NAMES libmysql.lib PATH_SUFFIXES lib)
+    link_directories("${MYSQL_LIB_DIR}")
+
+endif()
+
 # Disable use of avx2 in cppcrypto algorithms
 add_definitions(-DNO_OPTIMIZED_VERSIONS)
 
@@ -35,7 +50,7 @@ find_package(Threads REQUIRED)
 
 # Boost
 set(Boost_USE_MULTITHREADED ON)
-find_package(Boost REQUIRED COMPONENTS system iostreams)
+find_package(Boost REQUIRED COMPONENTS system iostreams date_time)
 
 # cURL
 find_package(CURL REQUIRED)
@@ -93,7 +108,13 @@ foreach (RESOURCE ${RESOURCES})
 endforeach()
 
 if (WIN32)
-    set(CMAKE_LINK_LIBS ${CMAKE_LINK_LIBS})
+    set(CMAKE_LINK_LIBS libmysql pdh OpenSSL::Crypto ${CMAKE_LINK_LIBS})
+    
+    link_directories("external/sqlpp11-connector-mysql/build/src")
+    set(CMAKE_LINK_LIBS optimized "Release/sqlpp-mysql" ${CMAKE_LINK_LIBS})
+    set(CMAKE_LINK_LIBS debug "Debug/sqlpp-mysql" ${CMAKE_LINK_LIBS})
+
+    # message(WARNING "${CURL_LIBRARIES}")
 elseif (APPLE)
     set(CMAKE_LINK_LIBS dl sqlpp-mysql mysqlclient crypto stdc++fs ${CMAKE_LINK_LIBS})
 elseif (UNIX) # Linux
@@ -102,4 +123,4 @@ endif()
 
 include_directories(${CURL_INCLUDE_DIRS} ${OPENSSL_INCLUDE_DIR} ${HinnantDate_INCLUDE_DIR} ${ZLIB_INCLUDE_DIRS} ${LIBLZMA_INCLUDE_DIRS} ${LIBOSU_INCLUDE_DIRS} ${AKAME_INCLUDE_DIRS})
 add_executable(shiro ${SRC})
-target_link_libraries(shiro Threads::Threads ${Boost_LIBRARIES} ${CURL_LIBRARIES} ${ZLIB_LIBRARIES} ${LIBLZMA_LIBRARIES} ${LIBOSU_LIBRARIES} ${AKAME_LIBRARIES} ${CMAKE_LINK_LIBS})
+target_link_libraries(shiro general Threads::Threads ${CURL_LIBRARIES} ${Boost_LIBRARIES} ${ZLIB_LIBRARIES} ${LIBLZMA_LIBRARIES} ${LIBOSU_LIBRARIES} ${AKAME_LIBRARIES} ${CMAKE_LINK_LIBS})
