@@ -27,7 +27,7 @@ pushd "%~dp0"
         mkdir build
         cd build
 
-        cmake -DCMAKE_TOOLCHAIN_FILE=E:/src/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_EXPORT_COMPILE_COMMANDS=true -DVCPKG_INCLUDE_DIR=%VCPKG_ROOT%installed\x64-windows\include\ ..
+        cmake -DCMAKE_TOOLCHAIN_FILE=%VCPKG_ROOT%/scripts/buildsystems/vcpkg.cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_EXPORT_COMPILE_COMMANDS=true -DVCPKG_INCLUDE_DIR=%VCPKG_ROOT%\installed\x64-windows\include\ ..
         cmake --build . --config Release --target sqlpp-mysql
         cmake --build . --config Debug --target sqlpp-mysql
     popd

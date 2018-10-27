@@ -29,7 +29,7 @@ endif()
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     # these should already be setup from the "windows_setup_build" script
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /DNOMINMAX")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /DNOMINMAX /UIN")
     include_directories("external/sqlpp11/include")
     include_directories("external/sqlpp11-connector-mysql/include")
     
@@ -38,7 +38,6 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
 
     find_path(MYSQL_LIB_DIR NAMES libmysql.lib PATH_SUFFIXES lib)
     link_directories("${MYSQL_LIB_DIR}")
-
 endif()
 
 # Disable use of avx2 in cppcrypto algorithms
