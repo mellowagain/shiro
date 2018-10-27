@@ -26,7 +26,7 @@
             using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;\
             template <typename T>                                                 \
             struct _member_t {                                                    \
-                T  var;                                                           \
+                T var;                                                           \
                 T &operator()() {                                                 \
                     return var;                                                   \
                 }                                                                 \
