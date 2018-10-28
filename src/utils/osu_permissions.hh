@@ -16,23 +16,23 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef SHIRO_BANCHO_FILE_HH
-#define SHIRO_BANCHO_FILE_HH
+#ifndef SHIRO_OSU_PERMISSIONS_HH
+#define SHIRO_OSU_PERMISSIONS_HH
 
-#include <string>
+#include <cstdint>
 
-namespace shiro::config::bancho {
+namespace shiro::utils {
 
-    extern std::string host;
-    extern uint16_t port;
-    extern uint16_t concurrency;
-
-    extern bool default_supporter;
-
-    extern std::string api_key;
-
-    void parse();
+    enum class osu_permissions : uint8_t {
+        none = 0 << 0, // Light yellow
+        normal = 1 << 0, // Light yellow
+        bat = 1 << 1, // Red
+        supporter = 1 << 2, // Yellow
+        friend_ = 1 << 3, // Light blue
+        peppy = 1 << 4, // Blue
+        tournament = 1 << 5 // This bit will never be sent by us in user presence
+    };
 
 }
 
-#endif //SHIRO_BANCHO_FILE_HH
+#endif  // SHIRO_OSU_PERMISSIONS_HH

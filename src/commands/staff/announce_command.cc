@@ -16,6 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "../../permissions/role_manager.hh"
 #include "../../users/user_manager.hh"
 #include "../../utils/bot_utils.hh"
 #include "announce_command.hh"
@@ -23,6 +24,11 @@
 bool shiro::commands::announce(std::deque<std::string> &args, std::shared_ptr<shiro::users::user> user, std::string channel) {
     if (args.empty()) {
         utils::bot::respond("Usage: !announce [user] <announcement>", user, channel, true);
+        return false;
+    }
+
+    if (!roles::manager::has_permission(user, permissions::perms::cmd_announce)) {
+        utils::bot::respond("Permission denied. (" + std::to_string((uint64_t) permissions::perms::cmd_announce) + ")", user, channel, true);
         return false;
     }
 

@@ -17,6 +17,7 @@
  */
 
 #include "../../config/bot_file.hh"
+#include "../../permissions/role_manager.hh"
 #include "../../users/user_manager.hh"
 #include "../../utils/bot_utils.hh"
 #include "clear_command.hh"
@@ -26,6 +27,11 @@ bool shiro::commands::clear(std::deque<std::string> &args, std::shared_ptr<shiro
 
     if (args.size() >= 2) {
         utils::bot::respond("Usage: !clear [user]", user, channel, true);
+        return false;
+    }
+
+    if (!roles::manager::has_permission(user, permissions::perms::cmd_clear)) {
+        utils::bot::respond("Permission denied. (" + std::to_string((uint64_t) permissions::perms::cmd_clear) + ")", user, channel, true);
         return false;
     }
 

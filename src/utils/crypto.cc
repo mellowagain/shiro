@@ -128,3 +128,16 @@ std::string shiro::utils::crypto::lzma::decompress(std::string input) {
 
     return "";
 }
+
+uint32_t shiro::utils::crypto::get_highest_bit(uint32_t bitwise) {
+    if (bitwise == 0)
+        return 0;
+
+    uint32_t result = 1;
+
+    while (bitwise >>= 1) {
+        result <<= 1;
+    }
+
+    return result;
+}

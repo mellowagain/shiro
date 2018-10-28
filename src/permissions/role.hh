@@ -16,23 +16,25 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef SHIRO_BANCHO_FILE_HH
-#define SHIRO_BANCHO_FILE_HH
+#ifndef SHIRO_ROLE_HH
+#define SHIRO_ROLE_HH
 
+#include <cstdint>
 #include <string>
 
-namespace shiro::config::bancho {
+namespace shiro::permissions {
 
-    extern std::string host;
-    extern uint16_t port;
-    extern uint16_t concurrency;
+    class role {
+    public:
+        uint32_t id = 0;
+        std::string name = "";
+        uint64_t permissions = 0;
+        uint8_t color = 0;
 
-    extern bool default_supporter;
+        role(uint32_t id, std::string name, uint64_t permissions, uint8_t color);
 
-    extern std::string api_key;
-
-    void parse();
+    };
 
 }
 
-#endif //SHIRO_BANCHO_FILE_HH
+#endif //SHIRO_ROLE_HH

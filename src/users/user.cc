@@ -20,6 +20,7 @@
 
 #include "../database/tables/relationship_table.hh"
 #include "../database/tables/user_table.hh"
+#include "../permissions/role_manager.hh"
 #include "../thirdparty/loguru.hh"
 #include "../utils/crypto.hh"
 #include "../utils/play_mode.hh"
@@ -55,7 +56,8 @@ bool shiro::users::user::init() {
         this->presence.username = row.username;
         this->password = row.password;
         this->salt = row.salt;
-        this->presence.permissions = row.groups;
+        this->roles = row.roles;
+        this->presence.permissions = roles::manager::get_chat_color(this->roles);
         this->stats.pp = row.pp_std;
         this->stats.accuracy = row.accuracy_std;
         this->stats.total_score = row.score_std;

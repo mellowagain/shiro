@@ -16,23 +16,27 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef SHIRO_BANCHO_FILE_HH
-#define SHIRO_BANCHO_FILE_HH
+#ifndef SHIRO_ROLE_MANAGER_HH
+#define SHIRO_ROLE_MANAGER_HH
 
-#include <string>
+#include <cstdint>
+#include <vector>
 
-namespace shiro::config::bancho {
+#include "../users/user.hh"
 
-    extern std::string host;
-    extern uint16_t port;
-    extern uint16_t concurrency;
+#include "permissions.hh"
+#include "role.hh"
 
-    extern bool default_supporter;
+namespace shiro::roles::manager {
 
-    extern std::string api_key;
+    extern std::vector<permissions::role> roles;
 
-    void parse();
+    void init();
+
+    bool has_permission(std::shared_ptr<users::user> user, permissions::perms permissions);
+
+    uint8_t get_chat_color(uint32_t roles);
 
 }
 
-#endif //SHIRO_BANCHO_FILE_HH
+#endif //SHIRO_ROLE_MANAGER_HH

@@ -16,6 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "../../permissions/role_manager.hh"
 #include "../../users/user_manager.hh"
 #include "../../utils/bot_utils.hh"
 #include "../../utils/osu_client.hh"
@@ -24,6 +25,11 @@
 bool shiro::commands::clients(std::deque<std::string> &args, std::shared_ptr<shiro::users::user> user, std::string channel) {
     if (args.size() >= 2) {
         utils::bot::respond("Usage: !clients [user]", user, channel, true);
+        return false;
+    }
+
+    if (!roles::manager::has_permission(user, permissions::perms::cmd_clients)) {
+        utils::bot::respond("Permission denied. (" + std::to_string((uint64_t) permissions::perms::cmd_clients) + ")", user, channel, true);
         return false;
     }
 

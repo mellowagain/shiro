@@ -19,10 +19,16 @@
 #include "../../users/user_manager.hh"
 #include "../../utils/bot_utils.hh"
 #include "rtx_command.hh"
+#include "../../permissions/role_manager.hh"
 
 bool shiro::commands::rtx(std::deque<std::string> &args, std::shared_ptr<shiro::users::user> user, std::string channel) {
     if (args.empty()) {
         utils::bot::respond("Usage: !rtx <target> [reason]", user, channel, true);
+        return false;
+    }
+
+    if (!roles::manager::has_permission(user, permissions::perms::cmd_rtx)) {
+        utils::bot::respond("Permission denied. (" + std::to_string((uint64_t) permissions::perms::cmd_rtx) + ")", user, channel, true);
         return false;
     }
 

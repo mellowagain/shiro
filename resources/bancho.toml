@@ -7,5 +7,9 @@ port = 8080
 # Set this higher if you have more players, however also results in more RAM being used.
 concurrency = 64
 
+[permissions]
+# Allow users with no roles / permissions to have supporer in-game?
+default_supporter = true
+
 [api]
 key = "osu!Bancho token"
