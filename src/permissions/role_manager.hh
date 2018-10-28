@@ -23,7 +23,6 @@
 #include <vector>
 
 #include "../users/user.hh"
-
 #include "permissions.hh"
 #include "role.hh"
 
