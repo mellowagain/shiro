@@ -31,7 +31,7 @@ namespace shiro::io::layouts {
         uint8_t time_zone = 0;
         uint8_t country_id = 0;
 
-        uint8_t permissions = 5;
+        uint8_t permissions = 0;
 
         float longitude = 0.0f;
         float latitude = 0.0f;

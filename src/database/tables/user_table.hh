@@ -38,7 +38,7 @@ namespace shiro::tables {
         object_struct(registration_date, sqlpp::integer);
         object_struct(last_seen, sqlpp::integer);
         object_struct(followers, sqlpp::integer);
-        object_struct(groups, sqlpp::integer);
+        object_struct(roles, sqlpp::integer_unsigned);
         object_struct(user_page, sqlpp::text);
         object_struct(pp_std, sqlpp::floating_point);
         object_struct(pp_taiko, sqlpp::floating_point);
@@ -70,7 +70,7 @@ namespace shiro::tables {
     struct users : sqlpp::table_t<users, users_objects::id, users_objects::username, users_objects::safe_username,
             users_objects::password, users_objects::salt, users_objects::email, users_objects::ip,
             users_objects::registration_date, users_objects::last_seen,
-            users_objects::followers, users_objects::groups, users_objects::user_page,
+            users_objects::followers, users_objects::roles, users_objects::user_page,
             users_objects::pp_std, users_objects::pp_taiko, users_objects::pp_ctb, users_objects::pp_mania,
             users_objects::rank_std, users_objects::rank_taiko, users_objects::rank_ctb, users_objects::rank_mania,
             users_objects::score_std, users_objects::score_taiko, users_objects::score_ctb, users_objects::score_mania,

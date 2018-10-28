@@ -16,23 +16,23 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef SHIRO_BANCHO_FILE_HH
-#define SHIRO_BANCHO_FILE_HH
+#ifndef SHIRO_PERMISSIONS_HH
+#define SHIRO_PERMISSIONS_HH
 
-#include <string>
+#include <cstdint>
 
-namespace shiro::config::bancho {
+namespace shiro::permissions {
 
-    extern std::string host;
-    extern uint16_t port;
-    extern uint16_t concurrency;
+    enum class perms : uint64_t {
+        // General permissions (<32)
 
-    extern bool default_supporter;
-
-    extern std::string api_key;
-
-    void parse();
+        // Command permissions (>32)
+        cmd_announce = 1LL << 32,
+        cmd_clear = 1LL << 33,
+        cmd_clients = 1LL << 34,
+        cmd_rtx = 1LL << 35
+    };
 
 }
 
-#endif //SHIRO_BANCHO_FILE_HH
+#endif  // SHIRO_PERMISSIONS_HH

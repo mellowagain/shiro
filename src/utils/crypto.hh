@@ -45,6 +45,8 @@ namespace shiro::utils::crypto {
         std::string decompress(std::string input);
     }
 
+    uint32_t get_highest_bit(uint32_t bitwise);
+
     // Anonymous utility namespace
     namespace {
         struct bio_free_all {

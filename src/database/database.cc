@@ -94,7 +94,7 @@ void shiro::database::setup() {
            "username VARCHAR(32) NOT NULL, safe_username VARCHAR(32) NOT NULL, "
            "password VARCHAR(128) NOT NULL, salt VARCHAR(64) NOT NULL,"
            "email VARCHAR(100) NOT NULL, ip VARCHAR(39) NOT NULL, registration_date INT NOT NULL, last_seen INT NOT NULL, "
-           "followers INT NOT NULL, groups INT NOT NULL, user_page TEXT NOT NULL, "
+           "followers INT NOT NULL, roles INT UNSIGNED NOT NULL, user_page TEXT NOT NULL, "
            "pp_std FLOAT NOT NULL DEFAULT 0, pp_taiko FLOAT NOT NULL DEFAULT 0, pp_ctb FLOAT NOT NULL DEFAULT 0, "
            "pp_mania FLOAT NOT NULL DEFAULT 0, rank_std INT NOT NULL DEFAULT 0, rank_taiko INT NOT NULL DEFAULT 0, "
            "rank_ctb INT NOT NULL DEFAULT 0, rank_mania INT NOT NULL DEFAULT 0, score_std INT NOT NULL DEFAULT 0, "
@@ -117,6 +117,13 @@ void shiro::database::setup() {
     // Relationships between users (friends and blocked)
     db.execute(
            "CREATE TABLE IF NOT EXISTS `relationships` (origin INT NOT NULL, target INT NOT NULL, blocked BOOLEAN NOT NULL);"
+    );
+
+    // Roles
+    db.execute(
+            "CREATE TABLE IF NOT EXISTS `roles` "
+            "(id INT UNSIGNED PRIMARY KEY NOT NULL, name VARCHAR(32) NOT NULL, "
+            "permissions BIGINT UNSIGNED NOT NULL, color TINYINT UNSIGNED NOT NULL);"
     );
 
     LOG_S(INFO) << "Successfully created and structured tables in database.";

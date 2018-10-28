@@ -62,7 +62,7 @@ void shiro::bot::init() {
                 user_table.registration_date = 0,
                 user_table.last_seen = 0,
                 user_table.followers = 0,
-                user_table.groups = 0,
+                user_table.roles = 0xDEADCAFE, // Special role for robots
                 user_table.user_page = "beep boop",
                 user_table.pp_std = 0,
                 user_table.pp_taiko = 0,
