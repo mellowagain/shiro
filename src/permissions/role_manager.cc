@@ -55,23 +55,23 @@ uint8_t shiro::roles::manager::get_chat_color(uint32_t roles) {
     if (roles == 0xDEADCAFE)
         return (uint8_t) utils::osu_permissions::friend_;
 
+    uint8_t result = (uint8_t) utils::osu_permissions::normal;
+
+    if (config::bancho::default_supporter)
+        result |= (uint8_t) utils::osu_permissions::supporter;
+
     uint32_t highest_role = utils::crypto::get_highest_bit(roles);
 
-    if (highest_role == 0) {
-        uint8_t result = (uint8_t) utils::osu_permissions::normal;
-
-        if (config::bancho::default_supporter)
-            result = (uint8_t) utils::osu_permissions::supporter;
-
+    if (highest_role == 0)
         return result;
-    }
 
     for (const permissions::role &role : manager::roles) {
         if (role.id != highest_role)
             continue;
 
-        return role.color;
+        result |= role.color;
+        break;
     }
 
-    return config::bancho::default_supporter ? (uint8_t) utils::osu_permissions::supporter : (uint8_t) utils::osu_permissions::normal;
+    return result;
 }
