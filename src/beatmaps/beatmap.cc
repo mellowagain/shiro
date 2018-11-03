@@ -170,6 +170,7 @@ bool shiro::beatmaps::beatmap::fetch_api() {
     }
 
     std::string original_md5sum = this->beatmap_md5;
+    bool map_found = false;
     auto result = json::parse(output);
 
     for (auto &part : result) {
@@ -220,6 +221,9 @@ bool shiro::beatmaps::beatmap::fetch_api() {
             return false;
         }
 
+        if (this->beatmap_md5 == original_md5sum)
+            map_found = true;
+
         std::string last_update = part["last_update"];
 
         std::tm time {};
@@ -229,35 +233,46 @@ bool shiro::beatmaps::beatmap::fetch_api() {
         std::chrono::seconds seconds = std::chrono::time_point_cast<std::chrono::seconds>(time_point).time_since_epoch();
         this->last_update = seconds.count();
 
-        sqlpp::mysql::connection db(db_connection->get_config());
-        const tables::beatmaps beatmaps_table {};
-
-        db(insert_into(beatmaps_table).set(
-                beatmaps_table.beatmap_id = this->beatmap_id,
-                beatmaps_table.beatmapset_id = this->beatmapset_id,
-                beatmaps_table.game_mode = this->play_mode,
-                beatmaps_table.beatmap_md5 = this->beatmap_md5,
-                beatmaps_table.song_name = this->song_name,
-                beatmaps_table.ar = this->ar,
-                beatmaps_table.od = this->od,
-                beatmaps_table.diff_std = this->diff_std,
-                beatmaps_table.diff_taiko = this->diff_taiko,
-                beatmaps_table.diff_ctb = this->diff_ctb,
-                beatmaps_table.diff_mania = this->diff_mania,
-                beatmaps_table.max_combo = this->max_combo,
-                beatmaps_table.hit_length = this->hit_length,
-                beatmaps_table.bpm = this->bpm,
-                beatmaps_table.ranked_status = this->ranked_status,
-                beatmaps_table.ranked_status_freezed = this->ranked_status_freezed,
-                beatmaps_table.last_update = this->last_update,
-                beatmaps_table.play_count = this->play_count,
-                beatmaps_table.pass_count = this->pass_count
-        ));
+        save();
     }
 
     this->beatmap_md5 = original_md5sum;
+
+    if (!map_found) {
+        // Map was not found when queuing for the beatmap set, the map is not submitted.
+        this->ranked_status = (int32_t) status::unsubmitted;
+        return true;
+    }
+
     fetch_db();
     return true;
+}
+
+void shiro::beatmaps::beatmap::save() {
+    sqlpp::mysql::connection db(db_connection->get_config());
+    const tables::beatmaps beatmaps_table {};
+
+    db(insert_into(beatmaps_table).set(
+            beatmaps_table.beatmap_id = this->beatmap_id,
+            beatmaps_table.beatmapset_id = this->beatmapset_id,
+            beatmaps_table.game_mode = this->play_mode,
+            beatmaps_table.beatmap_md5 = this->beatmap_md5,
+            beatmaps_table.song_name = this->song_name,
+            beatmaps_table.ar = this->ar,
+            beatmaps_table.od = this->od,
+            beatmaps_table.diff_std = this->diff_std,
+            beatmaps_table.diff_taiko = this->diff_taiko,
+            beatmaps_table.diff_ctb = this->diff_ctb,
+            beatmaps_table.diff_mania = this->diff_mania,
+            beatmaps_table.max_combo = this->max_combo,
+            beatmaps_table.hit_length = this->hit_length,
+            beatmaps_table.bpm = this->bpm,
+            beatmaps_table.ranked_status = this->ranked_status,
+            beatmaps_table.ranked_status_freezed = this->ranked_status_freezed,
+            beatmaps_table.last_update = this->last_update,
+            beatmaps_table.play_count = this->play_count,
+            beatmaps_table.pass_count = this->pass_count
+    ));
 }
 
 void shiro::beatmaps::beatmap::update_play_metadata() {
