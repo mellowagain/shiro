@@ -117,7 +117,8 @@ void shiro::handler::login::handle(const crow::request &request, crow::response 
 
         parseable_version.erase(std::remove_if(parseable_version.begin(), parseable_version.end(), [](char c) {
             return !std::isdigit(c);
-        }), parseable_version.end());
+        }),
+            parseable_version.end());
     }
 
     try {
@@ -145,8 +146,7 @@ void shiro::handler::login::handle(const crow::request &request, crow::response 
     user->client_type = utils::clients::parse_version(version, build);
 
     std::chrono::seconds seconds = std::chrono::duration_cast<std::chrono::seconds>(
-            std::chrono::system_clock::now().time_since_epoch()
-    );
+        std::chrono::system_clock::now().time_since_epoch());
 
     user->token = sole::uuid4().str();
     user->client_version = version;
@@ -193,12 +193,13 @@ void shiro::handler::login::handle(const crow::request &request, crow::response 
 
     if (users::punishments::is_restricted(user->user_id)) {
         utils::bot::respond(
-                "[https://shiro.host/u/me Your account has been restricted]. "
-                "Because of that, your profile has been hidden from the public. "
-                "If you believe this is a mistake, [https://shiro.host/support contact support] "
-                "to have your account status reviewed.",
-                user, config::bot::name, true
-        );
+            "[https://shiro.host/u/me Your account has been restricted]. "
+            "Because of that, your profile has been hidden from the public. "
+            "If you believe this is a mistake, [https://shiro.host/support contact support] "
+            "to have your account status reviewed.",
+            user,
+            config::bot::name,
+            true);
     }
 
     for (const std::shared_ptr<users::user> &online_user : users::manager::online_users) {

@@ -23,7 +23,7 @@
 #include "index_view.hh"
 
 std::string shiro::views::index::get_view() {
-    std::string view = std::string(reinterpret_cast<char*>(shiro_index_html), shiro_index_html_len);
+    std::string view = std::string(reinterpret_cast<char *>(shiro_index_html), shiro_index_html_len);
 
     double difference = std::difftime(std::time(nullptr), start_time);
     std::time_t seconds((time_t) difference);

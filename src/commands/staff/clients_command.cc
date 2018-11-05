@@ -43,13 +43,7 @@ bool shiro::commands::clients(std::deque<std::string> &args, std::shared_ptr<shi
 
         char buffer[256];
         std::snprintf(
-                buffer, sizeof(buffer),
-                "%s is using %s. (%s -> %i)",
-                target->presence.username.c_str(),
-                utils::clients::to_pretty_string(utils::clients::osu_client::_from_integral(target->client_type)).c_str(),
-                target->client_version.c_str(),
-                target->client_build
-        );
+            buffer, sizeof(buffer), "%s is using %s. (%s -> %i)", target->presence.username.c_str(), utils::clients::to_pretty_string(utils::clients::osu_client::_from_integral(target->client_type)).c_str(), target->client_version.c_str(), target->client_build);
 
         utils::bot::respond(buffer, user, channel, true);
         return true;

@@ -34,7 +34,6 @@ namespace shiro::ranking::helper {
     int16_t get_pp_for_user(uint8_t mode, std::string username);
 
     void recalculate_ranks(uint8_t mode);
-
 }
 
 #endif //SHIRO_RANKING_HELPER_HH

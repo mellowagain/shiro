@@ -46,7 +46,7 @@ namespace shiro::io {
         template <typename t = uint8_t>
         void write(t data) {
             this->allocate(sizeof(t));
-            uint8_t *data_arr = reinterpret_cast<uint8_t*>(&data);
+            uint8_t *data_arr = reinterpret_cast<uint8_t *>(&data);
 
             for (size_t i = 0; i < sizeof(t); i++)
                 this->bytes.at(this->written_size++) = data_arr[i];
@@ -54,7 +54,7 @@ namespace shiro::io {
 
         template <typename t = uint8_t>
         t read() {
-            t data = *reinterpret_cast<t*>((uintptr_t)this->bytes.data() + this->position);
+            t data = *reinterpret_cast<t *>((uintptr_t) this->bytes.data() + this->position);
             this->position += sizeof(t);
 
             return data;
@@ -76,9 +76,7 @@ namespace shiro::io {
         void advance(size_t amount);
 
         size_t get_size();
-
     };
-
 }
 
 #endif //SHIRO_OSU_BUFFER_HH

@@ -39,7 +39,7 @@ namespace shiro::utils {
         auto_play = 1 << 11,
         spun_out = 1 << 12,
         auto_pilot = 1 << 13, // relax2
-        perfect = 1 << 14, // only set together with SD (mods::sudden_death | mods::perfect)
+        perfect = 1 << 14,    // only set together with SD (mods::sudden_death | mods::perfect)
 
         key_4 = 1 << 15,
         key_5 = 1 << 16,
@@ -61,40 +61,39 @@ namespace shiro::utils {
     };
 
     constexpr uint32_t key_mods = (uint32_t) mods::key_1 |
-            (uint32_t) mods::key_2 |
-            (uint32_t) mods::key_3 |
-            (uint32_t) mods::key_4 |
-            (uint32_t) mods::key_5 |
-            (uint32_t) mods::key_6 |
-            (uint32_t) mods::key_7 |
-            (uint32_t) mods::key_8 |
-            (uint32_t) mods::key_9 |
-            (uint32_t) mods::key_coop;
+                                  (uint32_t) mods::key_2 |
+                                  (uint32_t) mods::key_3 |
+                                  (uint32_t) mods::key_4 |
+                                  (uint32_t) mods::key_5 |
+                                  (uint32_t) mods::key_6 |
+                                  (uint32_t) mods::key_7 |
+                                  (uint32_t) mods::key_8 |
+                                  (uint32_t) mods::key_9 |
+                                  (uint32_t) mods::key_coop;
 
     constexpr uint32_t unranked_key_mods = (uint32_t) mods::key_1 |
-            (uint32_t) mods::key_2 |
-            (uint32_t) mods::key_3 |
-            (uint32_t) mods::key_9 |
-            (uint32_t) mods::key_coop;
+                                           (uint32_t) mods::key_2 |
+                                           (uint32_t) mods::key_3 |
+                                           (uint32_t) mods::key_9 |
+                                           (uint32_t) mods::key_coop;
 
     constexpr uint32_t free_mods = (uint32_t) mods::no_fail |
-            (uint32_t) mods::easy |
-            (uint32_t) mods::hidden |
-            (uint32_t) mods::hard_rock |
-            (uint32_t) mods::sudden_death |
-            (uint32_t) mods::flashlight |
-            (uint32_t) mods::fade_in |
-            (uint32_t) mods::relax |
-            (uint32_t) mods::auto_pilot |
-            (uint32_t) mods::spun_out |
-            key_mods;
+                                   (uint32_t) mods::easy |
+                                   (uint32_t) mods::hidden |
+                                   (uint32_t) mods::hard_rock |
+                                   (uint32_t) mods::sudden_death |
+                                   (uint32_t) mods::flashlight |
+                                   (uint32_t) mods::fade_in |
+                                   (uint32_t) mods::relax |
+                                   (uint32_t) mods::auto_pilot |
+                                   (uint32_t) mods::spun_out |
+                                   key_mods;
 
     constexpr uint32_t score_increase_mods = (uint32_t) mods::hidden |
-            (uint32_t) mods::hard_rock |
-            (uint32_t) mods::double_time |
-            (uint32_t) mods::flashlight |
-            (uint32_t) mods::fade_in;
-
+                                             (uint32_t) mods::hard_rock |
+                                             (uint32_t) mods::double_time |
+                                             (uint32_t) mods::flashlight |
+                                             (uint32_t) mods::fade_in;
 }
 
-#endif  // SHIRO_MODS_HH
+#endif // SHIRO_MODS_HH

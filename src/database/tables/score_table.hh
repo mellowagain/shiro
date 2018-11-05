@@ -51,12 +51,7 @@ namespace shiro::tables {
         object_struct(times_watched, sqlpp::integer);
     };
 
-    struct scores : sqlpp::table_t<scores, scores_objects::id, scores_objects::hash,
-            scores_objects::beatmap_md5, scores_objects::user_id, scores_objects::rank, scores_objects::score, scores_objects::max_combo,
-            scores_objects::fc, scores_objects::mods, scores_objects::_300_count, scores_objects::_100_count,
-            scores_objects::_50_count, scores_objects::katus_count, scores_objects::gekis_count, scores_objects::miss_count,
-            scores_objects::time, scores_objects::play_mode, scores_objects::passed, scores_objects::accuracy,
-            scores_objects::pp, scores_objects::times_watched> {
+    struct scores : sqlpp::table_t<scores, scores_objects::id, scores_objects::hash, scores_objects::beatmap_md5, scores_objects::user_id, scores_objects::rank, scores_objects::score, scores_objects::max_combo, scores_objects::fc, scores_objects::mods, scores_objects::_300_count, scores_objects::_100_count, scores_objects::_50_count, scores_objects::katus_count, scores_objects::gekis_count, scores_objects::miss_count, scores_objects::time, scores_objects::play_mode, scores_objects::passed, scores_objects::accuracy, scores_objects::pp, scores_objects::times_watched> {
         using _value_type = sqlpp::no_value_t;
         struct _alias_t {
             static constexpr const char _literal[] = "scores";
@@ -73,7 +68,6 @@ namespace shiro::tables {
             };
         };
     };
-
 }
 
-#endif  // SHIRO_SCORE_TABLE_HH
+#endif // SHIRO_SCORE_TABLE_HH

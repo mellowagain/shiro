@@ -114,6 +114,6 @@ size_t shiro::geoloc::callback(void *raw_data, size_t size, size_t memory, std::
         return 0;
     }
 
-    std::copy((char*) raw_data, (char*) raw_data + new_length, ptr->begin() + old_length);
+    std::copy((char *) raw_data, (char *) raw_data + new_length, ptr->begin() + old_length);
     return size * memory;
 }

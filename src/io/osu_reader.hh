@@ -34,9 +34,7 @@ namespace shiro::io {
         explicit osu_reader(std::string data);
 
         std::vector<osu_packet> &parse();
-
     };
-
 }
 
 #endif //SHIRO_OSU_READER_HH

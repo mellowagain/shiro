@@ -50,12 +50,7 @@ namespace shiro::tables {
         object_struct(pass_count, sqlpp::integer);
     };
 
-    struct beatmaps : sqlpp::table_t<beatmaps, beatmaps_objects::id, beatmaps_objects::beatmap_id,
-            beatmaps_objects::beatmapset_id, beatmaps_objects::beatmap_md5, beatmaps_objects::song_name, beatmaps_objects::game_mode,
-            beatmaps_objects::ar, beatmaps_objects::od, beatmaps_objects::diff_std, beatmaps_objects::diff_taiko,
-            beatmaps_objects::diff_ctb, beatmaps_objects::diff_mania, beatmaps_objects::max_combo,
-            beatmaps_objects::hit_length, beatmaps_objects::bpm, beatmaps_objects::ranked_status, beatmaps_objects::last_update,
-            beatmaps_objects::ranked_status_freezed, beatmaps_objects::play_count, beatmaps_objects::pass_count> {
+    struct beatmaps : sqlpp::table_t<beatmaps, beatmaps_objects::id, beatmaps_objects::beatmap_id, beatmaps_objects::beatmapset_id, beatmaps_objects::beatmap_md5, beatmaps_objects::song_name, beatmaps_objects::game_mode, beatmaps_objects::ar, beatmaps_objects::od, beatmaps_objects::diff_std, beatmaps_objects::diff_taiko, beatmaps_objects::diff_ctb, beatmaps_objects::diff_mania, beatmaps_objects::max_combo, beatmaps_objects::hit_length, beatmaps_objects::bpm, beatmaps_objects::ranked_status, beatmaps_objects::last_update, beatmaps_objects::ranked_status_freezed, beatmaps_objects::play_count, beatmaps_objects::pass_count> {
         using _value_type = sqlpp::no_value_t;
         struct _alias_t {
             static constexpr const char _literal[] = "beatmaps";
@@ -72,7 +67,6 @@ namespace shiro::tables {
             };
         };
     };
-
 }
 
-#endif  // SHIRO_BEATMAP_TABLE_HH
+#endif // SHIRO_BEATMAP_TABLE_HH

@@ -21,9 +21,6 @@
 #include "role.hh"
 
 shiro::permissions::role::role(uint32_t id, std::string name, uint64_t permissions, uint8_t color)
-    : id(id)
-    , name(std::move(name))
-    , permissions(permissions)
-    , color(color) {
+    : id(id), name(std::move(name)), permissions(permissions), color(color) {
     // Initialized in initializer list
 }

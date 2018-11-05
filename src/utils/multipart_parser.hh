@@ -59,9 +59,7 @@ namespace shiro::utils {
 
         multipart_form_parts parse();
         multipart_form_fields parse_fields();
-
     };
-
 }
 
 #endif //SHIRO_MULTIPART_PARSER_HH

@@ -30,7 +30,7 @@
 
 shiro::scores::score shiro::scores::helper::fetch_top_score_user(std::string beatmap_md5sum, std::shared_ptr<shiro::users::user> user) {
     sqlpp::mysql::connection db(db_connection->get_config());
-    const tables::scores score_table {};
+    const tables::scores score_table{};
 
     auto result = db(select(all_of(score_table)).from(score_table).where(score_table.beatmap_md5 == beatmap_md5sum and score_table.user_id == user->user_id));
     bool empty = is_query_empty(result);
@@ -90,7 +90,7 @@ shiro::scores::score shiro::scores::helper::fetch_top_score_user(std::string bea
 
 std::vector<shiro::scores::score> shiro::scores::helper::fetch_all_scores(std::string beatmap_md5sum, size_t limit) {
     sqlpp::mysql::connection db(db_connection->get_config());
-    const tables::scores score_table {};
+    const tables::scores score_table{};
 
     auto result = db(select(all_of(score_table)).from(score_table).where(score_table.beatmap_md5 == beatmap_md5sum));
     bool empty = is_query_empty(result);
@@ -162,7 +162,8 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_all_scores(std::s
         }
 
         return false;
-    }), scores.end());
+    }),
+        scores.end());
 
     std::sort(scores.begin(), scores.end(), [](const score &s_left, const score &s_right) {
         return s_left.total_score > s_right.total_score;
@@ -176,7 +177,7 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_all_scores(std::s
 
 std::vector<shiro::scores::score> shiro::scores::helper::fetch_country_scores(std::string beatmap_md5sum, uint8_t country, size_t limit) {
     sqlpp::mysql::connection db(db_connection->get_config());
-    const tables::scores score_table {};
+    const tables::scores score_table{};
 
     auto result = db(select(all_of(score_table)).from(score_table).where(score_table.beatmap_md5 == beatmap_md5sum));
     bool empty = is_query_empty(result);
@@ -261,7 +262,8 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_country_scores(st
         }
 
         return false;
-    }), scores.end());
+    }),
+        scores.end());
 
     std::sort(scores.begin(), scores.end(), [](const score &s_left, const score &s_right) {
         return s_left.total_score > s_right.total_score;
@@ -275,7 +277,7 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_country_scores(st
 
 std::vector<shiro::scores::score> shiro::scores::helper::fetch_mod_scores(std::string beatmap_md5sum, int32_t mods, size_t limit) {
     sqlpp::mysql::connection db(db_connection->get_config());
-    const tables::scores score_table {};
+    const tables::scores score_table{};
 
     auto result = db(select(all_of(score_table)).from(score_table).where(score_table.beatmap_md5 == beatmap_md5sum));
     bool empty = is_query_empty(result);
@@ -350,7 +352,8 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_mod_scores(std::s
         }
 
         return false;
-    }), scores.end());
+    }),
+        scores.end());
 
     std::sort(scores.begin(), scores.end(), [](const score &s_left, const score &s_right) {
         return s_left.total_score > s_right.total_score;
@@ -364,7 +367,7 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_mod_scores(std::s
 
 std::vector<shiro::scores::score> shiro::scores::helper::fetch_friend_scores(std::string beatmap_md5sum, std::shared_ptr<shiro::users::user> user, size_t limit) {
     sqlpp::mysql::connection db(db_connection->get_config());
-    const tables::scores score_table {};
+    const tables::scores score_table{};
 
     auto result = db(select(all_of(score_table)).from(score_table).where(score_table.beatmap_md5 == beatmap_md5sum));
     bool empty = is_query_empty(result);
@@ -440,7 +443,8 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_friend_scores(std
             return false;
 
         return std::find(user->friends.begin(), user->friends.end(), score_user->user_id) == user->friends.end();
-    }), scores.end());
+    }),
+        scores.end());
 
     scores.erase(std::remove_if(scores.begin(), scores.end(), [&](const score &s) {
         for (const score &score : scores) {
@@ -452,7 +456,8 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_friend_scores(std
         }
 
         return false;
-    }), scores.end());
+    }),
+        scores.end());
 
     std::sort(scores.begin(), scores.end(), [](const score &s_left, const score &s_right) {
         return s_left.total_score > s_right.total_score;
@@ -466,11 +471,9 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_friend_scores(std
 
 std::vector<shiro::scores::score> shiro::scores::helper::fetch_user_scores(std::string beatmap_md5sum, std::shared_ptr<shiro::users::user> user, size_t limit) {
     sqlpp::mysql::connection db(db_connection->get_config());
-    const tables::scores score_table {};
+    const tables::scores score_table{};
 
-    auto result = db(select(all_of(score_table)).from(score_table).where(
-            score_table.beatmap_md5 == beatmap_md5sum and score_table.user_id == user->user_id
-    ));
+    auto result = db(select(all_of(score_table)).from(score_table).where(score_table.beatmap_md5 == beatmap_md5sum and score_table.user_id == user->user_id));
     bool empty = is_query_empty(result);
 
     if (empty)
@@ -539,7 +542,7 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_user_scores(std::
 
 std::vector<shiro::scores::score> shiro::scores::helper::fetch_all_user_scores(int32_t user_id, size_t limit) {
     sqlpp::mysql::connection db(db_connection->get_config());
-    const tables::scores score_table {};
+    const tables::scores score_table{};
 
     auto result = db(select(all_of(score_table)).from(score_table).where(score_table.user_id == user_id));
     bool empty = is_query_empty(result);
@@ -593,7 +596,7 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_all_user_scores(i
 
 std::vector<shiro::scores::score> shiro::scores::helper::fetch_top100_user(shiro::utils::play_mode mode, int32_t user_id) {
     sqlpp::mysql::connection db(db_connection->get_config());
-    const tables::scores score_table {};
+    const tables::scores score_table{};
 
     auto result = db(select(all_of(score_table)).from(score_table).where(score_table.user_id == user_id and score_table.play_mode == (uint8_t) mode));
     bool empty = is_query_empty(result);
@@ -663,7 +666,8 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_top100_user(shiro
         }
 
         return false;
-    }), scores.end());
+    }),
+        scores.end());
 
     std::sort(scores.begin(), scores.end(), [](const score &s_left, const score &s_right) {
         return s_left.pp > s_right.pp;
@@ -677,7 +681,7 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_top100_user(shiro
 
 shiro::scores::score shiro::scores::helper::get_score(int32_t id) {
     sqlpp::mysql::connection db(db_connection->get_config());
-    const tables::scores score_table {};
+    const tables::scores score_table{};
 
     auto result = db(select(all_of(score_table)).from(score_table).where(score_table.id == id));
     bool empty = is_query_empty(result);
@@ -859,116 +863,116 @@ bool shiro::scores::helper::is_ranked(const shiro::scores::score &score, const s
 
 std::tuple<bool, std::string> shiro::scores::helper::is_flagged(const shiro::scores::score &score, const shiro::beatmaps::beatmap &beatmap) {
     if (!is_ranked(score, beatmap) || !score.passed)
-        return { false, "" };
+        return {false, ""};
 
     if (config::score_submission::restrict_negative_values) {
         if (score.total_score < 0)
-            return { true, "Negative score value (total score " + std::to_string(score.total_score) + " < 0)" };
+            return {true, "Negative score value (total score " + std::to_string(score.total_score) + " < 0)"};
 
         if (score.max_combo < 0)
-            return { true, "Negative score value (max combo " + std::to_string(score.max_combo) + " < 0)" };
+            return {true, "Negative score value (max combo " + std::to_string(score.max_combo) + " < 0)"};
 
         if (score._300_count < 0)
-            return { true, "Negative score value (300 count " + std::to_string(score._300_count) + " < 0)" };
+            return {true, "Negative score value (300 count " + std::to_string(score._300_count) + " < 0)"};
 
         if (score._100_count < 0)
-            return { true, "Negative score value (100 count " + std::to_string(score._100_count) + " < 0)" };
+            return {true, "Negative score value (100 count " + std::to_string(score._100_count) + " < 0)"};
 
         if (score._50_count < 0)
-            return { true, "Negative score value (50 count " + std::to_string(score._50_count) + " < 0)" };
+            return {true, "Negative score value (50 count " + std::to_string(score._50_count) + " < 0)"};
 
         if (score.katus_count < 0)
-            return { true, "Negative score value (katus count " + std::to_string(score.katus_count) + " < 0)" };
+            return {true, "Negative score value (katus count " + std::to_string(score.katus_count) + " < 0)"};
 
         if (score.gekis_count < 0)
-            return { true, "Negative score value (gekis count " + std::to_string(score.gekis_count) + " < 0)" };
+            return {true, "Negative score value (gekis count " + std::to_string(score.gekis_count) + " < 0)"};
 
         if (score.miss_count < 0)
-            return { true, "Negative score value (miss count " + std::to_string(score.miss_count) + " < 0)" };
+            return {true, "Negative score value (miss count " + std::to_string(score.miss_count) + " < 0)"};
 
         if (score.mods < 0)
-            return { true, "Negative score value (mods " + std::to_string(score.mods) + " < 0)" };
+            return {true, "Negative score value (mods " + std::to_string(score.mods) + " < 0)"};
     }
 
     if (config::score_submission::restrict_impossible_mods) {
         int32_t mods = score.mods;
 
         if (mods & (int32_t) utils::mods::easy && mods & (int32_t) utils::mods::hard_rock)
-            return { true, "Impossible mod combination (EZ + HR)" };
+            return {true, "Impossible mod combination (EZ + HR)"};
 
         if (mods & (int32_t) utils::mods::no_fail && mods & (int32_t) utils::mods::sudden_death)
-            return { true, "Impossible mod combination (NF + SD)" };
+            return {true, "Impossible mod combination (NF + SD)"};
 
         if (mods & (int32_t) utils::mods::no_fail && mods & (int32_t) utils::mods::perfect)
-            return { true, "Impossible mod combination (NF + PF)" };
+            return {true, "Impossible mod combination (NF + PF)"};
 
         if (mods & (int32_t) utils::mods::half_time && mods & (int32_t) utils::mods::double_time)
-            return { true, "Impossible mod combination (HT + DT)" };
+            return {true, "Impossible mod combination (HT + DT)"};
 
         if (mods & (int32_t) utils::mods::sudden_death && mods & (int32_t) utils::mods::relax)
-            return { true, "Impossible mod combination (SD + RX)" };
+            return {true, "Impossible mod combination (SD + RX)"};
 
         if (mods & (int32_t) utils::mods::sudden_death && mods & (int32_t) utils::mods::auto_pilot)
-            return { true, "Impossible mod combination (SD + AP)" };
+            return {true, "Impossible mod combination (SD + AP)"};
 
         if (mods & (int32_t) utils::mods::sudden_death && mods & (int32_t) utils::mods::auto_play)
-            return { true, "Impossible mod combination (SD + AUTO)" };
+            return {true, "Impossible mod combination (SD + AUTO)"};
 
         if (mods & (int32_t) utils::mods::relax && mods & (int32_t) utils::mods::no_fail)
-            return { true, "Impossible mod combination (RX + NF)" };
+            return {true, "Impossible mod combination (RX + NF)"};
 
         if (mods & (int32_t) utils::mods::relax && mods & (int32_t) utils::mods::auto_pilot)
-            return { true, "Impossible mod combination (RX + AP)" };
+            return {true, "Impossible mod combination (RX + AP)"};
 
         if (mods & (int32_t) utils::mods::relax && mods & (int32_t) utils::mods::auto_play)
-            return { true, "Impossible mod combination (RX + AUTO)" };
+            return {true, "Impossible mod combination (RX + AUTO)"};
 
         if (mods & (int32_t) utils::mods::auto_pilot && mods & (int32_t) utils::mods::no_fail)
-            return { true, "Impossible mod combination (AP + NF)" };
+            return {true, "Impossible mod combination (AP + NF)"};
 
         if (mods & (int32_t) utils::mods::auto_pilot && mods & (int32_t) utils::mods::spun_out)
-            return { true, "Impossible mod combination (AP + SO)" };
+            return {true, "Impossible mod combination (AP + SO)"};
 
         if (mods & (int32_t) utils::mods::auto_pilot && mods & (int32_t) utils::mods::auto_play)
-            return { true, "Impossible mod combination (AP + AUTO)" };
+            return {true, "Impossible mod combination (AP + AUTO)"};
 
         if (mods & (int32_t) utils::mods::spun_out && mods & (int32_t) utils::mods::auto_play)
-            return { true, "Impossible mod combination (SO + AUTO)" };
+            return {true, "Impossible mod combination (SO + AUTO)"};
     }
 
     if (config::score_submission::restrict_impossible_combo && score.max_combo > beatmap.max_combo) {
         std::string reason = "Impossible combo (" + std::to_string(score.max_combo) + " > " + std::to_string(beatmap.max_combo) + ")";
-        return { true, reason };
+        return {true, reason};
     }
 
     switch ((utils::play_mode) score.play_mode) {
         case utils::play_mode::standard:
             if (config::score_submission::auto_restrict_pp_std > -1 && score.pp > config::score_submission::auto_restrict_pp_std) {
                 std::string reason = "High pp gain (osu!std, " + std::to_string(score.pp) + "pp > " + std::to_string(config::score_submission::auto_restrict_pp_std) + "pp)";
-                return { true, reason };
+                return {true, reason};
             }
             break;
         case utils::play_mode::taiko:
             if (config::score_submission::auto_restrict_pp_taiko > -1 && score.pp > config::score_submission::auto_restrict_pp_taiko) {
                 std::string reason = "High pp gain (osu!taiko, " + std::to_string(score.pp) + "pp > " + std::to_string(config::score_submission::auto_restrict_pp_taiko) + "pp)";
-                return { true, reason };
+                return {true, reason};
             }
             break;
         case utils::play_mode::fruits:
             if (config::score_submission::auto_restrict_pp_catch > -1 && score.pp > config::score_submission::auto_restrict_pp_catch) {
                 std::string reason = "High pp gain (osu!catch, " + std::to_string(score.pp) + "pp > " + std::to_string(config::score_submission::auto_restrict_pp_catch) + "pp)";
-                return { true, reason };
+                return {true, reason};
             }
             break;
         case utils::play_mode::mania:
             if (config::score_submission::auto_restrict_pp_mania > -1 && score.pp > config::score_submission::auto_restrict_pp_mania) {
                 std::string reason = "High pp gain (osu!mania, " + std::to_string(score.pp) + "pp > " + std::to_string(config::score_submission::auto_restrict_pp_mania) + "pp)";
-                return { true, reason };
+                return {true, reason};
             }
             break;
     }
 
-    return { false, "" };
+    return {false, ""};
 }
 
 float shiro::scores::helper::calculate_accuracy(utils::play_mode mode, int32_t _300, int32_t _100, int32_t _50, int32_t geki, int32_t katu, int32_t miss) {

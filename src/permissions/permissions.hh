@@ -32,7 +32,6 @@ namespace shiro::permissions {
         cmd_clients = 1LL << 34,
         cmd_rtx = 1LL << 35
     };
-
 }
 
-#endif  // SHIRO_PERMISSIONS_HH
+#endif // SHIRO_PERMISSIONS_HH

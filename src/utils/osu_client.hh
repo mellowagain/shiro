@@ -49,8 +49,7 @@ namespace shiro::utils::clients {
         // Third party osu! clients
         osu_fx = 11,
         banana_client = 12,
-        tsuki = 13
-    );
+        tsuki = 13);
 
     osu_client parse_version(const std::string &client_version, const int32_t &client_build);
 
@@ -72,7 +71,6 @@ namespace shiro::utils::clients {
     std::vector<std::shared_ptr<users::user>> get_users(const osu_client &client);
 
     std::string to_pretty_string(const osu_client &client);
-
 }
 
-#endif  // SHIRO_OSU_CLIENT_HH
+#endif // SHIRO_OSU_CLIENT_HH

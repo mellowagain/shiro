@@ -26,7 +26,7 @@ uint8_t shiro::geoloc::get_country_id(const std::string &country_code) {
 
     if (!id) {
         LOG_F(WARNING, "Unable to find country id for country %s.", country_code.c_str());
-        return (uint8_t) country_id::JP;  // Default to Japan because we're weebs ¯\_(ツ)_/¯
+        return (uint8_t) country_id::JP; // Default to Japan because we're weebs ¯\_(ツ)_/¯
     }
 
     return id->_to_integral();

@@ -23,8 +23,7 @@
 
 namespace shiro::io {
 
-    [[maybe_unused]]
-    static const int cho_protocol = 19;
+    [[maybe_unused]] static const int cho_protocol = 19;
 
     enum class packet_id : uint16_t {
         in_send_user_status = 0,
@@ -134,7 +133,6 @@ namespace shiro::io {
         in_special_join_match_channel = 108,
         in_special_leave_match_channel = 109
     };
-
 }
 
 #endif //SHIRO_PACKETS_HH

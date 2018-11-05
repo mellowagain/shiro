@@ -26,8 +26,7 @@
 #include "string_utils.hh"
 
 shiro::utils::multipart_parser::multipart_parser(const std::string &body, const std::string &content_type)
-    : body(body)
-    , content_type(content_type) {
+    : body(body), content_type(content_type) {
     // Initialized in initializer list
 }
 
@@ -48,14 +47,14 @@ shiro::utils::multipart_form_parts shiro::utils::multipart_parser::parse() {
     std::string header_name;
     std::string header_value;
 
-    multipart_form_parts parts {};
+    multipart_form_parts parts{};
 
     const auto on_body_begin = [&](multipartparser *parser) -> int {
         body_begin_called = true;
         return 0;
     };
     const auto on_part_begin = [&](multipartparser *parser) -> int {
-        parts.emplace_back(multipart_form_part {});
+        parts.emplace_back(multipart_form_part{});
         return 0;
     };
     const auto on_header_done = [&]() -> int {
@@ -95,8 +94,8 @@ shiro::utils::multipart_form_parts shiro::utils::multipart_parser::parse() {
         return 0;
     };
 
-    multipartparser parser {};
-    multipartparser_callbacks callbacks {};
+    multipartparser parser{};
+    multipartparser_callbacks callbacks{};
 
     multipartparser_callbacks_init(&callbacks);
 
@@ -120,7 +119,7 @@ shiro::utils::multipart_form_parts shiro::utils::multipart_parser::parse() {
 
 shiro::utils::multipart_form_fields shiro::utils::multipart_parser::parse_fields() {
     multipart_form_parts parts = this->parse();
-    multipart_form_fields fields {};
+    multipart_form_fields fields{};
 
     for (const multipart_form_part &part : parts) {
         if (part.headers.find("Content-Disposition") == part.headers.end())
@@ -145,7 +144,7 @@ shiro::utils::multipart_form_fields shiro::utils::multipart_parser::parse_fields
                 field.name = field_name;
                 field.type = multipart_field_type::file;
 
-                fields.insert({ field_name, field });
+                fields.insert({field_name, field});
             }
         } else {
             if (std::regex_match(part.headers.at("Content-Disposition"), field_name_regex_match, field_name_regex)) {
@@ -156,7 +155,7 @@ shiro::utils::multipart_form_fields shiro::utils::multipart_parser::parse_fields
                 field.name = field_name_regex_match[1];
                 field.type = multipart_field_type::text;
 
-                fields.insert({ field_name_regex_match[1], field });
+                fields.insert({field_name_regex_match[1], field});
             }
         }
     }

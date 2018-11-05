@@ -29,8 +29,7 @@ namespace shiro::config::cli {
 
     void parse(int argc, char **argv);
 
-    std::tuple<int, char**> get_args();
-
+    std::tuple<int, char **> get_args();
 }
 
 #endif //SHIRO_CLI_ARGS_HH

@@ -115,9 +115,7 @@ namespace shiro::io {
 
         std::string serialize();
         buffer &get_buffer();
-
     };
-
 }
 
 #endif //SHIRO_OSU_WRITER_HH

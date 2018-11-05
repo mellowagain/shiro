@@ -55,7 +55,6 @@ namespace shiro::scores::helper {
     std::tuple<bool, std::string> is_flagged(const score &score, const beatmaps::beatmap &beatmap);
 
     float calculate_accuracy(utils::play_mode mode, int32_t _300, int32_t _100, int32_t _50, int32_t geki, int32_t katu, int32_t miss);
-
 }
 
 #endif //SHIRO_SCORE_HELPER_HH

@@ -26,7 +26,6 @@
 namespace shiro::handler::friends::add {
 
     void handle(io::osu_packet &in, io::osu_writer &out, std::shared_ptr<users::user> user);
-
 }
 
 #endif //SHIRO_FRIEND_ADD_HANDLER_HH

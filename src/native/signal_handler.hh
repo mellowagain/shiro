@@ -22,7 +22,6 @@
 namespace shiro::native::signal_handler {
 
     void install();
-
 }
 
-#endif  // SHIRO_SIGNAL_HANDLER_HH
+#endif // SHIRO_SIGNAL_HANDLER_HH

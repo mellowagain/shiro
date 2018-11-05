@@ -34,8 +34,7 @@ namespace shiro::tables {
         object_struct(color, sqlpp::tinyint_unsigned);
     };
 
-    struct roles : sqlpp::table_t<roles, roles_objects::id, roles_objects::name,
-            roles_objects::permissions, roles_objects::color> {
+    struct roles : sqlpp::table_t<roles, roles_objects::id, roles_objects::name, roles_objects::permissions, roles_objects::color> {
         using _value_type = sqlpp::no_value_t;
         struct _alias_t {
             static constexpr const char _literal[] = "roles";
@@ -52,7 +51,6 @@ namespace shiro::tables {
             };
         };
     };
-
 }
 
-#endif  // SHIRO_ROLES_TABLE_HH
+#endif // SHIRO_ROLES_TABLE_HH

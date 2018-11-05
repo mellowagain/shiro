@@ -39,7 +39,6 @@ namespace shiro::io::layouts {
 
         int32_t get_size() override;
     };
-
 }
 
 #endif //SHIRO_SPECTATE_FRAMES_HH

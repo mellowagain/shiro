@@ -32,8 +32,7 @@ void shiro::users::timeout::init() {
                 continue;
 
             std::chrono::seconds now = std::chrono::duration_cast<std::chrono::seconds>(
-                    std::chrono::system_clock::now().time_since_epoch()
-            );
+                std::chrono::system_clock::now().time_since_epoch());
 
             if (std::chrono::duration_cast<std::chrono::seconds>(now - user->last_ping).count() >= 30) {
                 LOG_F(WARNING, "User %s didn't send a ping in 30 seconds, timing out.", user->presence.username.c_str());

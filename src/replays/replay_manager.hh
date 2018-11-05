@@ -35,7 +35,6 @@ namespace shiro::replays {
     std::string get_replay(const scores::score &s);
 
     bool has_replay(const scores::score &s);
-
 }
 
 #endif //SHIRO_REPLAY_MANAGER_HH

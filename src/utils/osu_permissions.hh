@@ -24,15 +24,14 @@
 namespace shiro::utils {
 
     enum class osu_permissions : uint8_t {
-        none = 0 << 0, // Light yellow
-        normal = 1 << 0, // Light yellow
-        bat = 1 << 1, // Red
+        none = 0 << 0,      // Light yellow
+        normal = 1 << 0,    // Light yellow
+        bat = 1 << 1,       // Red
         supporter = 1 << 2, // Yellow
-        friend_ = 1 << 3, // Light blue
-        peppy = 1 << 4, // Blue
+        friend_ = 1 << 3,   // Light blue
+        peppy = 1 << 4,     // Blue
         tournament = 1 << 5 // This bit will never be sent by us in user presence
     };
-
 }
 
-#endif  // SHIRO_OSU_PERMISSIONS_HH
+#endif // SHIRO_OSU_PERMISSIONS_HH

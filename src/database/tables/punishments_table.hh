@@ -38,10 +38,13 @@ namespace shiro::tables {
     };
 
     struct punishments : sqlpp::table_t<punishments,
-            punishments_objects::id, punishments_objects::user_id,
-            punishments_objects::type, punishments_objects::time,
-            punishments_objects::duration, punishments_objects::active,
-            punishments_objects::reason> {
+                             punishments_objects::id,
+                             punishments_objects::user_id,
+                             punishments_objects::type,
+                             punishments_objects::time,
+                             punishments_objects::duration,
+                             punishments_objects::active,
+                             punishments_objects::reason> {
         using _value_type = sqlpp::no_value_t;
         struct _alias_t {
             static constexpr const char _literal[] = "punishments";
@@ -58,7 +61,6 @@ namespace shiro::tables {
             };
         };
     };
-
 }
 
-#endif  // SHIRO_PUNISHMENTS_TABLE_HH
+#endif // SHIRO_PUNISHMENTS_TABLE_HH

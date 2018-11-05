@@ -27,7 +27,6 @@
 namespace shiro::commands {
 
     bool announce(std::deque<std::string> &args, std::shared_ptr<users::user> user, std::string channel);
-
 }
 
 #endif //SHIRO_ANNOUNCE_COMMAND_HH

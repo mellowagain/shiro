@@ -40,48 +40,48 @@
 #include "../utils/osu_client.hh"
 #include "bot.hh"
 
-static std::unordered_map<std::string, std::function<bool(std::deque<std::string>&, std::shared_ptr<shiro::users::user>, std::string)>> commands_map;
+static std::unordered_map<std::string, std::function<bool(std::deque<std::string> &, std::shared_ptr<shiro::users::user>, std::string)>> commands_map;
 
 void shiro::bot::init() {
     sqlpp::mysql::connection db(db_connection->get_config());
-    const tables::users user_table {};
+    const tables::users user_table{};
 
     auto result = db(select(all_of(user_table)).from(user_table).where(user_table.id == 1));
     bool empty = is_query_empty(result);
 
     if (empty) {
         // Bot user doesn't exist
-        db(insert_into(user_table).set(
-                user_table.id = 1,
-                user_table.username = config::bot::name,
-                user_table.safe_username = utils::escaper::make_safe(config::bot::name),
-                user_table.password = digestpp::sha256().absorb(config::database::password).hexdigest(),
-                user_table.salt = config::database::database,
-                user_table.email = config::bot::name + "@shiro.host",
-                user_table.ip = "127.0.0.1",
-                user_table.registration_date = 0,
-                user_table.last_seen = 0,
-                user_table.followers = 0,
-                user_table.roles = 0xDEADCAFE, // Special role for robots
-                user_table.user_page = "beep boop",
-                user_table.pp_std = 0,
-                user_table.pp_taiko = 0,
-                user_table.pp_ctb = 0,
-                user_table.pp_mania = 0,
-                user_table.score_std = 0,
-                user_table.score_taiko = 0,
-                user_table.score_ctb = 0,
-                user_table.score_mania = 0,
-                user_table.ranked_score_std = 0,
-                user_table.ranked_score_taiko = 0,
-                user_table.ranked_score_ctb = 0,
-                user_table.ranked_score_mania = 0,
-                user_table.play_count_std = 0,
-                user_table.play_count_taiko = 0,
-                user_table.play_count_ctb = 0,
-                user_table.play_count_mania = 0,
-                user_table.country = "JP"
-        ));
+        db(insert_into(user_table)
+                .set(
+                    user_table.id = 1,
+                    user_table.username = config::bot::name,
+                    user_table.safe_username = utils::escaper::make_safe(config::bot::name),
+                    user_table.password = digestpp::sha256().absorb(config::database::password).hexdigest(),
+                    user_table.salt = config::database::database,
+                    user_table.email = config::bot::name + "@shiro.host",
+                    user_table.ip = "127.0.0.1",
+                    user_table.registration_date = 0,
+                    user_table.last_seen = 0,
+                    user_table.followers = 0,
+                    user_table.roles = 0xDEADCAFE, // Special role for robots
+                    user_table.user_page = "beep boop",
+                    user_table.pp_std = 0,
+                    user_table.pp_taiko = 0,
+                    user_table.pp_ctb = 0,
+                    user_table.pp_mania = 0,
+                    user_table.score_std = 0,
+                    user_table.score_taiko = 0,
+                    user_table.score_ctb = 0,
+                    user_table.score_mania = 0,
+                    user_table.ranked_score_std = 0,
+                    user_table.ranked_score_taiko = 0,
+                    user_table.ranked_score_ctb = 0,
+                    user_table.ranked_score_mania = 0,
+                    user_table.play_count_std = 0,
+                    user_table.play_count_taiko = 0,
+                    user_table.play_count_ctb = 0,
+                    user_table.play_count_mania = 0,
+                    user_table.country = "JP"));
     }
 
     std::shared_ptr<users::user> bot_user = std::make_shared<users::user>(1);
@@ -92,8 +92,7 @@ void shiro::bot::init() {
     }
 
     std::chrono::seconds seconds = std::chrono::duration_cast<std::chrono::seconds>(
-            std::chrono::system_clock::now().time_since_epoch()
-    );
+        std::chrono::system_clock::now().time_since_epoch());
 
     bot_user->token = sole::uuid4().str();
     bot_user->hwid = digestpp::sha256().absorb(config::bot::name).hexdigest();

@@ -71,7 +71,8 @@ shiro::utils::clients::osu_client shiro::utils::clients::parse_version(const std
 
     subversion.erase(std::remove_if(subversion.begin(), subversion.end(), [](char c) {
         return std::isdigit(c);
-    }), subversion.end());
+    }),
+        subversion.end());
 
     if (subversion.empty())
         return osu_client::stable;

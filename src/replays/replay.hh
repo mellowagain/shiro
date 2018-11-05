@@ -36,7 +36,6 @@ namespace shiro::replays {
         action() = default;
 
         std::string to_string() const;
-
     };
 
     class replay {
@@ -53,9 +52,7 @@ namespace shiro::replays {
         std::vector<action> get_actions();
 
         std::string to_string() const;
-
     };
-
 }
 
 #endif //SHIRO_REPLAY_HH

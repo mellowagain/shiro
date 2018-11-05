@@ -73,9 +73,7 @@ namespace shiro::beatmaps {
 
         // Builds beatmap with score count instead of default pass count
         std::string build_header(const std::vector<scores::score> &scores);
-
     };
-
 }
 
 #endif //SHIRO_BEATMAP_HH

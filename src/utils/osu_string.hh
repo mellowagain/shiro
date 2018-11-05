@@ -24,7 +24,6 @@
 namespace shiro::utils {
 
     std::string osu_string(std::string value, bool nullable = false);
-
 }
 
 #endif //SHIRO_OSU_STRING_HH

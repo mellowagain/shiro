@@ -29,7 +29,6 @@ namespace shiro::utils {
         restrict = 2,
         ban = 3
     };
-
 }
 
-#endif  // SHIRO_PUNISHMENT_TYPE_HH
+#endif // SHIRO_PUNISHMENT_TYPE_HH

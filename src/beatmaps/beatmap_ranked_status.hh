@@ -34,7 +34,6 @@ namespace shiro::beatmaps {
         loved = 5
 
     };
-
 }
 
-#endif  // SHIRO_BEATMAP_RANKED_STATUS_HH
+#endif // SHIRO_BEATMAP_RANKED_STATUS_HH

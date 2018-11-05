@@ -35,8 +35,7 @@ std::string shiro::replays::action::to_string() const {
 }
 
 shiro::replays::replay::replay(shiro::scores::score s, std::string replay)
-    : score(std::move(s))
-    , raw_replay(std::move(replay)) {
+    : score(std::move(s)), raw_replay(std::move(replay)) {
     // Initialized in initializer list
 }
 

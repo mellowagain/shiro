@@ -26,7 +26,6 @@
 namespace shiro::handler::friends::remove {
 
     void handle(io::osu_packet &in, io::osu_writer &out, std::shared_ptr<users::user> user);
-
 }
 
 #endif //SHIRO_FRIEND_REMOVE_HANDLER_HH

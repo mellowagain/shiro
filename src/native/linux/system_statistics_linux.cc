@@ -45,8 +45,8 @@ static clock_t last_user_cpu;
 static int32_t thread_count = 0; // CPU threads
 
 #if defined(__GNUC__)
-    #pragma GCC diagnostic push
-    #pragma GCC diagnostic ignored "-Wunused-result"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-result"
 #endif
 
 void shiro::native::system_stats::init() {
@@ -72,7 +72,7 @@ void shiro::native::system_stats::init() {
 }
 
 #if defined(__GNUC__)
-    #pragma GCC diagnostic pop
+#pragma GCC diagnostic pop
 #endif
 
 uint64_t shiro::native::system_stats::get_total_memory() {
@@ -176,8 +176,8 @@ uint64_t shiro::native::system_stats::get_physical_process_memory_usage() {
 }
 
 #if defined(__GNUC__)
-    #pragma GCC diagnostic push
-    #pragma GCC diagnostic ignored "-Wunused-result"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-result"
 #endif
 
 double shiro::native::system_stats::get_cpu_usage() {
@@ -210,7 +210,7 @@ double shiro::native::system_stats::get_cpu_usage() {
 }
 
 #if defined(__GNUC__)
-    #pragma GCC diagnostic pop
+#pragma GCC diagnostic pop
 #endif
 
 double shiro::native::system_stats::get_process_cpu_usage() {

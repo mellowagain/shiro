@@ -32,7 +32,6 @@ namespace shiro::geoloc {
     location_info get_location(const std::string &ip_address);
 
     size_t callback(void *raw_data, size_t size, size_t memory, std::string *ptr);
-
 }
 
 #endif //SHIRO_GEOLOC_HH

@@ -73,9 +73,7 @@ namespace shiro::io {
         virtual void unmarshal(buffer &buf);
 
         virtual int32_t get_size();
-
     };
-
 }
 
 #endif //SHIRO_SERIALIZABLE_HH

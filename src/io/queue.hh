@@ -41,9 +41,7 @@ namespace shiro::io {
 
         // This function additionally clears the queue
         std::string serialize();
-
     };
-
 }
 
 #endif //SHIRO_QUEUE_HH

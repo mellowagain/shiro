@@ -52,7 +52,6 @@ namespace shiro::io::layouts {
 
         int32_t get_size() override;
     };
-
 }
 
 #endif //SHIRO_SCORE_FRAME_HH

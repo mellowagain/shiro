@@ -31,30 +31,30 @@ void shiro::channels::manager::init() {
         channels.clear();
 
     sqlpp::mysql::connection db(db_connection->get_config());
-    const tables::channels channel_table {};
+    const tables::channels channel_table{};
 
     auto result = db(select(all_of(channel_table)).from(channel_table).where(channel_table.name == "#announce"));
     bool empty = is_query_empty(result);
 
     if (empty) {
-        db(insert_into(channel_table).set(
-                channel_table.name = "#announce",
-                channel_table.description = "",
-                channel_table.auto_join = true,
-                channel_table.hidden = false
-        ));
+        db(insert_into(channel_table)
+                .set(
+                    channel_table.name = "#announce",
+                    channel_table.description = "",
+                    channel_table.auto_join = true,
+                    channel_table.hidden = false));
     }
 
     result = db(select(all_of(channel_table)).from(channel_table).where(channel_table.name == "#lobby"));
     empty = is_query_empty(result);
 
     if (empty) {
-        db(insert_into(channel_table).set(
-                channel_table.name = "#lobby",
-                channel_table.description = "",
-                channel_table.auto_join = false,
-                channel_table.hidden = true
-        ));
+        db(insert_into(channel_table)
+                .set(
+                    channel_table.name = "#lobby",
+                    channel_table.description = "",
+                    channel_table.auto_join = false,
+                    channel_table.hidden = true));
     }
 
     result = db(select(all_of(channel_table)).from(channel_table).unconditionally());
@@ -70,15 +70,15 @@ void shiro::channels::manager::init() {
             LOG_F(WARNING, "Channel name of channel id %i doesn't start with #, fixing (%s -> %s).", (int) row.id, name.c_str(), ("#" + name).c_str());
             name.insert(0, "#");
 
-            db(update(channel_table).set(
-                    channel_table.name = name
-            ).where(channel_table.id == row.id));
+            db(update(channel_table)
+                    .set(
+                        channel_table.name = name)
+                    .where(channel_table.id == row.id));
         }
 
         channels.insert(std::make_pair<io::layouts::channel, std::vector<std::shared_ptr<users::user>>>(
-                io::layouts::channel(row.id, row.auto_join, row.hidden, name, row.description, 0),
-                std::vector<std::shared_ptr<users::user>>()
-        ));
+            io::layouts::channel(row.id, row.auto_join, row.hidden, name, row.description, 0),
+            std::vector<std::shared_ptr<users::user>>()));
     }
 }
 

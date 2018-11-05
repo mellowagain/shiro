@@ -38,11 +38,11 @@ namespace shiro::users {
         std::string country = "XX";
 
         uint32_t roles = 0;
-        std::vector<int32_t> friends {};
+        std::vector<int32_t> friends{};
 
         // Session info
         std::string token = ""; // UUID v4
-        std::string hwid = ""; // SHA256
+        std::string hwid = "";  // SHA256
         std::chrono::seconds last_ping;
         bool hidden = false; // If the client is hidden, e.g. restricted
 
@@ -67,9 +67,7 @@ namespace shiro::users {
         void refresh_stats();
 
         bool check_password(const std::string &password);
-
     };
-
 }
 
 #endif //SHIRO_USER_HH

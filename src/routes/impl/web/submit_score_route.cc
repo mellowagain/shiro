@@ -100,10 +100,9 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
         key = "osu!-scoreburgr---------" + fields.at("osuver").body;
 
     std::vector<unsigned char> decrypted = utils::crypto::rijndael256::decode(
-            utils::crypto::base64::decode(fields.at("iv").body.c_str()),
-            key,
-            utils::crypto::base64::decode(fields.at("score").body.c_str())
-    );
+        utils::crypto::base64::decode(fields.at("iv").body.c_str()),
+        key,
+        utils::crypto::base64::decode(fields.at("score").body.c_str()));
 
     if (decrypted.empty()) {
         response.code = 400;
@@ -113,7 +112,7 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
         return;
     }
 
-    std::string result(reinterpret_cast<char*>(&decrypted[0]), decrypted.size());
+    std::string result(reinterpret_cast<char *>(&decrypted[0]), decrypted.size());
 
     std::vector<std::string> score_metadata;
     boost::split(score_metadata, result, boost::is_any_of(":"));
@@ -155,13 +154,14 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
     }
 
     sqlpp::mysql::connection db(db_connection->get_config());
-    const tables::scores score_table {};
+    const tables::scores score_table{};
 
     int32_t game_version = 20131216;
 
     score_metadata.at(17).erase(std::remove_if(score_metadata.at(17).begin(), score_metadata.at(17).end(), [](char c) {
         return !std::isdigit(c);
-    }), score_metadata.at(17).end());
+    }),
+        score_metadata.at(17).end());
 
     scores::score score;
     score.user_id = user->user_id;
@@ -209,8 +209,7 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
     }
 
     std::chrono::seconds seconds = std::chrono::duration_cast<std::chrono::seconds>(
-            std::chrono::system_clock::now().time_since_epoch()
-    );
+        std::chrono::system_clock::now().time_since_epoch());
 
     score.rank = score_metadata.at(12);
     score.fc = utils::strings::to_bool(score_metadata.at(11));
@@ -218,10 +217,13 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
     score.time = seconds.count();
 
     score.accuracy = scores::helper::calculate_accuracy(
-            (utils::play_mode) score.play_mode,
-            score._300_count, score._100_count, score._50_count,
-            score.gekis_count, score.katus_count, score.miss_count
-    );
+        (utils::play_mode) score.play_mode,
+        score._300_count,
+        score._100_count,
+        score._50_count,
+        score.gekis_count,
+        score.katus_count,
+        score.miss_count);
 
     auto db_result = db(select(all_of(score_table)).from(score_table).where(score_table.hash == score.hash));
     bool empty = is_query_empty(db_result);
@@ -359,27 +361,27 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
     if (old_scoreboard_pos == -1)
         old_scoreboard_pos = 0;
 
-    db(insert_into(score_table).set(
-            score_table.user_id = score.user_id,
-            score_table.hash = score.hash,
-            score_table.beatmap_md5 = score.beatmap_md5,
-            score_table.rank = score.rank,
-            score_table.score = score.total_score,
-            score_table.max_combo = score.max_combo,
-            score_table.pp = score.pp,
-            score_table.accuracy = score.accuracy,
-            score_table.mods = score.mods,
-            score_table.fc = score.fc,
-            score_table.passed = score.passed,
-            score_table._300_count = score._300_count,
-            score_table._100_count = score._100_count,
-            score_table._50_count = score._50_count,
-            score_table.katus_count = score.katus_count,
-            score_table.gekis_count = score.gekis_count,
-            score_table.miss_count = score.miss_count,
-            score_table.play_mode = score.play_mode,
-            score_table.time = score.time
-    ));
+    db(insert_into(score_table)
+            .set(
+                score_table.user_id = score.user_id,
+                score_table.hash = score.hash,
+                score_table.beatmap_md5 = score.beatmap_md5,
+                score_table.rank = score.rank,
+                score_table.score = score.total_score,
+                score_table.max_combo = score.max_combo,
+                score_table.pp = score.pp,
+                score_table.accuracy = score.accuracy,
+                score_table.mods = score.mods,
+                score_table.fc = score.fc,
+                score_table.passed = score.passed,
+                score_table._300_count = score._300_count,
+                score_table._100_count = score._100_count,
+                score_table._50_count = score._50_count,
+                score_table.katus_count = score.katus_count,
+                score_table.gekis_count = score.gekis_count,
+                score_table.miss_count = score.miss_count,
+                score_table.play_mode = score.play_mode,
+                score_table.time = score.time));
 
     db_result = db(select(all_of(score_table)).from(score_table).where(score_table.hash == score.hash));
     empty = is_query_empty(db_result);
@@ -416,12 +418,7 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
         if (scoreboard_position == 1) {
             char buffer[1024];
             std::snprintf(
-                    buffer, sizeof(buffer),
-                    "[https://shiro.host/u/%i %s] achieved rank #1 on [https://osu.ppy.sh/b/%i %s] (%s)",
-                    user->user_id, user->presence.username.c_str(),
-                    beatmap.beatmap_id, beatmap.song_name.c_str(),
-                    utils::play_mode_to_string((utils::play_mode) score.play_mode).c_str()
-            );
+                buffer, sizeof(buffer), "[https://shiro.host/u/%i %s] achieved rank #1 on [https://osu.ppy.sh/b/%i %s] (%s)", user->user_id, user->presence.username.c_str(), beatmap.beatmap_id, beatmap.song_name.c_str(), utils::play_mode_to_string((utils::play_mode) score.play_mode).c_str());
 
             utils::bot::respond(buffer, user, "#announce", false);
         }
@@ -462,9 +459,12 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
     out << "beatmapPlaycount:" << beatmap.play_count << "|";
     out << "beatmapPasscount:" << beatmap.pass_count << "|";
     out << "approvedDate:" << std::put_time(tm, "%F %X") << std::endl;
-    out << "chartId:overall" << "|";
-    out << "chartName:Overall Ranking" << "|";
-    out << "chartEndDate:" << "|";
+    out << "chartId:overall"
+        << "|";
+    out << "chartName:Overall Ranking"
+        << "|";
+    out << "chartEndDate:"
+        << "|";
     out << "beatmapRankingBefore:" << old_scoreboard_pos << "|";
     out << "beatmapRankingAfter:" << scoreboard_position << "|";
     out << "rankedScoreBefore:" << user->stats.ranked_score - score.total_score << "|";
@@ -478,8 +478,10 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
     out << "rankAfter:" << user->stats.rank << "|";
     out << "toNextRank:" << to_next_rank << "|";
     out << "toNextRankUser:" << user_above << "|";
-    out << "achievements:" << "|";
-    out << "achievements-new:" << "|";
+    out << "achievements:"
+        << "|";
+    out << "achievements-new:"
+        << "|";
     out << "onlineScoreId:" << score.id;
     out << std::endl;
 

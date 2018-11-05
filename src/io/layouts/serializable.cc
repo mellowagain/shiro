@@ -82,40 +82,40 @@ shiro::io::buffer shiro::io::serializable::marshal() {
     buffer buf;
 
     switch (this->type) {
-    case data_type::byte:
-        buf.write<uint8_t>(this->data_byte);
-        break;
-    case data_type::int16:
-        buf.write<int16_t>(this->data_short);
-        break;
-    case data_type::uint16:
-        buf.write<uint16_t>(this->data_ushort);
-        break;
-    case data_type::int32:
-        buf.write<int32_t>(this->data_int);
-        break;
-    case data_type::uint32:
-        buf.write<uint32_t>(this->data_uint);
-        break;
-    case data_type::int64:
-        buf.write<int64_t>(this->data_long);
-        break;
-    case data_type::uint64:
-        buf.write<uint64_t>(this->data_ulong);
-        break;
-    case data_type::flt:
-        buf.write<float>(this->data_float);
-        break;
-    case data_type::dble:
-        buf.write<double>(this->data_double);
-        break;
-    case data_type::string: {
-        buf.write_string(utils::osu_string(this->data_string));
-        break;
-    }
-    case data_type::array:
-        buf.write_array(this->data_array);
-        break;
+        case data_type::byte:
+            buf.write<uint8_t>(this->data_byte);
+            break;
+        case data_type::int16:
+            buf.write<int16_t>(this->data_short);
+            break;
+        case data_type::uint16:
+            buf.write<uint16_t>(this->data_ushort);
+            break;
+        case data_type::int32:
+            buf.write<int32_t>(this->data_int);
+            break;
+        case data_type::uint32:
+            buf.write<uint32_t>(this->data_uint);
+            break;
+        case data_type::int64:
+            buf.write<int64_t>(this->data_long);
+            break;
+        case data_type::uint64:
+            buf.write<uint64_t>(this->data_ulong);
+            break;
+        case data_type::flt:
+            buf.write<float>(this->data_float);
+            break;
+        case data_type::dble:
+            buf.write<double>(this->data_double);
+            break;
+        case data_type::string: {
+            buf.write_string(utils::osu_string(this->data_string));
+            break;
+        }
+        case data_type::array:
+            buf.write_array(this->data_array);
+            break;
     }
 
     return buf;

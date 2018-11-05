@@ -44,7 +44,6 @@ namespace shiro::channels::manager {
     std::vector<std::shared_ptr<users::user>> get_users_in_channel(const std::string &channel_name);
 
     uint32_t get_channel_id(const std::string &channel_name);
-
 }
 
 #endif //SHIRO_CHANNEL_MANAGER_HH

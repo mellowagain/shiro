@@ -31,16 +31,14 @@ namespace shiro::io {
 
         explicit osu_packet(buffer &data);
 
-        template<typename l>
+        template <typename l>
         l unmarshal() {
             l result;
             result.unmarshal(this->data);
 
             return result;
         }
-
     };
-
 }
 
 #endif //SHIRO_OSU_PACKET_HH

@@ -38,7 +38,6 @@ namespace shiro::spectating::manager {
     std::vector<std::shared_ptr<users::user>> get_spectators(std::shared_ptr<users::user> user);
 
     std::shared_ptr<users::user> get_host(std::shared_ptr<users::user> user);
-
 }
 
 #endif //SHIRO_SPECTATOR_MANAGER_HH

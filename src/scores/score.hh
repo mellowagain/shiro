@@ -31,7 +31,8 @@ namespace shiro::scores {
     public:
         score() = default;
 
-        explicit score(int32_t id) : id(id) {
+        explicit score(int32_t id)
+            : id(id) {
             // Initialized in initializer list
         }
 
@@ -62,9 +63,7 @@ namespace shiro::scores {
         int32_t time = 0;
 
         std::string to_string(std::vector<score> &scores);
-
     };
-
 }
 
 #endif //SHIRO_SCORE_HH

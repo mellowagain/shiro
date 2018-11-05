@@ -20,10 +20,7 @@
 #include "message.hh"
 
 shiro::io::layouts::message::message(std::string sender, int32_t sender_id, std::string content, std::string channel)
-        : sender(std::move(sender))
-        , sender_id(sender_id)
-        , content(std::move(content))
-        , channel(std::move(channel)) {
+    : sender(std::move(sender)), sender_id(sender_id), content(std::move(content)), channel(std::move(channel)) {
     // Initialized in initializer list
 }
 

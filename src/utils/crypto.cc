@@ -48,7 +48,7 @@ std::vector<unsigned char> shiro::utils::crypto::rijndael256::decode(std::vector
     using namespace cppcrypto;
 
     std::unique_ptr<cbc> decryptor = std::make_unique<cbc>(rijndael256_256());
-    decryptor->init((unsigned char*) key.c_str(), key.size(), &iv[0], iv.size(), block_cipher::direction::decryption);
+    decryptor->init((unsigned char *) key.c_str(), key.size(), &iv[0], iv.size(), block_cipher::direction::decryption);
 
     std::vector<unsigned char> result;
     decryptor->decrypt_update(&cipher[0], cipher.size(), result);
@@ -61,7 +61,7 @@ std::string shiro::utils::crypto::pbkdf2_hmac_sha512::hash(std::string input, st
     unsigned char result[64];
     char output[256];
 
-    PKCS5_PBKDF2_HMAC(input.c_str(), input.length(), reinterpret_cast<const unsigned char*>(salt.c_str()), salt.size(), 4096, EVP_sha512(), 64, result);
+    PKCS5_PBKDF2_HMAC(input.c_str(), input.length(), reinterpret_cast<const unsigned char *>(salt.c_str()), salt.size(), 4096, EVP_sha512(), 64, result);
 
     for (size_t i = 0; i < 64; i++) {
         std::snprintf(&output[i * 2], sizeof(output), "%02x", (unsigned int) result[i]);
@@ -74,7 +74,7 @@ std::string shiro::utils::crypto::md5::hash(const std::string &input) {
     unsigned char result[16];
     char output[33];
 
-    MD5((unsigned char*) input.c_str(), input.length(), result);
+    MD5((unsigned char *) input.c_str(), input.length(), result);
 
     for (size_t i = 0; i < 16; i++) {
         std::snprintf(&output[i * 2], sizeof(output), "%02x", (unsigned int) result[i]);
@@ -97,9 +97,9 @@ std::string shiro::utils::crypto::lzma::decompress(std::string input) {
     size_t amount = 0;
     size_t available = output.size();
 
-    stream.next_in = reinterpret_cast<const uint8_t*>(input.data());
+    stream.next_in = reinterpret_cast<const uint8_t *>(input.data());
     stream.avail_in = input.size();
-    stream.next_out = reinterpret_cast<uint8_t*>(&output[0]);
+    stream.next_out = reinterpret_cast<uint8_t *>(&output[0]);
     stream.avail_out = available;
 
     while (true) {
@@ -121,7 +121,7 @@ std::string shiro::utils::crypto::lzma::decompress(std::string input) {
         if (stream.avail_out == 0) {
             amount += available - stream.avail_out;
             output.resize(input.size() << 1);
-            stream.next_out = reinterpret_cast<uint8_t*>(&output[0] + amount);
+            stream.next_out = reinterpret_cast<uint8_t *>(&output[0] + amount);
             stream.avail_out = available = output.size() - amount;
         }
     }

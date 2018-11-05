@@ -32,9 +32,7 @@ namespace shiro::io::layouts {
         void unmarshal(shiro::io::buffer &buffer) override;
 
         int32_t get_size() override;
-
     };
-
 }
 
 #endif //SHIRO_MULTIPLAYER_JOIN_HH

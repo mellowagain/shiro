@@ -20,7 +20,7 @@
 #include "cli_args.hh"
 
 static int args_count = 0;
-static char **args_vector {};
+static char **args_vector{};
 
 CLI::App shiro::config::cli::cli_app = CLI::App("C++ osu!Bancho re-implementation", "shiro");
 
@@ -35,6 +35,6 @@ void shiro::config::cli::parse(int argc, char **argv) {
     }
 }
 
-std::tuple<int, char**> shiro::config::cli::get_args() {
+std::tuple<int, char **> shiro::config::cli::get_args() {
     return std::make_tuple(args_count, args_vector);
 }

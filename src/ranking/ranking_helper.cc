@@ -27,7 +27,7 @@ int32_t shiro::ranking::helper::get_leaderboard_position(uint8_t mode, std::stri
         return 0;
 
     sqlpp::mysql::connection db(db_connection->get_config());
-    const tables::users user_table {};
+    const tables::users user_table{};
 
     auto result = db(select(all_of(user_table)).from(user_table).unconditionally());
     bool empty = is_query_empty(result);
@@ -79,7 +79,7 @@ std::string shiro::ranking::helper::get_leaderboard_user(uint8_t mode, int32_t p
         return "";
 
     sqlpp::mysql::connection db(db_connection->get_config());
-    const tables::users user_table {};
+    const tables::users user_table{};
 
     auto result = db(select(all_of(user_table)).from(user_table).unconditionally());
     bool empty = is_query_empty(result);
@@ -125,7 +125,7 @@ std::string shiro::ranking::helper::get_leaderboard_user(uint8_t mode, int32_t p
 
 int16_t shiro::ranking::helper::get_pp_for_user(uint8_t mode, std::string username) {
     sqlpp::mysql::connection db(db_connection->get_config());
-    const tables::users user_table {};
+    const tables::users user_table{};
 
     auto result = db(select(all_of(user_table)).from(user_table).where(user_table.username == username));
     bool empty = is_query_empty(result);
@@ -157,7 +157,7 @@ int16_t shiro::ranking::helper::get_pp_for_user(uint8_t mode, std::string userna
 
 void shiro::ranking::helper::recalculate_ranks(uint8_t mode) {
     sqlpp::mysql::connection db(db_connection->get_config());
-    const tables::users user_table {};
+    const tables::users user_table{};
 
     auto result = db(select(all_of(user_table)).from(user_table).unconditionally());
     bool empty = is_query_empty(result);
@@ -201,24 +201,28 @@ void shiro::ranking::helper::recalculate_ranks(uint8_t mode) {
 
         switch ((utils::play_mode) mode) {
             case utils::play_mode::standard:
-                db(update(user_table).set(
-                        user_table.rank_std = rank
-                ).where(user_table.id == row.id));
+                db(update(user_table)
+                        .set(
+                            user_table.rank_std = rank)
+                        .where(user_table.id == row.id));
                 break;
             case utils::play_mode::taiko:
-                db(update(user_table).set(
-                        user_table.rank_taiko = rank
-                ).where(user_table.id == row.id));
+                db(update(user_table)
+                        .set(
+                            user_table.rank_taiko = rank)
+                        .where(user_table.id == row.id));
                 break;
             case utils::play_mode::fruits:
-                db(update(user_table).set(
-                        user_table.rank_ctb = rank
-                ).where(user_table.id == row.id));
+                db(update(user_table)
+                        .set(
+                            user_table.rank_ctb = rank)
+                        .where(user_table.id == row.id));
                 break;
             case utils::play_mode::mania:
-                db(update(user_table).set(
-                        user_table.rank_mania = rank
-                ).where(user_table.id == row.id));
+                db(update(user_table)
+                        .set(
+                            user_table.rank_mania = rank)
+                        .where(user_table.id == row.id));
                 break;
         }
 

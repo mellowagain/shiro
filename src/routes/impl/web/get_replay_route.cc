@@ -98,11 +98,12 @@ void shiro::routes::web::get_replay::handle(const crow::request &request, crow::
     }
 
     sqlpp::mysql::connection db(db_connection->get_config());
-    const tables::scores score_table {};
+    const tables::scores score_table{};
 
-    db(update(score_table).set(
-            score_table.times_watched += 1
-    ).where(score_table.id == s.id));
+    db(update(score_table)
+            .set(
+                score_table.times_watched += 1)
+            .where(score_table.id == s.id));
 
     response.set_header("Content-Type", "application/zip");
     response.set_header("Content-Disposition", "attachment; filename=replay.osr");

@@ -27,7 +27,7 @@ std::vector<shiro::permissions::role> shiro::roles::manager::roles;
 
 void shiro::roles::manager::init() {
     sqlpp::mysql::connection db(db_connection->get_config());
-    const tables::roles roles_table {};
+    const tables::roles roles_table{};
 
     auto result = db(select(all_of(roles_table)).from(roles_table).unconditionally());
 

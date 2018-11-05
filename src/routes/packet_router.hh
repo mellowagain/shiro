@@ -27,7 +27,6 @@
 namespace shiro::routes {
 
     void route(io::packet_id packet_id, io::osu_packet &in, io::osu_writer &out, std::shared_ptr<users::user> user);
-
 }
 
 #endif //SHIRO_PACKET_ROUTER_HH

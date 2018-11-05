@@ -47,9 +47,12 @@ void shiro::beatmaps::beatmap::fetch(bool force_peppster) {
 
 bool shiro::beatmaps::beatmap::fetch_db() {
     sqlpp::mysql::connection db(db_connection->get_config());
-    const tables::beatmaps beatmaps_table {};
+    const tables::beatmaps beatmaps_table{};
 
-    auto result = db(select(all_of(beatmaps_table)).from(beatmaps_table).where(beatmaps_table.beatmap_md5 == this->beatmap_md5));
+    auto result = db(
+        select(all_of(beatmaps_table))
+            .from(beatmaps_table)
+            .where(beatmaps_table.beatmap_md5 == this->beatmap_md5));
     bool empty = is_query_empty(result);
 
     if (empty)
@@ -92,7 +95,7 @@ size_t callback(void *raw_data, size_t size, size_t memory, std::string *ptr) {
         return 0;
     }
 
-    std::copy((char*) raw_data, (char*) raw_data + new_length, ptr->begin() + old_length);
+    std::copy((char *) raw_data, (char *) raw_data + new_length, ptr->begin() + old_length);
     return size * memory;
 }
 
@@ -226,7 +229,7 @@ bool shiro::beatmaps::beatmap::fetch_api() {
 
         std::string last_update = part["last_update"];
 
-        std::tm time {};
+        std::tm time{};
         std::stringstream stream(last_update);
         stream >> std::get_time(&time, "%Y-%m-%d %H:%M:%S");
         std::chrono::time_point time_point = std::chrono::system_clock::from_time_t(std::mktime(&time));
@@ -250,39 +253,39 @@ bool shiro::beatmaps::beatmap::fetch_api() {
 
 void shiro::beatmaps::beatmap::save() {
     sqlpp::mysql::connection db(db_connection->get_config());
-    const tables::beatmaps beatmaps_table {};
+    const tables::beatmaps beatmaps_table{};
 
-    db(insert_into(beatmaps_table).set(
-            beatmaps_table.beatmap_id = this->beatmap_id,
-            beatmaps_table.beatmapset_id = this->beatmapset_id,
-            beatmaps_table.game_mode = this->play_mode,
-            beatmaps_table.beatmap_md5 = this->beatmap_md5,
-            beatmaps_table.song_name = this->song_name,
-            beatmaps_table.ar = this->ar,
-            beatmaps_table.od = this->od,
-            beatmaps_table.diff_std = this->diff_std,
-            beatmaps_table.diff_taiko = this->diff_taiko,
-            beatmaps_table.diff_ctb = this->diff_ctb,
-            beatmaps_table.diff_mania = this->diff_mania,
-            beatmaps_table.max_combo = this->max_combo,
-            beatmaps_table.hit_length = this->hit_length,
-            beatmaps_table.bpm = this->bpm,
-            beatmaps_table.ranked_status = this->ranked_status,
-            beatmaps_table.ranked_status_freezed = this->ranked_status_freezed,
-            beatmaps_table.last_update = this->last_update,
-            beatmaps_table.play_count = this->play_count,
-            beatmaps_table.pass_count = this->pass_count
-    ));
+    db(insert_into(beatmaps_table)
+            .set(beatmaps_table.beatmap_id = this->beatmap_id,
+                beatmaps_table.beatmapset_id = this->beatmapset_id,
+                beatmaps_table.game_mode = this->play_mode,
+                beatmaps_table.beatmap_md5 = this->beatmap_md5,
+                beatmaps_table.song_name = this->song_name,
+                beatmaps_table.ar = this->ar,
+                beatmaps_table.od = this->od,
+                beatmaps_table.diff_std = this->diff_std,
+                beatmaps_table.diff_taiko = this->diff_taiko,
+                beatmaps_table.diff_ctb = this->diff_ctb,
+                beatmaps_table.diff_mania = this->diff_mania,
+                beatmaps_table.max_combo = this->max_combo,
+                beatmaps_table.hit_length = this->hit_length,
+                beatmaps_table.bpm = this->bpm,
+                beatmaps_table.ranked_status = this->ranked_status,
+                beatmaps_table.ranked_status_freezed = this->ranked_status_freezed,
+                beatmaps_table.last_update = this->last_update,
+                beatmaps_table.play_count = this->play_count,
+                beatmaps_table.pass_count = this->pass_count));
 }
 
 void shiro::beatmaps::beatmap::update_play_metadata() {
     sqlpp::mysql::connection db(db_connection->get_config());
-    const tables::beatmaps beatmaps_table {};
+    const tables::beatmaps beatmaps_table{};
 
-    db(update(beatmaps_table).set(
-            beatmaps_table.play_count = this->play_count,
-            beatmaps_table.pass_count = this->pass_count
-    ).where(beatmaps_table.beatmap_md5 == this->beatmap_md5));
+    db(update(beatmaps_table)
+            .set(
+                beatmaps_table.play_count = this->play_count,
+                beatmaps_table.pass_count = this->pass_count)
+            .where(beatmaps_table.beatmap_md5 == this->beatmap_md5));
 }
 
 std::string shiro::beatmaps::beatmap::build_header() {

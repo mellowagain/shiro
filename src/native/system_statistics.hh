@@ -46,7 +46,6 @@ namespace shiro::native::system_stats {
     double get_cpu_usage();
 
     double get_process_cpu_usage();
-
 }
 
-#endif  // SHIRO_SYSTEM_STATISTICS_HH
+#endif // SHIRO_SYSTEM_STATISTICS_HH

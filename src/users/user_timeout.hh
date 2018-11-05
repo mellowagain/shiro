@@ -22,7 +22,6 @@
 namespace shiro::users::timeout {
 
     void init();
-
 }
 
 #endif //SHIRO_USER_TIMEOUT_HH

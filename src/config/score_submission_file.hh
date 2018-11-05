@@ -80,7 +80,6 @@ namespace shiro::config::score_submission {
     extern bool key_coop_ranked;
 
     void parse();
-
 }
 
 #endif //SHIRO_SCORE_SUBMISSION_FILE_HH

@@ -32,7 +32,6 @@ namespace shiro::config::bancho {
     extern std::string api_key;
 
     void parse();
-
 }
 
 #endif //SHIRO_BANCHO_FILE_HH

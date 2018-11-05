@@ -30,7 +30,6 @@ namespace shiro::config::database {
     extern std::string password;
 
     void parse();
-
 }
 
 #endif //SHIRO_DB_FILE_HH

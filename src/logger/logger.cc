@@ -18,11 +18,11 @@
 
 // Loguro settings
 #if defined(_DEBUG)
-    #define LOGURU_DEBUG_LOGGING 1
-    #define LOGURU_DEBUG_CHECKS 1
+#define LOGURU_DEBUG_LOGGING 1
+#define LOGURU_DEBUG_CHECKS 1
 #else
-    #undef LOGURU_DEBUG_LOGGING
-    #undef LOGURU_DEBUG_CHECKS
+#undef LOGURU_DEBUG_LOGGING
+#undef LOGURU_DEBUG_CHECKS
 #endif
 
 #define LOGURU_IMPLEMENTATION 1

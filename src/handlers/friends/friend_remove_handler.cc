@@ -23,12 +23,9 @@ void shiro::handler::friends::remove::handle(shiro::io::osu_packet &in, shiro::i
     int32_t target = in.data.read<int32_t>();
 
     sqlpp::mysql::connection db(db_connection->get_config());
-    const tables::relationships relationships_table {};
+    const tables::relationships relationships_table{};
 
-    db(remove_from(relationships_table).where(
-            relationships_table.origin == user->user_id and
-            relationships_table.target == target
-    ));
+    db(remove_from(relationships_table).where(relationships_table.origin == user->user_id and relationships_table.target == target));
 
     auto iterator = std::find(user->friends.begin(), user->friends.end(), target);
 

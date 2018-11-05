@@ -67,17 +67,7 @@ namespace shiro::tables {
         object_struct(country, sqlpp::varchar);
     };
 
-    struct users : sqlpp::table_t<users, users_objects::id, users_objects::username, users_objects::safe_username,
-            users_objects::password, users_objects::salt, users_objects::email, users_objects::ip,
-            users_objects::registration_date, users_objects::last_seen,
-            users_objects::followers, users_objects::roles, users_objects::user_page,
-            users_objects::pp_std, users_objects::pp_taiko, users_objects::pp_ctb, users_objects::pp_mania,
-            users_objects::rank_std, users_objects::rank_taiko, users_objects::rank_ctb, users_objects::rank_mania,
-            users_objects::score_std, users_objects::score_taiko, users_objects::score_ctb, users_objects::score_mania,
-            users_objects::ranked_score_std, users_objects::ranked_score_taiko, users_objects::ranked_score_ctb, users_objects::ranked_score_mania,
-            users_objects::accuracy_std, users_objects::accuracy_taiko, users_objects::accuracy_ctb, users_objects::accuracy_mania,
-            users_objects::play_count_std, users_objects::play_count_taiko, users_objects::play_count_ctb, users_objects::play_count_mania,
-            users_objects::country> {
+    struct users : sqlpp::table_t<users, users_objects::id, users_objects::username, users_objects::safe_username, users_objects::password, users_objects::salt, users_objects::email, users_objects::ip, users_objects::registration_date, users_objects::last_seen, users_objects::followers, users_objects::roles, users_objects::user_page, users_objects::pp_std, users_objects::pp_taiko, users_objects::pp_ctb, users_objects::pp_mania, users_objects::rank_std, users_objects::rank_taiko, users_objects::rank_ctb, users_objects::rank_mania, users_objects::score_std, users_objects::score_taiko, users_objects::score_ctb, users_objects::score_mania, users_objects::ranked_score_std, users_objects::ranked_score_taiko, users_objects::ranked_score_ctb, users_objects::ranked_score_mania, users_objects::accuracy_std, users_objects::accuracy_taiko, users_objects::accuracy_ctb, users_objects::accuracy_mania, users_objects::play_count_std, users_objects::play_count_taiko, users_objects::play_count_ctb, users_objects::play_count_mania, users_objects::country> {
         using _value_type = sqlpp::no_value_t;
         struct _alias_t {
             static constexpr const char _literal[] = "users";
@@ -94,7 +84,6 @@ namespace shiro::tables {
             };
         };
     };
-
 }
 
-#endif  // SHIRO_USER_TABLE_HH
+#endif // SHIRO_USER_TABLE_HH

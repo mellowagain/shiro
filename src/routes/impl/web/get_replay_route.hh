@@ -24,7 +24,6 @@
 namespace shiro::routes::web::get_replay {
 
     void handle(const crow::request &request, crow::response &response);
-
 }
 
 #endif //SHIRO_GET_REPLAY_ROUTE_HH

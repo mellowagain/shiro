@@ -67,10 +67,7 @@ void shiro::replays::save_replay(const shiro::scores::score &s, const beatmaps::
     char hash_buffer[1024];
 
     // poot are you?
-    std::snprintf(hash_buffer, sizeof(hash_buffer), "%ip%io%io%it%ia%sr%ie%sy%so%liu%s%i%s",
-            s._100_count + s._300_count, s._50_count, s.gekis_count, s.katus_count, s.miss_count,
-            s.beatmap_md5.c_str(), s.max_combo, s.fc ? "True" : "False",
-            user->presence.username.c_str(), s.total_score, s.rank.c_str(), s.mods, "True");
+    std::snprintf(hash_buffer, sizeof(hash_buffer), "%ip%io%io%it%ia%sr%ie%sy%so%liu%s%i%s", s._100_count + s._300_count, s._50_count, s.gekis_count, s.katus_count, s.miss_count, s.beatmap_md5.c_str(), s.max_combo, s.fc ? "True" : "False", user->presence.username.c_str(), s.total_score, s.rank.c_str(), s.mods, "True");
 
     std::string beatmap_md5 = utils::osu_string(s.beatmap_md5);
     std::string username = utils::osu_string(user->presence.username);

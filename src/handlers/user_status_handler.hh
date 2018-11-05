@@ -26,7 +26,6 @@
 namespace shiro::handler::user_status {
 
     void handle(io::osu_packet &in, io::osu_writer &out, std::shared_ptr<users::user> user);
-
 }
 
 #endif //SHIRO_USER_STATUS_HANDLER_HH

@@ -24,7 +24,6 @@
 namespace shiro::utils::escaper {
 
     std::string make_safe(std::string input);
-
 }
 
 #endif //SHIRO_ESCAPER_HH

@@ -22,7 +22,6 @@
 namespace shiro::users::activity {
 
     void init();
-
 }
 
 #endif //SHIRO_USER_ACTIVITY_HH

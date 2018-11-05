@@ -42,7 +42,6 @@ namespace shiro::users::punishments {
     bool has_scores(int32_t user_id);
 
     std::tuple<int32_t, uint32_t> get_silence_time(int32_t user_id);
-
 }
 
 #endif //SHIRO_USER_PUNISHMENTS_HH

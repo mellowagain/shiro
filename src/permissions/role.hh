@@ -32,9 +32,7 @@ namespace shiro::permissions {
         uint8_t color = 0;
 
         role(uint32_t id, std::string name, uint64_t permissions, uint8_t color);
-
     };
-
 }
 
 #endif //SHIRO_ROLE_HH

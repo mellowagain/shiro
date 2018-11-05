@@ -45,9 +45,7 @@ namespace shiro::io::layouts {
 
         bool operator==(const channel &other_channel) const;
         bool operator!=(const channel &other_channel) const;
-
     };
-
 }
 
 namespace std {
@@ -56,9 +54,7 @@ namespace std {
     struct hash<shiro::io::layouts::channel> {
 
         size_t operator()(const shiro::io::layouts::channel &channel) const;
-
     };
-
 }
 
 #endif //SHIRO_CHANNEL_HH

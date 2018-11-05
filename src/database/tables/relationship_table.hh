@@ -34,8 +34,9 @@ namespace shiro::tables {
     };
 
     struct relationships : sqlpp::table_t<relationships,
-            relationships_objects::origin, relationships_objects::target,
-            relationships_objects::blocked> {
+                               relationships_objects::origin,
+                               relationships_objects::target,
+                               relationships_objects::blocked> {
         using _value_type = sqlpp::no_value_t;
         struct _alias_t {
             static constexpr const char _literal[] = "relationships";
@@ -52,7 +53,6 @@ namespace shiro::tables {
             };
         };
     };
-
 }
 
-#endif  // SHIRO_RELATIONSHIP_TABLE_HH
+#endif // SHIRO_RELATIONSHIP_TABLE_HH

@@ -26,7 +26,6 @@
 namespace shiro::handler::chat::leave {
 
     void handle(io::osu_packet &in, io::osu_writer &out, std::shared_ptr<users::user> user);
-
 }
 
 #endif //SHIRO_LEAVE_CHANNEL_HANDLER_HH

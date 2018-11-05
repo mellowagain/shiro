@@ -63,9 +63,7 @@ int shiro::init(int argc, char **argv) {
     beatmaps::helper::init();
 
     db_connection = std::make_shared<database>(
-            config::database::address, config::database::port, config::database::database,
-            config::database::username, config::database::password
-    );
+        config::database::address, config::database::port, config::database::database, config::database::username, config::database::password);
     db_connection->connect();
     db_connection->setup();
 

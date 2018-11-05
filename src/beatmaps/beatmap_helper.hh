@@ -37,7 +37,6 @@ namespace shiro::beatmaps::helper {
     size_t callback(void *raw_data, size_t size, size_t memory, std::string *ptr);
 
     FILE *download(int32_t beatmap_id);
-
 }
 
 #endif //SHIRO_BEATMAP_HELPER_HH

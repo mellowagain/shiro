@@ -55,7 +55,6 @@ namespace shiro::utils::crypto {
             }
         };
     }
-
 }
 
 #endif //SHIRO_CRYPTO_HH

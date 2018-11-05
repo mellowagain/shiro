@@ -46,9 +46,7 @@ namespace shiro {
 
         bool is_connected(bool abort = false);
         std::shared_ptr<sqlpp::mysql::connection_config> get_config();
-
     };
-
 }
 
 #define is_query_empty(x)         \

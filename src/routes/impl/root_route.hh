@@ -24,7 +24,6 @@
 namespace shiro::routes::root {
 
     void handle(const crow::request &request, crow::response &response);
-
 }
 
 #endif //SHIRO_ROOT_ROUTE_HH

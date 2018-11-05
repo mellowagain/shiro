@@ -27,7 +27,6 @@
 namespace shiro::commands {
 
     bool clear(std::deque<std::string> &args, std::shared_ptr<users::user> user, std::string channel);
-
 }
 
 #endif //SHIRO_CLEAR_COMMAND_HH

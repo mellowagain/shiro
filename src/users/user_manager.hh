@@ -44,7 +44,6 @@ namespace shiro::users::manager {
     std::shared_ptr<user> get_user_by_token(const std::string &token);
 
     size_t get_online_users();
-
 }
 
 #endif //SHIRO_USER_MANAGER_HH

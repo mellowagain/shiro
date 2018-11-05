@@ -31,7 +31,7 @@ bool shiro::commands::roll(std::deque<std::string> &args, std::shared_ptr<shiro:
     if (!args.empty()) {
         try {
             max = boost::lexical_cast<uint32_t>(args.at(0));
-        } catch (const boost::bad_lexical_cast&) {
+        } catch (const boost::bad_lexical_cast &) {
             // User wrote some non-sense, let's ignore and roll with default 100
         }
     }

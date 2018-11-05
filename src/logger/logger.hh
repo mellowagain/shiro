@@ -22,7 +22,6 @@
 namespace shiro::logging {
 
     void init(int argc, char **argv);
-
 }
 
 #endif //SHIRO_LOGGER_HH

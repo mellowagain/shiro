@@ -27,9 +27,7 @@ namespace shiro::logging {
     public:
         virtual ~route_logger() = default;
         void log(std::string message, crow::LogLevel level) override;
-
     };
-
 }
 
 #endif //SHIRO_ROUTE_LOGGER_HH

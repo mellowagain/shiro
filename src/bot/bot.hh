@@ -31,7 +31,6 @@ namespace shiro::bot {
     void init_commands();
 
     bool handle(const std::string &command, std::deque<std::string> &args, std::shared_ptr<users::user> user, std::string channel);
-
 }
 
 #endif //SHIRO_BOT_HH

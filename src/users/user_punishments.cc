@@ -28,11 +28,9 @@
 void shiro::users::punishments::init() {
     scheduler.Schedule(1min, [](tsc::TaskContext ctx) {
         sqlpp::mysql::connection db(db_connection->get_config());
-        const tables::punishments punishments_table {};
+        const tables::punishments punishments_table{};
 
-        auto result = db(select(all_of(punishments_table)).from(punishments_table).where(
-                punishments_table.active == true
-        ));
+        auto result = db(select(all_of(punishments_table)).from(punishments_table).where(punishments_table.active == true));
         bool empty = is_query_empty(result);
 
         if (empty) {
@@ -41,8 +39,7 @@ void shiro::users::punishments::init() {
         }
 
         std::chrono::seconds seconds = std::chrono::duration_cast<std::chrono::seconds>(
-                std::chrono::system_clock::now().time_since_epoch()
-        );
+            std::chrono::system_clock::now().time_since_epoch());
 
         for (const auto &row : result) {
             if (row.duration.is_null())
@@ -53,9 +50,10 @@ void shiro::users::punishments::init() {
             int32_t duration = row.duration;
 
             if (seconds.count() >= (timestamp + duration)) {
-                db(update(punishments_table).set(
-                        punishments_table.active = false
-                ).where(punishments_table.id == row.id));
+                db(update(punishments_table)
+                        .set(
+                            punishments_table.active = false)
+                        .where(punishments_table.id == row.id));
 
                 switch (type) {
                     case utils::punishment_type::silence: {
@@ -94,19 +92,18 @@ void shiro::users::punishments::init() {
 
 void shiro::users::punishments::kick(int32_t user_id, const std::string &reason) {
     std::chrono::seconds seconds = std::chrono::duration_cast<std::chrono::seconds>(
-            std::chrono::system_clock::now().time_since_epoch()
-    );
+        std::chrono::system_clock::now().time_since_epoch());
 
     sqlpp::mysql::connection db(db_connection->get_config());
-    const tables::punishments punishments_table {};
+    const tables::punishments punishments_table{};
 
-    db(insert_into(punishments_table).set(
-            punishments_table.user_id = user_id,
-            punishments_table.type = (uint16_t) utils::punishment_type::kick,
-            punishments_table.time = seconds.count(),
-            punishments_table.active = false,
-            punishments_table.reason = reason
-    ));
+    db(insert_into(punishments_table)
+            .set(
+                punishments_table.user_id = user_id,
+                punishments_table.type = (uint16_t) utils::punishment_type::kick,
+                punishments_table.time = seconds.count(),
+                punishments_table.active = false,
+                punishments_table.reason = reason));
 
     std::shared_ptr<user> user = manager::get_user_by_id(user_id);
 
@@ -130,20 +127,19 @@ void shiro::users::punishments::silence(int32_t user_id, uint32_t duration, cons
         return;
 
     std::chrono::seconds seconds = std::chrono::duration_cast<std::chrono::seconds>(
-            std::chrono::system_clock::now().time_since_epoch()
-    );
+        std::chrono::system_clock::now().time_since_epoch());
 
     sqlpp::mysql::connection db(db_connection->get_config());
-    const tables::punishments punishments_table {};
+    const tables::punishments punishments_table{};
 
-    db(insert_into(punishments_table).set(
-            punishments_table.user_id = user_id,
-            punishments_table.type = (uint16_t) utils::punishment_type::silence,
-            punishments_table.time = seconds.count(),
-            punishments_table.duration = duration,
-            punishments_table.active = true,
-            punishments_table.reason = reason
-    ));
+    db(insert_into(punishments_table)
+            .set(
+                punishments_table.user_id = user_id,
+                punishments_table.type = (uint16_t) utils::punishment_type::silence,
+                punishments_table.time = seconds.count(),
+                punishments_table.duration = duration,
+                punishments_table.active = true,
+                punishments_table.reason = reason));
 
     std::shared_ptr<user> user = manager::get_user_by_id(user_id);
 
@@ -165,9 +161,10 @@ void shiro::users::punishments::silence(int32_t user_id, uint32_t duration, cons
     }
 
     utils::bot::respond(
-            "You have been silenced for " + std::to_string(duration) + " seconds for " + reason + ".",
-            user, config::bot::name, true
-    );
+        "You have been silenced for " + std::to_string(duration) + " seconds for " + reason + ".",
+        user,
+        config::bot::name,
+        true);
 
     io::osu_writer writer;
     writer.user_ban_info(duration); // This will lock the client
@@ -180,19 +177,18 @@ void shiro::users::punishments::restrict(int32_t user_id, const std::string &rea
         return;
 
     std::chrono::seconds seconds = std::chrono::duration_cast<std::chrono::seconds>(
-            std::chrono::system_clock::now().time_since_epoch()
-    );
+        std::chrono::system_clock::now().time_since_epoch());
 
     sqlpp::mysql::connection db(db_connection->get_config());
-    const tables::punishments punishments_table {};
+    const tables::punishments punishments_table{};
 
-    db(insert_into(punishments_table).set(
-            punishments_table.user_id = user_id,
-            punishments_table.type = (uint16_t) utils::punishment_type::restrict,
-            punishments_table.time = seconds.count(),
-            punishments_table.active = true,
-            punishments_table.reason = reason
-    ));
+    db(insert_into(punishments_table)
+            .set(
+                punishments_table.user_id = user_id,
+                punishments_table.type = (uint16_t) utils::punishment_type::restrict,
+                punishments_table.time = seconds.count(),
+                punishments_table.active = true,
+                punishments_table.reason = reason));
 
     std::shared_ptr<user> user = manager::get_user_by_id(user_id);
 
@@ -206,12 +202,13 @@ void shiro::users::punishments::restrict(int32_t user_id, const std::string &rea
     user->hidden = true;
 
     utils::bot::respond(
-            "[https://shiro.host/u/me Your account has been restricted]. "
-            "Because of that, your profile has been hidden from the public. "
-            "If you believe this is a mistake, [https://shiro.host/support contact support] "
-            "to have your account status reviewed.",
-            user, config::bot::name, true
-    );
+        "[https://shiro.host/u/me Your account has been restricted]. "
+        "Because of that, your profile has been hidden from the public. "
+        "If you believe this is a mistake, [https://shiro.host/support contact support] "
+        "to have your account status reviewed.",
+        user,
+        config::bot::name,
+        true);
 
     io::layouts::user_quit quit;
     io::osu_writer writer;
@@ -234,19 +231,18 @@ void shiro::users::punishments::ban(int32_t user_id, const std::string &reason) 
         return;
 
     std::chrono::seconds seconds = std::chrono::duration_cast<std::chrono::seconds>(
-            std::chrono::system_clock::now().time_since_epoch()
-    );
+        std::chrono::system_clock::now().time_since_epoch());
 
     sqlpp::mysql::connection db(db_connection->get_config());
-    const tables::punishments punishments_table {};
+    const tables::punishments punishments_table{};
 
-    db(insert_into(punishments_table).set(
-            punishments_table.user_id = user_id,
-            punishments_table.type = (uint16_t) utils::punishment_type::ban,
-            punishments_table.time = seconds.count(),
-            punishments_table.active = true,
-            punishments_table.reason = reason
-    ));
+    db(insert_into(punishments_table)
+            .set(
+                punishments_table.user_id = user_id,
+                punishments_table.type = (uint16_t) utils::punishment_type::ban,
+                punishments_table.time = seconds.count(),
+                punishments_table.active = true,
+                punishments_table.reason = reason));
 
     std::shared_ptr<user> user = manager::get_user_by_id(user_id);
 
@@ -267,39 +263,27 @@ void shiro::users::punishments::ban(int32_t user_id, const std::string &reason) 
 
 bool shiro::users::punishments::is_silenced(int32_t user_id) {
     sqlpp::mysql::connection db(db_connection->get_config());
-    const tables::punishments punishments_table {};
+    const tables::punishments punishments_table{};
 
-    auto result = db(select(all_of(punishments_table)).from(punishments_table).where(
-            punishments_table.user_id == user_id and
-            punishments_table.type == (uint16_t) utils::punishment_type::silence and
-            punishments_table.active == true
-    ));
+    auto result = db(select(all_of(punishments_table)).from(punishments_table).where(punishments_table.user_id == user_id and punishments_table.type == (uint16_t) utils::punishment_type::silence and punishments_table.active == true));
 
     return !is_query_empty(result);
 }
 
 bool shiro::users::punishments::is_restricted(int32_t user_id) {
     sqlpp::mysql::connection db(db_connection->get_config());
-    const tables::punishments punishments_table {};
+    const tables::punishments punishments_table{};
 
-    auto result = db(select(all_of(punishments_table)).from(punishments_table).where(
-            punishments_table.user_id == user_id and
-            punishments_table.type == (uint16_t) utils::punishment_type::restrict and
-            punishments_table.active == true
-    ));
+    auto result = db(select(all_of(punishments_table)).from(punishments_table).where(punishments_table.user_id == user_id and punishments_table.type == (uint16_t) utils::punishment_type::restrict and punishments_table.active == true));
 
     return !is_query_empty(result);
 }
 
 bool shiro::users::punishments::is_banned(int32_t user_id) {
     sqlpp::mysql::connection db(db_connection->get_config());
-    const tables::punishments punishments_table {};
+    const tables::punishments punishments_table{};
 
-    auto result = db(select(all_of(punishments_table)).from(punishments_table).where(
-            punishments_table.user_id == user_id and
-            punishments_table.type == (uint16_t) utils::punishment_type::ban and
-            punishments_table.active == true
-    ));
+    auto result = db(select(all_of(punishments_table)).from(punishments_table).where(punishments_table.user_id == user_id and punishments_table.type == (uint16_t) utils::punishment_type::ban and punishments_table.active == true));
 
     return !is_query_empty(result);
 }
@@ -325,13 +309,9 @@ std::tuple<int32_t, uint32_t> shiro::users::punishments::get_silence_time(int32_
         return {};
 
     sqlpp::mysql::connection db(db_connection->get_config());
-    const tables::punishments punishments_table {};
+    const tables::punishments punishments_table{};
 
-    auto result = db(select(all_of(punishments_table)).from(punishments_table).where(
-            punishments_table.user_id == user_id and
-            punishments_table.type == (uint16_t) utils::punishment_type::silence and
-            punishments_table.active == true
-    ));
+    auto result = db(select(all_of(punishments_table)).from(punishments_table).where(punishments_table.user_id == user_id and punishments_table.type == (uint16_t) utils::punishment_type::silence and punishments_table.active == true));
     bool empty = is_query_empty(result);
 
     if (empty)

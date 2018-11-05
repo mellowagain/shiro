@@ -33,7 +33,6 @@ namespace shiro::utils {
         account_password_rest = -7,
         verification_required = -8
     };
-
 }
 
-#endif  // SHIRO_LOGIN_RESPONSES_HH
+#endif // SHIRO_LOGIN_RESPONSES_HH
