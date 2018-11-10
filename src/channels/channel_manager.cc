@@ -169,7 +169,7 @@ void shiro::channels::manager::insert_if_not_exists(std::string name, std::strin
 }
 
 bool shiro::channels::manager::has_permissions(std::shared_ptr<shiro::users::user> user, uint32_t channel_id) {
-    for (const auto &[channel, users] : channels) {
+    for (auto &[channel, users] : channels) {
         if (channel.id != channel_id)
             continue;
 
