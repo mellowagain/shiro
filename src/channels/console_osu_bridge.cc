@@ -6,5 +6,5 @@ void shiro::channels::bridge::install() {
 }
 
 void shiro::channels::bridge::callback(void *user_data, const loguru::Message &message) {
-    utils::bot::respond(std::string(message.preamble) + " " + std::string(message.message), nullptr, "#console");
+    utils::bot::respond(message.message, nullptr, "#console");
 }
