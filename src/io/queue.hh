@@ -29,12 +29,18 @@ namespace shiro::io {
     class queue {
     private:
         io::buffer packet_queue;
+        io::buffer next_queue;
 
     public:
         queue() = default;
 
         void enqueue(osu_writer &writer);
         void enqueue(buffer &buffer);
+
+        // These methods enqueue the corresponding writer / buffer to be put into the queue
+        // as soon as the current packet queue has been sent to the user.
+        void enqueue_next(osu_writer &writer);
+        void enqueue_next(buffer &buffer);
 
         void clear();
         bool is_empty();
