@@ -50,6 +50,7 @@ void shiro::utils::bot::handle(shiro::io::layouts::message message, std::shared_
 void shiro::utils::bot::respond(std::string message, std::shared_ptr<shiro::users::user> user, std::string channel, bool only_user) {
     io::osu_writer buffer;
     io::layouts::message response;
+    int32_t user_id = 0;
 
     response.sender = config::bot::name;
     response.sender_id = 1;
@@ -59,8 +60,10 @@ void shiro::utils::bot::respond(std::string message, std::shared_ptr<shiro::user
 
     buffer.send_message(response);
 
-    if (user != nullptr)
+    if (user != nullptr) {
         user->queue.enqueue(buffer);
+        user_id = user->user_id;
+    }
 
     if (!boost::algorithm::starts_with(channel, "#"))
         return;
@@ -89,7 +92,7 @@ void shiro::utils::bot::respond(std::string message, std::shared_ptr<shiro::user
     std::vector<std::shared_ptr<users::user>> users = channels::manager::get_users_in_channel(channel);
 
     for (const std::shared_ptr<users::user> &channel_user : users) {
-        if (channel_user == nullptr || channel_user->user_id == user->user_id || user->user_id == 1)
+        if (channel_user == nullptr || channel_user->user_id == user_id || channel_user->user_id == 1)
             continue;
 
         channel_user->queue.enqueue(buffer);

@@ -49,6 +49,14 @@ void shiro::handler::chat::handle_private(shiro::io::osu_packet &in, shiro::io::
         return;
     }
 
+    if (!users::punishments::can_chat(target_user->user_id))
+        utils::bot::respond(
+                "The user you tried to chat is currently unable to reply because of a chat restriction.",
+                user,
+                message.channel,
+                true
+        );
+
     message.sender = user->presence.username;
     message.sender_id = user->user_id;
     message.channel = user->presence.username;

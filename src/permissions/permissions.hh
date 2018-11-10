@@ -26,6 +26,9 @@ namespace shiro::permissions {
     enum class perms : uint64_t {
         // General permissions (<32)
 
+        // Default channel permissions
+        channel_console = 1LL << 31,
+
         // Command permissions (>32)
         cmd_announce = 1LL << 32,
         cmd_clear = 1LL << 33,

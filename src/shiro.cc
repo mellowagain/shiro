@@ -23,6 +23,7 @@
 #include "beatmaps/beatmap_helper.hh"
 #include "bot/bot.hh"
 #include "channels/channel_manager.hh"
+#include "channels/console_osu_bridge.hh"
 #include "config/bancho_file.hh"
 #include "config/bot_file.hh"
 #include "config/cli_args.hh"
@@ -87,6 +88,8 @@ int shiro::init(int argc, char **argv) {
     users::activity::init();
     users::punishments::init();
     users::timeout::init();
+
+    channels::bridge::install();
 
     replays::init();
 

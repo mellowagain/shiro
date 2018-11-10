@@ -72,7 +72,8 @@ void shiro::database::setup() {
            "CREATE TABLE IF NOT EXISTS `channels` "
            "(id INT PRIMARY KEY NOT NULL AUTO_INCREMENT, "
            "name VARCHAR(32) NOT NULL, description VARCHAR(64) NOT NULL, "
-           "auto_join BOOLEAN NOT NULL, hidden BOOLEAN NOT NULL);"
+           "auto_join BOOLEAN NOT NULL, hidden BOOLEAN NOT NULL, "
+           "read_only BOOLEAN NOT NULL, permission BIGINT UNSIGNED NOT NULL);"
     );
 
     // Submitted scores
