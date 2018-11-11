@@ -298,8 +298,10 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
 
         struct pp_params params;
 
+        FILE *map_file = beatmaps::helper::download(beatmap.beatmap_id);
+
         p_init(&parser_state);
-        p_map(&parser_state, &map, beatmaps::helper::download(beatmap.beatmap_id));
+        p_map(&parser_state, &map, map_file);
 
         d_init(&difficulty);
         d_calc(&difficulty, &map, score.mods);
@@ -326,6 +328,8 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
 
         d_free(&difficulty);
         p_free(&parser_state);
+
+        std::fclose(map_file);
     } else {
         score.pp = 0;
     }
