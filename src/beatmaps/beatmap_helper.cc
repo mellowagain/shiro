@@ -71,7 +71,7 @@ FILE *shiro::beatmaps::helper::download(int32_t beatmap_id) {
     std::string filename = dir + utils::filesystem::preferred_separator + std::to_string(beatmap_id) + ".osu";
 
     if (fs::exists(filename))
-        return fopen(filename.c_str(), "r");
+        return std::fopen(filename.c_str(), "r");
 
     CURL *curl = curl_easy_init();
     CURLcode status_code;
@@ -96,10 +96,10 @@ FILE *shiro::beatmaps::helper::download(int32_t beatmap_id) {
         }
     }
 
-    FILE *map_file = fopen(filename.c_str(), "wb");
+    FILE *map_file = std::fopen(filename.c_str(), "wb");
 
-    fwrite(output.c_str(), sizeof(char), output.length(), map_file);
-    fclose(map_file);
+    std::fwrite(output.c_str(), sizeof(char), output.length(), map_file);
+    std::fclose(map_file);
 
-    return fopen(filename.c_str(), "r");
+    return std::fopen(filename.c_str(), "r");
 }

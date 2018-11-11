@@ -329,7 +329,7 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
         d_free(&difficulty);
         p_free(&parser_state);
 
-        fclose(map_file);
+        std::fclose(map_file);
     } else {
         score.pp = 0;
     }
