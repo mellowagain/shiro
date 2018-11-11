@@ -43,7 +43,7 @@ void shiro::handler::chat::handle_public(shiro::io::osu_packet &in, shiro::io::o
 
     message_buffer.send_message(message);
 
-    if (message.channel == "#announce")
+    if (channels::manager::is_read_only(message.channel))
         return;
 
     if (message.channel == "#spectator") {

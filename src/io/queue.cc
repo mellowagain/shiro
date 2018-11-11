@@ -27,8 +27,19 @@ void shiro::io::queue::enqueue(shiro::io::buffer &buffer) {
     this->packet_queue.append(buffer);
 }
 
+void shiro::io::queue::enqueue_next(shiro::io::osu_writer &writer) {
+    buffer buf = writer.get_buffer();
+    this->next_queue.append(buf);
+}
+
+void shiro::io::queue::enqueue_next(shiro::io::buffer &buffer) {
+    this->next_queue.append(buffer);
+}
+
 void shiro::io::queue::clear() {
     this->packet_queue.clear();
+    this->packet_queue.append(this->next_queue);
+    this->next_queue.clear();
 }
 
 bool shiro::io::queue::is_empty() {

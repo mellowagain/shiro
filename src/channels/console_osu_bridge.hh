@@ -16,26 +16,19 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef SHIRO_PERMISSIONS_HH
-#define SHIRO_PERMISSIONS_HH
+#ifndef SHIRO_CONSOLE_OSU_BRIDGE_HH
+#define SHIRO_CONSOLE_OSU_BRIDGE_HH
 
-#include <cstdint>
+#include "../thirdparty/loguru.hh"
 
-namespace shiro::permissions {
+namespace shiro::channels::bridge {
 
-    enum class perms : uint64_t {
-        // General permissions (<32)
+    void install();
 
-        // Default channel permissions
-        channel_console = 1LL << 31,
+    void callback(void *user_data, const loguru::Message &message);
 
-        // Command permissions (>32)
-        cmd_announce = 1LL << 32,
-        cmd_clear = 1LL << 33,
-        cmd_clients = 1LL << 34,
-        cmd_rtx = 1LL << 35
-    };
+    uint8_t get_permission(loguru::Verbosity verbosity);
 
 }
 
-#endif  // SHIRO_PERMISSIONS_HH
+#endif //SHIRO_CONSOLE_OSU_BRIDGE_HH

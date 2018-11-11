@@ -38,6 +38,9 @@ void shiro::roles::manager::init() {
 }
 
 bool shiro::roles::manager::has_permission(std::shared_ptr<shiro::users::user> user, shiro::permissions::perms permissions) {
+    if (user == nullptr)
+        return false;
+
     for (permissions::role role : roles) {
         if (!(user->roles & role.id))
             continue;

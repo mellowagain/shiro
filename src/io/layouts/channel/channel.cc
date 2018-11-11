@@ -21,10 +21,12 @@
 #include "../../../utils/osu_string.hh"
 #include "channel.hh"
 
-shiro::io::layouts::channel::channel(uint32_t id, bool auto_join, bool hidden, std::string name, std::string description, int32_t user_count)
+shiro::io::layouts::channel::channel(uint32_t id, bool auto_join, bool hidden, std::string name, std::string description, int32_t user_count, bool read_only, uint64_t permission)
         : id(id)
         , auto_join(auto_join)
         , hidden(hidden)
+        , read_only(read_only)
+        , permission(permission)
         , name(std::move(name))
         , description(std::move(description))
         , user_count(user_count) {

@@ -20,6 +20,8 @@
 #include <utility>
 
 #include "../database/tables/channel_table.hh"
+#include "../permissions/permissions.hh"
+#include "../permissions/role_manager.hh"
 #include "../thirdparty/loguru.hh"
 #include "../shiro.hh"
 #include "channel_manager.hh"
@@ -33,32 +35,12 @@ void shiro::channels::manager::init() {
     sqlpp::mysql::connection db(db_connection->get_config());
     const tables::channels channel_table {};
 
-    auto result = db(select(all_of(channel_table)).from(channel_table).where(channel_table.name == "#announce"));
+    insert_if_not_exists("#announce", "", true, false, true, 0);
+    insert_if_not_exists("#lobby", "", false, true, false, 0);
+    insert_if_not_exists("#console", "", true, false, true, (uint64_t) permissions::perms::channel_console);
+
+    auto result = db(select(all_of(channel_table)).from(channel_table).unconditionally());
     bool empty = is_query_empty(result);
-
-    if (empty) {
-        db(insert_into(channel_table).set(
-                channel_table.name = "#announce",
-                channel_table.description = "",
-                channel_table.auto_join = true,
-                channel_table.hidden = false
-        ));
-    }
-
-    result = db(select(all_of(channel_table)).from(channel_table).where(channel_table.name == "#lobby"));
-    empty = is_query_empty(result);
-
-    if (empty) {
-        db(insert_into(channel_table).set(
-                channel_table.name = "#lobby",
-                channel_table.description = "",
-                channel_table.auto_join = false,
-                channel_table.hidden = true
-        ));
-    }
-
-    result = db(select(all_of(channel_table)).from(channel_table).unconditionally());
-    empty = is_query_empty(result);
 
     if (empty)
         return;
@@ -76,7 +58,7 @@ void shiro::channels::manager::init() {
         }
 
         channels.insert(std::make_pair<io::layouts::channel, std::vector<std::shared_ptr<users::user>>>(
-                io::layouts::channel(row.id, row.auto_join, row.hidden, name, row.description, 0),
+                io::layouts::channel(row.id, row.auto_join, row.hidden, name, row.description, 0, row.read_only, row.permission),
                 std::vector<std::shared_ptr<users::user>>()
         ));
     }
@@ -84,7 +66,7 @@ void shiro::channels::manager::init() {
 
 void shiro::channels::manager::write_channels(shiro::io::osu_writer &buf, std::shared_ptr<shiro::users::user> user, bool first) {
     for (auto &[channel, users] : channels) {
-        if (channel.hidden)
+        if (channel.hidden || !has_permissions(user, channel.id))
             continue;
 
         shiro::io::layouts::channel channel_layout;
@@ -103,34 +85,40 @@ void shiro::channels::manager::write_channels(shiro::io::osu_writer &buf, std::s
     }
 }
 
-void shiro::channels::manager::join_channel(uint32_t channel_id, std::shared_ptr<shiro::users::user> user) {
+bool shiro::channels::manager::join_channel(uint32_t channel_id, std::shared_ptr<shiro::users::user> user) {
     if (in_channel(channel_id, user))
         leave_channel(channel_id, std::move(user));
 
     for (auto &[channel, users] : channels) {
-        if (channel.id == channel_id) {
-            users.emplace_back(user);
-            break;
-        }
+        if (channel.id == channel_id || !has_permissions(user, channel.id))
+            continue;
+
+        users.emplace_back(user);
+        return true;
     }
+
+    return false;
 }
 
-void shiro::channels::manager::leave_channel(uint32_t channel_id, std::shared_ptr<shiro::users::user> user) {
+bool shiro::channels::manager::leave_channel(uint32_t channel_id, std::shared_ptr<shiro::users::user> user) {
     if (!in_channel(channel_id, user))
-        return;
+        return true;
 
     for (auto &[channel, users] : channels) {
-        if (channel.id == channel_id) {
-            auto iterator = std::find(users.begin(), users.end(), user);
+        if (channel.id == channel_id || !has_permissions(user, channel.id))
+            continue;
 
-            if (iterator == users.end())
-                return;
+        auto iterator = std::find(users.begin(), users.end(), user);
 
-            ptrdiff_t index = std::distance(users.begin(), iterator);
-            users.erase(users.begin() + index);
-            break;
-        }
+        if (iterator == users.end())
+            return false;
+
+        ptrdiff_t index = std::distance(users.begin(), iterator);
+        users.erase(users.begin() + index);
+        return true;
     }
+
+    return false;
 }
 
 bool shiro::channels::manager::in_channel(uint32_t channel_id, const std::shared_ptr<shiro::users::user> &user) {
@@ -158,4 +146,56 @@ uint32_t shiro::channels::manager::get_channel_id(const std::string &channel_nam
     }
 
     return 0;
+}
+
+void shiro::channels::manager::insert_if_not_exists(std::string name, std::string description, bool auto_join, bool hidden, bool read_only, uint64_t permission) {
+    sqlpp::mysql::connection db(db_connection->get_config());
+    const tables::channels channel_table {};
+
+    auto result = db(select(all_of(channel_table)).from(channel_table).where(channel_table.name == name));
+    bool empty = is_query_empty(result);
+
+    if (!empty)
+        return;
+
+    db(insert_into(channel_table).set(
+            channel_table.name = name,
+            channel_table.description = std::move(description),
+            channel_table.auto_join = auto_join,
+            channel_table.hidden = hidden,
+            channel_table.read_only = read_only,
+            channel_table.permission = permission
+    ));
+}
+
+bool shiro::channels::manager::has_permissions(std::shared_ptr<shiro::users::user> user, uint32_t channel_id) {
+    for (auto &[channel, users] : channels) {
+        if (channel.id != channel_id)
+            continue;
+
+        if (channel.permission == 0)
+            return true;
+
+        return roles::manager::has_permission(user, (permissions::perms) channel.permission);
+    }
+
+    return false;
+}
+
+bool shiro::channels::manager::is_read_only(uint32_t channel_id) {
+    for (const auto &[channel, users] : channels) {
+        if (channel.id == channel_id)
+            return channel.read_only;
+    }
+
+    return true;
+}
+
+bool shiro::channels::manager::is_read_only(std::string channel_name) {
+    for (const auto &[channel, users] : channels) {
+        if (channel.name == channel_name)
+            return channel.read_only;
+    }
+
+    return true;
 }
