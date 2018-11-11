@@ -29,7 +29,7 @@ void shiro::handler::chat::leave::handle(shiro::io::osu_packet &in, shiro::io::o
 
     io::osu_writer writer;
 
-    if (channels::manager::leave_channel(target_channel, user)) {
+    if (!channels::manager::leave_channel(target_channel, user)) {
         writer.channel_join(channel);
         return;
     }

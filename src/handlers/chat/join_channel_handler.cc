@@ -29,7 +29,7 @@ void shiro::handler::chat::join::handle(shiro::io::osu_packet &in, shiro::io::os
 
     io::osu_writer writer;
 
-    if (channels::manager::join_channel(target_channel, user)) {
+    if (!channels::manager::join_channel(target_channel, user)) {
         writer.channel_revoked(channel);
         return;
     }
