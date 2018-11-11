@@ -96,9 +96,10 @@ FILE *shiro::beatmaps::helper::download(int32_t beatmap_id) {
         }
     }
 
-    std::ofstream stream(filename, std::ios::trunc);
-    stream << output;
-    stream.close();
+    FILE *map_file = fopen(filename.c_str(), "wb");
+
+    fwrite(output.c_str(), sizeof(char), output.length(), map_file);
+    fclose(map_file);
 
     return fopen(filename.c_str(), "r");
 }
