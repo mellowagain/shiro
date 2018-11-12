@@ -24,9 +24,13 @@
 #include "../commands/public/help_command.hh"
 #include "../commands/public/roll_command.hh"
 #include "../commands/staff/announce_command.hh"
+#include "../commands/staff/ban_command.hh"
 #include "../commands/staff/clear_command.hh"
 #include "../commands/staff/clients_command.hh"
+#include "../commands/staff/kick_command.hh"
+#include "../commands/staff/restrict_command.hh"
 #include "../commands/staff/rtx_command.hh"
+#include "../commands/staff/silence_command.hh"
 #include "../config/bot_file.hh"
 #include "../config/db_file.hh"
 #include "../database/tables/user_table.hh"
@@ -121,11 +125,15 @@ void shiro::bot::init() {
 
 void shiro::bot::init_commands() {
     commands_map.insert(std::make_pair("announce", commands::announce));
+    commands_map.insert(std::make_pair("ban", commands::ban));
     commands_map.insert(std::make_pair("clear", commands::clear));
     commands_map.insert(std::make_pair("clients", commands::clients));
     commands_map.insert(std::make_pair("help", commands::help));
+    commands_map.insert(std::make_pair("kick", commands::kick));
+    commands_map.insert(std::make_pair("restrict", commands::restrict));
     commands_map.insert(std::make_pair("roll", commands::roll));
     commands_map.insert(std::make_pair("rtx", commands::rtx));
+    commands_map.insert(std::make_pair("silence", commands::silence));
 
     LOG_S(INFO) << "Bot commands have been successfully loaded. " << commands_map.size() << " commands available.";
 }

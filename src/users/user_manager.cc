@@ -159,6 +159,28 @@ std::string shiro::users::manager::get_username_by_id(int32_t id) {
     return "";
 }
 
+int32_t shiro::users::manager::get_id_by_username(const std::string &username) {
+    std::shared_ptr<user> user = get_user_by_username(username);
+
+    if (user != nullptr)
+        return user->user_id;
+
+    sqlpp::mysql::connection db(db_connection->get_config());
+    const tables::users user_table {};
+
+    auto result = db(select(all_of(user_table)).from(user_table).where(user_table.username == username));
+    bool empty = is_query_empty(result);
+
+    if (empty)
+        return -1;
+
+    for (const auto &row : result) {
+        return row.id;
+    }
+
+    return -1;
+}
+
 size_t shiro::users::manager::get_online_users() {
     return online_users.size();
 }

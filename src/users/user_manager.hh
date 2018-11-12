@@ -45,6 +45,7 @@ namespace shiro::users::manager {
 
     // Works for both online and offline users
     std::string get_username_by_id(int32_t id);
+    int32_t get_id_by_username(const std::string &username);
 
     size_t get_online_users();
 
