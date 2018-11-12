@@ -26,7 +26,7 @@
 #include "ban_command.hh"
 
 bool shiro::commands::ban(std::deque<std::string> &args, std::shared_ptr<shiro::users::user> user, std::string channel) {
-    if (args.size() < 3) {
+    if (args.size() < 2) {
         utils::bot::respond("Usage: !ban <user> <reason>", user, channel, true);
         return false;
     }
@@ -42,6 +42,11 @@ bool shiro::commands::ban(std::deque<std::string> &args, std::shared_ptr<shiro::
 
     if (target == -1) {
         utils::bot::respond(target_username + " could not be found.", user, channel, true);
+        return false;
+    }
+
+    if (target == 1) {
+        utils::bot::respond("Don\'t try to ban robots, silly human!", user, channel, true);
         return false;
     }
 

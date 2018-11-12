@@ -39,6 +39,11 @@ bool shiro::commands::kick(std::deque<std::string> &args, std::shared_ptr<shiro:
     std::shared_ptr<users::user> target = users::manager::get_user_by_username(args.at(0));
     std::string reason = "You have been kicked.";
 
+    if (target->user_id == 1) {
+        utils::bot::respond("Don\'t try to kick robots, silly human!", user, channel, true);
+        return false;
+    }
+
     if (args.size() >= 3) {
         std::stringstream stream;
 

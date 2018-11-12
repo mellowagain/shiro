@@ -24,8 +24,9 @@
 #include "../../utils/bot_utils.hh"
 #include "silence_command.hh"
 
+#include "../../thirdparty/loguru.hh"
 bool shiro::commands::silence(std::deque<std::string> &args, std::shared_ptr<shiro::users::user> user, std::string channel) {
-    if (args.size() < 4) {
+    if (args.size() < 3) {
         utils::bot::respond("Usage: !silence <user> <duration>[s,min,h,d,w,m] <reason>", user, channel, true);
         return false;
     }
@@ -44,19 +45,25 @@ bool shiro::commands::silence(std::deque<std::string> &args, std::shared_ptr<shi
         return false;
     }
 
+    if (target == 1) {
+        utils::bot::respond("Don\'t try to silence robots, silly human!", user, channel, true);
+        return false;
+    }
+
     std::string raw_time = args.at(1);
     std::string time_modifier = "s";
     uint32_t time = 0;
 
     if (raw_time.find("min") != std::string::npos) {
         time_modifier = raw_time.substr(raw_time.length() - 3);
+        raw_time = raw_time.substr(0, raw_time.length() - 3);
     } else {
         time_modifier = raw_time.back();
+        raw_time = raw_time.substr(0, raw_time.length() - 1);
     }
 
-    raw_time = raw_time.substr(0, raw_time.length() - 3);
-
     try {
+        LOG_F(INFO, "Converting %s to uint.", raw_time.c_str());
         time = boost::lexical_cast<uint32_t>(raw_time);
     } catch (const boost::bad_lexical_cast &ex) {
         utils::bot::respond("Unable to convert duration into valid unsigned integer.", user, channel, true);

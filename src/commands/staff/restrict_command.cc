@@ -26,7 +26,7 @@
 #include "restrict_command.hh"
 
 bool shiro::commands::restrict(std::deque<std::string> &args, std::shared_ptr<shiro::users::user> user, std::string channel) {
-    if (args.size() < 3) {
+    if (args.size() < 2) {
         utils::bot::respond("Usage: !restrict <user> <reason>", user, channel, true);
         return false;
     }
@@ -42,6 +42,11 @@ bool shiro::commands::restrict(std::deque<std::string> &args, std::shared_ptr<sh
 
     if (target == -1) {
         utils::bot::respond(target_username + " could not be found.", user, channel, true);
+        return false;
+    }
+
+    if (target == 1) {
+        utils::bot::respond("Don\'t try to restrict robots, silly human!", user, channel, true);
         return false;
     }
 
