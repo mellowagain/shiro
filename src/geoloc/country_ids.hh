@@ -24,9 +24,13 @@
 
 #include "../thirdparty/enum.hh"
 
+#ifdef IN
+#undef IN
+#endif
+
 namespace shiro::geoloc {
 
-    BETTER_ENUM(country_id, uint8_t,
+    enum class country_id : std::uint8_t {
         BL = 0,
         AD = 3,
         AF = 5,
@@ -241,13 +245,13 @@ namespace shiro::geoloc {
         GG = 248,
         IM = 249,
         JE = 250,
-        MF = 252
-    );
+        MF = 252,
+
+        LAST = MF,
+    };
 
     uint8_t get_country_id(const std::string &country_code);
-
     std::string get_country_name(uint8_t country_id);
-
 }
 
 #endif //SHIRO_COUNTRY_IDS_HH
