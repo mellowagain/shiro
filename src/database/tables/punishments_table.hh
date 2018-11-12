@@ -39,7 +39,7 @@ namespace shiro::tables {
     };
 
     struct punishments : sqlpp::table_t<punishments,
-            punishments_objects::id, punishments_objects::user_id,
+            punishments_objects::id, punishments_objects::user_id, punishments_objects::origin_id,
             punishments_objects::type, punishments_objects::time,
             punishments_objects::duration, punishments_objects::active,
             punishments_objects::reason> {

@@ -102,6 +102,7 @@ void shiro::users::punishments::kick(int32_t user_id, int32_t origin, const std:
 
     db(insert_into(punishments_table).set(
             punishments_table.user_id = user_id,
+            punishments_table.origin_id = origin,
             punishments_table.type = (uint16_t) utils::punishment_type::kick,
             punishments_table.time = seconds.count(),
             punishments_table.active = false,
@@ -138,6 +139,7 @@ void shiro::users::punishments::silence(int32_t user_id, int32_t origin, uint32_
 
     db(insert_into(punishments_table).set(
             punishments_table.user_id = user_id,
+            punishments_table.origin_id = origin,
             punishments_table.type = (uint16_t) utils::punishment_type::silence,
             punishments_table.time = seconds.count(),
             punishments_table.duration = duration,
@@ -188,6 +190,7 @@ void shiro::users::punishments::restrict(int32_t user_id, int32_t origin, const 
 
     db(insert_into(punishments_table).set(
             punishments_table.user_id = user_id,
+            punishments_table.origin_id = origin,
             punishments_table.type = (uint16_t) utils::punishment_type::restrict,
             punishments_table.time = seconds.count(),
             punishments_table.active = true,
@@ -242,6 +245,7 @@ void shiro::users::punishments::ban(int32_t user_id, int32_t origin, const std::
 
     db(insert_into(punishments_table).set(
             punishments_table.user_id = user_id,
+            punishments_table.origin_id = origin,
             punishments_table.type = (uint16_t) utils::punishment_type::ban,
             punishments_table.time = seconds.count(),
             punishments_table.active = true,
