@@ -30,6 +30,7 @@ namespace shiro::tables {
     struct punishments_objects {
         object_struct(id, sqlpp::integer);
         object_struct(user_id, sqlpp::integer);
+        object_struct(origin_id, sqlpp::integer);
         object_struct(type, sqlpp::tinyint_unsigned);
         object_struct(time, sqlpp::integer);
         object_struct(duration, sqlpp::integer);

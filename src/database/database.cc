@@ -110,7 +110,7 @@ void shiro::database::setup() {
     // Punishments (kicks, silences, restrictions, bans)
     db.execute(
             "CREATE TABLE IF NOT EXISTS `punishments` "
-            "(id INT PRIMARY KEY NOT NULL AUTO_INCREMENT, user_id INT NOT NULL, "
+            "(id INT PRIMARY KEY NOT NULL AUTO_INCREMENT, user_id INT NOT NULL, origin_id INT NOT NULL, "
             "type TINYINT UNSIGNED NOT NULL, time INT NOT NULL, duration INT DEFAULT NULL, "
             "active BOOLEAN NOT NULL, reason VARCHAR(128) DEFAULT NULL);"
     );
