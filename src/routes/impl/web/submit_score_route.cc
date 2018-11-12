@@ -252,7 +252,7 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
         response.end("error: invalid");
 
         if (config::score_submission::restrict_no_replay)
-            users::punishments::restrict(user->user_id, "No replay sent on score submission");
+            users::punishments::restrict(user->user_id, 1, "No replay sent on score submission");
 
         LOG_S(WARNING) << "Received score without replay data.";
         return;
@@ -338,15 +338,15 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
     auto [flagged, reason] = scores::helper::is_flagged(score, beatmap);
 
     if (flagged)
-        users::punishments::restrict(user->user_id, reason);
+        users::punishments::restrict(user->user_id, 1, reason);
 
     // Auto restriction for bad replay submitters that submit without editing username
     if (config::score_submission::restrict_mismatching_username && score_metadata.at(1) != user->presence.username)
-        users::punishments::restrict(user->user_id, "Mismatching username on score submission (" + score_metadata.at(1) + " != " + user->presence.username + ")");
+        users::punishments::restrict(user->user_id, 1, "Mismatching username on score submission (" + score_metadata.at(1) + " != " + user->presence.username + ")");
 
     // ...or the client build
     if (config::score_submission::restrict_mismatching_client_version && game_version != user->client_build)
-        users::punishments::restrict(user->user_id, "Mismatching client version on score submission (" + std::to_string(game_version) + " != " + std::to_string(user->client_build) + ")");
+        users::punishments::restrict(user->user_id, 1, "Mismatching client version on score submission (" + std::to_string(game_version) + " != " + std::to_string(user->client_build) + ")");
 
     // Auto restriction for notepad hack
     if (config::score_submission::restrict_notepad_hack && fields.find("bmk") != fields.end() && fields.find("bml") != fields.end()) {
@@ -354,7 +354,7 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
         std::string bml = fields.at("bml").body;
 
         if (bmk != bml)
-            users::punishments::restrict(user->user_id, "Mismatching bmk and bml (notepad hack, " + bmk + " != " + bml + ")");
+            users::punishments::restrict(user->user_id, 1, "Mismatching bmk and bml (notepad hack, " + bmk + " != " + bml + ")");
     }
 
     scores::score old_top_score = scores::helper::fetch_top_score_user(beatmap.beatmap_md5, user);

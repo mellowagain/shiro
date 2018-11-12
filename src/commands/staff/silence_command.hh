@@ -16,30 +16,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef SHIRO_PERMISSIONS_HH
-#define SHIRO_PERMISSIONS_HH
+#ifndef SHIRO_SILENCE_COMMAND_HH
+#define SHIRO_SILENCE_COMMAND_HH
 
-#include <cstdint>
+#include <deque>
+#include <string>
 
-namespace shiro::permissions {
+#include "../../users/user.hh"
 
-    enum class perms : uint64_t {
-        // General permissions (<32)
+namespace shiro::commands {
 
-        // Default channel permissions
-        channel_console = 1LL << 31,
-
-        // Command permissions (>32)
-        cmd_announce = 1LL << 32,
-        cmd_clear = 1LL << 33,
-        cmd_clients = 1LL << 34,
-        cmd_rtx = 1LL << 35,
-        cmd_ban = 1LL << 36,
-        cmd_kick = 1LL << 37,
-        cmd_restrict = 1LL << 38,
-        cmd_silence = 1LL << 39
-    };
+    bool silence(std::deque<std::string> &args, std::shared_ptr<users::user> user, std::string channel);
 
 }
 
-#endif  // SHIRO_PERMISSIONS_HH
+#endif //SHIRO_SILENCE_COMMAND_HH

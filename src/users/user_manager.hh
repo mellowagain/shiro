@@ -43,6 +43,10 @@ namespace shiro::users::manager {
     std::shared_ptr<user> get_user_by_id(int32_t id);
     std::shared_ptr<user> get_user_by_token(const std::string &token);
 
+    // Works for both online and offline users
+    std::string get_username_by_id(int32_t id);
+    int32_t get_id_by_username(const std::string &username);
+
     size_t get_online_users();
 
 }

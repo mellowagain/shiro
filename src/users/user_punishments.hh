@@ -29,10 +29,10 @@ namespace shiro::users::punishments {
 
     void init();
 
-    void kick(int32_t user_id, const std::string &reason = "You have been kicked. Please login again.");
-    void silence(int32_t user_id, uint32_t duration, const std::string &reason = "Silenced (" + config::bot::name + " protection)");
-    void restrict(int32_t user_id, const std::string &reason = "Your account has been flagged.");
-    void ban(int32_t user_id, const std::string &reason = "Your account has been convicted.");
+    void kick(int32_t user_id, int32_t origin, const std::string &reason = "You have been kicked. Please login again.");
+    void silence(int32_t user_id, int32_t origin, uint32_t duration, const std::string &reason = "Silenced (" + config::bot::name + " protection)");
+    void restrict(int32_t user_id, int32_t origin, const std::string &reason = "Your account has been flagged.");
+    void ban(int32_t user_id, int32_t origin, const std::string &reason = "Your account has been convicted.");
 
     bool is_silenced(int32_t user_id);
     bool is_restricted(int32_t user_id);
