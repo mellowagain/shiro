@@ -71,7 +71,7 @@ FILE *shiro::beatmaps::helper::download(int32_t beatmap_id) {
     std::string filename = dir + utils::filesystem::preferred_separator + std::to_string(beatmap_id) + ".osu";
 
     if (fs::exists(filename))
-        return std::fopen(filename.c_str(), "r");
+        return std::fopen(filename.c_str(), "rb");
 
     CURL *curl = curl_easy_init();
     CURLcode status_code;
