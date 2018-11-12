@@ -92,7 +92,7 @@ void shiro::users::punishments::init() {
     });
 }
 
-void shiro::users::punishments::kick(int32_t user_id, const std::string &reason) {
+void shiro::users::punishments::kick(int32_t user_id, int32_t origin, const std::string &reason) {
     std::chrono::seconds seconds = std::chrono::duration_cast<std::chrono::seconds>(
             std::chrono::system_clock::now().time_since_epoch()
     );
@@ -109,13 +109,13 @@ void shiro::users::punishments::kick(int32_t user_id, const std::string &reason)
     ));
 
     std::shared_ptr<user> user = manager::get_user_by_id(user_id);
+    std::string username = manager::get_username_by_id(user_id);
+    std::string origin_username = manager::get_username_by_id(origin);
 
-    if (user == nullptr) {
-        LOG_F(INFO, "User %i has been kicked for %s.", user_id, reason.c_str());
+    LOG_F(INFO, "%s has been kicked for %s by %s.", username.c_str(), reason.c_str(), origin_username.c_str());
+
+    if (user == nullptr)
         return;
-    }
-
-    LOG_F(INFO, "%s has been kicked for %s.", user->presence.username.c_str(), reason.c_str());
 
     io::osu_writer writer;
 
@@ -125,7 +125,7 @@ void shiro::users::punishments::kick(int32_t user_id, const std::string &reason)
     user->queue.enqueue(writer);
 }
 
-void shiro::users::punishments::silence(int32_t user_id, uint32_t duration, const std::string &reason) {
+void shiro::users::punishments::silence(int32_t user_id, int32_t origin, uint32_t duration, const std::string &reason) {
     if (is_silenced(user_id))
         return;
 
@@ -146,13 +146,13 @@ void shiro::users::punishments::silence(int32_t user_id, uint32_t duration, cons
     ));
 
     std::shared_ptr<user> user = manager::get_user_by_id(user_id);
+    std::string username = manager::get_username_by_id(user_id);
+    std::string origin_username = manager::get_username_by_id(origin);
 
-    if (user == nullptr) {
-        LOG_F(INFO, "User %i has been silenced for %i seconds for %s.", user_id, duration, reason.c_str());
+    LOG_F(INFO, "%s has been silenced for %i seconds for %s by %s.", username.c_str(), duration, reason.c_str(), origin_username.c_str());
+
+    if (user == nullptr)
         return;
-    }
-
-    LOG_F(INFO, "%s has been silenced for %i seconds for %s.", user->presence.username.c_str(), duration, reason.c_str());
 
     io::osu_writer global_writer;
     global_writer.user_silenced(user_id);
@@ -175,7 +175,7 @@ void shiro::users::punishments::silence(int32_t user_id, uint32_t duration, cons
     user->queue.enqueue(writer);
 }
 
-void shiro::users::punishments::restrict(int32_t user_id, const std::string &reason) {
+void shiro::users::punishments::restrict(int32_t user_id, int32_t origin, const std::string &reason) {
     if (is_restricted(user_id))
         return;
 
@@ -195,13 +195,13 @@ void shiro::users::punishments::restrict(int32_t user_id, const std::string &rea
     ));
 
     std::shared_ptr<user> user = manager::get_user_by_id(user_id);
+    std::string username = manager::get_username_by_id(user_id);
+    std::string origin_username = manager::get_username_by_id(origin);
 
-    if (user == nullptr) {
-        LOG_F(INFO, "User %i has been restricted for %s.", user_id, reason.c_str());
+    LOG_F(INFO, "%s has been restricted for %s by %s.", username.c_str(), reason.c_str(), origin_username.c_str());
+
+    if (user == nullptr)
         return;
-    }
-
-    LOG_F(INFO, "%s has been restricted for %s.", user->presence.username.c_str(), reason.c_str());
 
     user->hidden = true;
 
@@ -229,7 +229,7 @@ void shiro::users::punishments::restrict(int32_t user_id, const std::string &rea
     }
 }
 
-void shiro::users::punishments::ban(int32_t user_id, const std::string &reason) {
+void shiro::users::punishments::ban(int32_t user_id, int32_t origin, const std::string &reason) {
     if (is_banned(user_id))
         return;
 
@@ -249,13 +249,13 @@ void shiro::users::punishments::ban(int32_t user_id, const std::string &reason) 
     ));
 
     std::shared_ptr<user> user = manager::get_user_by_id(user_id);
+    std::string username = manager::get_username_by_id(user_id);
+    std::string origin_username = manager::get_username_by_id(origin);
 
-    if (user == nullptr) {
-        LOG_F(INFO, "User %i has been banned for %s.", user_id, reason.c_str());
+    LOG_F(INFO, "%s has been banned for %s by %s.", username.c_str(), reason.c_str(), origin_username.c_str());
+
+    if (user == nullptr)
         return;
-    }
-
-    LOG_F(INFO, "%s has been banned for %s.", user->presence.username.c_str(), reason.c_str());
 
     io::osu_writer writer;
 
