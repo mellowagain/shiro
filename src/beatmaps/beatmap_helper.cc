@@ -101,5 +101,5 @@ FILE *shiro::beatmaps::helper::download(int32_t beatmap_id) {
     std::fwrite(output.c_str(), sizeof(char), output.length(), map_file);
     std::fclose(map_file);
 
-    return std::fopen(filename.c_str(), "r");
+    return std::fopen(filename.c_str(), "rb");
 }
