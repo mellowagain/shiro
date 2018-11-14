@@ -80,7 +80,7 @@ void shiro::database::setup() {
     db.execute(
            "CREATE TABLE IF NOT EXISTS `scores` "
            "(id INT PRIMARY KEY NOT NULL AUTO_INCREMENT, "
-           "beatmap_md5 VARCHAR(35) NOT NULL, hash VARCHAR(35) NOT NULL, user_id INT NOT NULL, rank VARCHAR(2) NOT NULL, "
+           "beatmap_md5 VARCHAR(35) NOT NULL, hash VARCHAR(35) NOT NULL, user_id INT NOT NULL, ranking VARCHAR(2) NOT NULL, "
            "score BIGINT NOT NULL, max_combo INT NOT NULL, fc BOOLEAN NOT NULL, mods INT NOT NULL, "
            "300_count INT NOT NULL, 100_count INT NOT NULL, 50_count INT NOT NULL, "
            "katus_count INT NOT NULL, gekis_count INT NOT NULL, miss_count INT NOT NULL, "

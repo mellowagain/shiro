@@ -32,7 +32,7 @@ namespace shiro::tables {
         object_struct(hash, sqlpp::varchar);
         object_struct(beatmap_md5, sqlpp::varchar);
         object_struct(user_id, sqlpp::integer);
-        object_struct(rank, sqlpp::varchar);
+        object_struct(ranking, sqlpp::varchar);
         object_struct(score, sqlpp::bigint);
         object_struct(max_combo, sqlpp::integer);
         object_struct(fc, sqlpp::boolean);
@@ -52,7 +52,7 @@ namespace shiro::tables {
     };
 
     struct scores : sqlpp::table_t<scores, scores_objects::id, scores_objects::hash,
-            scores_objects::beatmap_md5, scores_objects::user_id, scores_objects::rank, scores_objects::score, scores_objects::max_combo,
+            scores_objects::beatmap_md5, scores_objects::user_id, scores_objects::ranking, scores_objects::score, scores_objects::max_combo,
             scores_objects::fc, scores_objects::mods, scores_objects::_300_count, scores_objects::_100_count,
             scores_objects::_50_count, scores_objects::katus_count, scores_objects::gekis_count, scores_objects::miss_count,
             scores_objects::time, scores_objects::play_mode, scores_objects::passed, scores_objects::accuracy,

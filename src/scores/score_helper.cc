@@ -48,7 +48,7 @@ shiro::scores::score shiro::scores::helper::fetch_top_score_user(std::string bea
         s.hash = row.hash;
         s.beatmap_md5 = beatmap_md5sum;
 
-        s.rank = row.rank;
+        s.rank = row.ranking;
         s.total_score = row.score;
         s.max_combo = row.max_combo;
         s.pp = row.pp;
@@ -116,7 +116,7 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_all_scores(std::s
         s.hash = row.hash;
         s.beatmap_md5 = beatmap_md5sum;
 
-        s.rank = row.rank;
+        s.rank = row.ranking;
         s.total_score = row.score;
         s.max_combo = row.max_combo;
         s.pp = row.pp;
@@ -202,7 +202,7 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_country_scores(st
         s.hash = row.hash;
         s.beatmap_md5 = beatmap_md5sum;
 
-        s.rank = row.rank;
+        s.rank = row.ranking;
         s.total_score = row.score;
         s.max_combo = row.max_combo;
         s.pp = row.pp;
@@ -301,7 +301,7 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_mod_scores(std::s
         s.hash = row.hash;
         s.beatmap_md5 = beatmap_md5sum;
 
-        s.rank = row.rank;
+        s.rank = row.ranking;
         s.total_score = row.score;
         s.max_combo = row.max_combo;
         s.pp = row.pp;
@@ -390,7 +390,7 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_friend_scores(std
         s.hash = row.hash;
         s.beatmap_md5 = beatmap_md5sum;
 
-        s.rank = row.rank;
+        s.rank = row.ranking;
         s.total_score = row.score;
         s.max_combo = row.max_combo;
         s.pp = row.pp;
@@ -494,7 +494,7 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_user_scores(std::
         s.hash = row.hash;
         s.beatmap_md5 = beatmap_md5sum;
 
-        s.rank = row.rank;
+        s.rank = row.ranking;
         s.total_score = row.score;
         s.max_combo = row.max_combo;
         s.pp = row.pp;
@@ -557,7 +557,7 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_all_user_scores(i
         s.hash = row.hash;
         s.beatmap_md5 = row.beatmap_md5;
 
-        s.rank = row.rank;
+        s.rank = row.ranking;
         s.total_score = row.score;
         s.max_combo = row.max_combo;
         s.pp = row.pp;
@@ -611,7 +611,7 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_top100_user(shiro
         s.hash = row.hash;
         s.beatmap_md5 = row.beatmap_md5;
 
-        s.rank = row.rank;
+        s.rank = row.ranking;
         s.total_score = row.score;
         s.max_combo = row.max_combo;
         s.pp = row.pp;
@@ -693,7 +693,7 @@ shiro::scores::score shiro::scores::helper::get_score(int32_t id) {
         s.hash = row.hash;
         s.beatmap_md5 = row.beatmap_md5;
 
-        s.rank = row.rank;
+        s.rank = row.ranking;
         s.total_score = row.score;
         s.max_combo = row.max_combo;
         s.pp = row.pp;
