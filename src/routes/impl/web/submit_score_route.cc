@@ -367,7 +367,7 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
             score_table.user_id = score.user_id,
             score_table.hash = score.hash,
             score_table.beatmap_md5 = score.beatmap_md5,
-            score_table.rank = score.rank,
+            score_table.ranking = score.rank,
             score_table.score = score.total_score,
             score_table.max_combo = score.max_combo,
             score_table.pp = score.pp,
