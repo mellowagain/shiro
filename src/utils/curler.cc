@@ -32,11 +32,11 @@ shiro::utils::curler::curler() {
 }
 
 bool shiro::utils::curler::valid() {
-    return c != nullptr;
+    return curl != nullptr;
 }
 
 shiro::utils::curler::~curler() {
-    curl_easy_cleanup(c);
+    curl_easy_cleanup(curl);
 }
 
 void shiro::utils::curler::set_callback(void *callback) {

@@ -22,7 +22,7 @@
 
 static std::shared_ptr<cpptoml::table> config_file = nullptr;
 
-std::string shiro::config::curl::user_agent = "";
+std::string shiro::config::curl::user_agent = "shiro (https://github.com/Marc3842h/shiro/)";
 bool shiro::config::curl::cert_verify = true;
 
 void shiro::config::curl::parse() {
