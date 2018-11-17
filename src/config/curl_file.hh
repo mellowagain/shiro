@@ -27,6 +27,7 @@ namespace shiro::config::curl {
     extern bool cert_verify;
 
     void parse();
+
 }
 
 #endif // SHIRO_CURL_FILE_HH

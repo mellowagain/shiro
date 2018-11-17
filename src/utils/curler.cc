@@ -16,20 +16,19 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "curler.hh"
-
-#include <curl/curl.h>
 #include <fstream>
-
-#include "../thirdparty/loguru.hh"
+#include <curl/curl.h>
 
 #include "../config/curl_file.hh"
+#include "../thirdparty/loguru.hh"
+
+#include "curler.hh"
 
 shiro::utils::curler::curler() {
-    c = curl_easy_init();
+    curl = curl_easy_init();
 
-    curl_easy_setopt(c, CURLOPT_SSL_VERIFYPEER, shiro::config::curl::cert_verify);
-    curl_easy_setopt(c, CURLOPT_USERAGENT, shiro::config::curl::user_agent.c_str());
+    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, config::curl::cert_verify);
+    curl_easy_setopt(curl, CURLOPT_USERAGENT, config::curl::user_agent.c_str());
 }
 
 bool shiro::utils::curler::valid() {
@@ -41,18 +40,18 @@ shiro::utils::curler::~curler() {
 }
 
 void shiro::utils::curler::set_callback(void *callback) {
-    curl_easy_setopt(c, CURLOPT_WRITEFUNCTION, callback);
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, callback);
 }
 
 void shiro::utils::curler::set_output(void *output) {
-    curl_easy_setopt(c, CURLOPT_WRITEDATA, output);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, output);
 }
 
 void shiro::utils::curler::set_user_agent(const std::string &user_agent) {
-    curl_easy_setopt(c, CURLOPT_USERAGENT, user_agent.c_str());
+    curl_easy_setopt(curl, CURLOPT_USERAGENT, user_agent.c_str());
 }
 
 CURLcode shiro::utils::curler::perform(const std::string &url) {
-    curl_easy_setopt(c, CURLOPT_URL, url.c_str());
-    return curl_easy_perform(c);
+    curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+    return curl_easy_perform(curl);
 }

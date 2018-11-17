@@ -19,7 +19,6 @@
 #include <algorithm>
 #include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
-#include <curl/curl.h>
 
 #include "../thirdparty/json.hh"
 #include "../thirdparty/loguru.hh"
@@ -40,7 +39,7 @@ shiro::geoloc::location_info shiro::geoloc::get_location(const std::string &ip_a
         // Not in cache, send request to Gitea API and then store result in cache
     }
 
-    shiro::utils::curler curl;
+    utils::curler curl;
     CURLcode status_code;
 
     std::string output;

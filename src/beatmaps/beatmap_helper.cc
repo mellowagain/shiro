@@ -21,9 +21,8 @@
 #include <fstream>
 
 #include "../thirdparty/loguru.hh"
-#include "beatmap_helper.hh"
-
 #include "../utils/curler.hh"
+#include "beatmap_helper.hh"
 
 static std::string dir = fs::current_path().u8string() + shiro::utils::filesystem::preferred_separator + "maps";
 
@@ -74,18 +73,18 @@ FILE *shiro::beatmaps::helper::download(int32_t beatmap_id) {
     if (fs::exists(filename))
         return std::fopen(filename.c_str(), "rb");
 
-    shiro::utils::curler c;
+    utils::curler curl;
     CURLcode status_code;
 
     std::string output;
 
-    if (c.valid()) {
+    if (curl.valid()) {
         char buffer[512];
         std::snprintf(buffer, sizeof(buffer), "https://old.ppy.sh/osu/%i", beatmap_id);
 
-        c.set_callback(callback);
-        c.set_output(&output);
-        status_code = c.perform(buffer);
+        curl.set_callback(callback);
+        curl.set_output(&output);
+        status_code = curl.perform(buffer);
 
         if (status_code != CURLE_OK) {
             LOG_F(ERROR, "Received invalid response from Bancho API: %s.", curl_easy_strerror(status_code));

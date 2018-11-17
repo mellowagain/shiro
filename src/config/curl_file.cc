@@ -16,15 +16,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "curl_file.hh"
-
 #include "../thirdparty/cpptoml.hh"
 #include "../thirdparty/loguru.hh"
+#include "curl_file.hh"
 
 static std::shared_ptr<cpptoml::table> config_file = nullptr;
 
-std::string shiro::config::curl::user_agent;
-bool shiro::config::curl::cert_verify;
+std::string shiro::config::curl::user_agent = "";
+bool shiro::config::curl::cert_verify = true;
 
 void shiro::config::curl::parse() {
     if (config_file != nullptr)

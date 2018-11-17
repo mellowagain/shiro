@@ -27,9 +27,9 @@
 #include "../thirdparty/json.hh"
 #include "../thirdparty/loguru.hh"
 #include "../shiro.hh"
+#include "../utils/curler.hh"
 #include "beatmap.hh"
 #include "beatmap_helper.hh"
-#include "../utils/curler.hh"
 
 void shiro::beatmaps::beatmap::fetch(bool force_peppster) {
     if (this->beatmapset_id == -1) {
@@ -101,7 +101,7 @@ bool shiro::beatmaps::beatmap::fetch_api() {
     // For convenience
     using json = nlohmann::json;
 
-    shiro::utils::curler curl;
+    utils::curler curl;
     CURLcode status_code;
 
     std::string output;

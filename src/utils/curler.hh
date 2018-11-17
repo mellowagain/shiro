@@ -20,12 +20,13 @@
 #define SHIRO_CURL_HH
 
 #include <string>
-
 #include <curl/curl.h>
 
 namespace shiro::utils {
+
     class curler {
-        CURL *c;
+
+        CURL *curl;
 
     public:
         curler();
@@ -37,20 +38,22 @@ namespace shiro::utils {
 
         template <typename T>
         void set_callback(T c) {
-            set_callback((void *) c);
+            set_callback((void*) c);
         }
 
         void set_output(void *o);
 
         template <typename T>
         void set_output(T c) {
-            set_output((void *) c);
+            set_output((void*) c);
         }
 
         void set_user_agent(const std::string &user_agent);
 
         CURLcode perform(const std::string &url);
+
     };
+
 }
 
 #endif // SHIRO_CURL_HH
