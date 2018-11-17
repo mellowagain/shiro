@@ -38,6 +38,10 @@ void shiro::io::osu_writer::protocol_negotiation(int32_t protocol_version) {
     this->write(packet_id::out_protocol_negotiation, serializable(protocol_version));
 }
 
+void shiro::io::osu_writer::bancho_restart(int32_t millis) {
+    this->write(packet_id::out_restart, serializable(millis));
+}
+
 void shiro::io::osu_writer::channel_listing_complete() {
     this->write(packet_id::out_channel_listing_complete);
 }

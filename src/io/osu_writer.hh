@@ -68,6 +68,8 @@ namespace shiro::io {
 
         void protocol_negotiation(int32_t protocol_version);
 
+        void bancho_restart(int32_t millis);
+
         void channel_listing_complete();
         void channel_available(layouts::channel channel);
         void channel_join(std::string channel_name);

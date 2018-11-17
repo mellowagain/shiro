@@ -1,0 +1,6 @@
+# API configuration file for shiro
+
+[deploy]
+enabled = false
+token = ""
+command = "systemctl restart shiro"
