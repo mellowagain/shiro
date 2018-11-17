@@ -24,11 +24,12 @@
 
 namespace shiro::utils::thread_safe {
 
-    class simple_lock { 
-        std::recursive_mutex &m;
+    template <typename M = std::recursive_mutex>
+    class simple_lock {
+        M &m;
 
     public:
-        simple_lock(std::recursive_mutex &m)
+        simple_lock(M &m)
             : m(m) {
             m.lock();
         }
@@ -48,13 +49,13 @@ namespace shiro::utils::thread_safe {
         }
     };
 
-    template <typename T>
+    template <typename T, typename M = std::recursive_mutex>
     class locked_iterable {
         T &v;
-        simple_lock l;
+        simple_lock<M> l;
 
     public:
-        locked_iterable(T &v, std::recursive_mutex &m)
+        locked_iterable(T &v, M &m)
             : l(m)
             , v(v) {
         }
@@ -77,10 +78,10 @@ namespace shiro::utils::thread_safe {
     };
 
     // clang-format off
-    template <typename T>
+    template <typename T, typename M = std::recursive_mutex>
     class locked_object {
         T v;
-        std::recursive_mutex m;
+        M m;
 
     public:
         // Forward all args to the enclosed type
@@ -93,7 +94,7 @@ namespace shiro::utils::thread_safe {
         }
 
         [[nodiscard]]
-        std::pair<T &, simple_lock> get() {
+        std::pair<T &, simple_lock<M>> get() {
 			auto p = std::make_pair(std::ref(v), simple_lock(m));
 
 			return p;
