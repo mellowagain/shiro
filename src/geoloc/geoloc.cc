@@ -24,6 +24,7 @@
 #include "../thirdparty/json.hh"
 #include "../thirdparty/loguru.hh"
 #include "../utils/string_utils.hh"
+#include "../utils/curler.hh"
 #include "country_ids.hh"
 #include "geoloc.hh"
 
@@ -39,22 +40,19 @@ shiro::geoloc::location_info shiro::geoloc::get_location(const std::string &ip_a
         // Not in cache, send request to Gitea API and then store result in cache
     }
 
-    CURL *curl = curl_easy_init();
+    shiro::utils::curler curl;
     CURLcode status_code;
 
     std::string output;
 
-    if (curl != nullptr) {
+    if (curl.valid()) {
         char buffer[512];
         std::snprintf(buffer, sizeof(buffer), "https://ip.zxq.co/%s", ip_address.c_str());
 
-        curl_easy_setopt(curl, CURLOPT_URL, buffer);
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, callback);
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &output);
-        curl_easy_setopt(curl, CURLOPT_USERAGENT, "shiro (https://github.com/Marc3842h/shiro)");
+        curl.set_callback(callback);
+        curl.set_output(&output);
 
-        status_code = curl_easy_perform(curl);
-        curl_easy_cleanup(curl);
+        status_code = curl.perform(buffer);
 
         if (status_code != CURLE_OK) {
             LOG_F(ERROR, "Received invalid response from Gitea API: %s.", curl_easy_strerror(status_code));

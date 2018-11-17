@@ -29,6 +29,7 @@
 #include "../shiro.hh"
 #include "beatmap.hh"
 #include "beatmap_helper.hh"
+#include "../utils/curler.hh"
 
 void shiro::beatmaps::beatmap::fetch(bool force_peppster) {
     if (this->beatmapset_id == -1) {
@@ -100,22 +101,21 @@ bool shiro::beatmaps::beatmap::fetch_api() {
     // For convenience
     using json = nlohmann::json;
 
-    CURL *curl = curl_easy_init();
+    shiro::utils::curler curl;
     CURLcode status_code;
 
     std::string output;
 
-    if (curl != nullptr) {
+    if (curl.valid()) {
         char buffer[512];
 
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, callback);
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &output);
-        curl_easy_setopt(curl, CURLOPT_USERAGENT, "Mozilla/5.0 (X11; Linux x86_64; rv:61.0) Gecko/20100101 Firefox/61.0"); // shiro (https://github.com/Marc3842h/shiro)
+        curl.set_callback(callback);
+        curl.set_output(&output);
 
         if (this->beatmapset_id == 0) {
             std::snprintf(buffer, sizeof(buffer), "https://old.ppy.sh/api/get_beatmaps?k=%s&b=%i", config::bancho::api_key.c_str(), this->beatmap_id);
-            curl_easy_setopt(curl, CURLOPT_URL, buffer);
-            status_code = curl_easy_perform(curl);
+
+            status_code = curl.perform(buffer);
 
             if (status_code != CURLE_OK) {
                 LOG_F(ERROR, "Received invalid response from Bancho API: %s.", curl_easy_strerror(status_code));
@@ -149,10 +149,7 @@ bool shiro::beatmaps::beatmap::fetch_api() {
 
         std::snprintf(buffer, sizeof(buffer), "https://old.ppy.sh/api/get_beatmaps?k=%s&s=%i", config::bancho::api_key.c_str(), this->beatmapset_id);
 
-        curl_easy_setopt(curl, CURLOPT_URL, buffer);
-
-        status_code = curl_easy_perform(curl);
-        curl_easy_cleanup(curl);
+        status_code = curl.perform(buffer);
 
         if (status_code != CURLE_OK) {
             LOG_F(ERROR, "Received invalid response from Bancho API: %s.", curl_easy_strerror(status_code));

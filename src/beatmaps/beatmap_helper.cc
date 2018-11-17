@@ -18,11 +18,12 @@
 
 #include "../utils/filesystem.hh"
 
-#include <curl/curl.h>
 #include <fstream>
 
 #include "../thirdparty/loguru.hh"
 #include "beatmap_helper.hh"
+
+#include "../utils/curler.hh"
 
 static std::string dir = fs::current_path().u8string() + shiro::utils::filesystem::preferred_separator + "maps";
 
@@ -73,22 +74,18 @@ FILE *shiro::beatmaps::helper::download(int32_t beatmap_id) {
     if (fs::exists(filename))
         return std::fopen(filename.c_str(), "rb");
 
-    CURL *curl = curl_easy_init();
+    shiro::utils::curler c;
     CURLcode status_code;
 
     std::string output;
 
-    if (curl != nullptr) {
+    if (c.valid()) {
         char buffer[512];
         std::snprintf(buffer, sizeof(buffer), "https://old.ppy.sh/osu/%i", beatmap_id);
 
-        curl_easy_setopt(curl, CURLOPT_URL, buffer);
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, callback);
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &output);
-        curl_easy_setopt(curl, CURLOPT_USERAGENT, "Mozilla/5.0 (X11; Linux x86_64; rv:61.0) Gecko/20100101 Firefox/61.0"); // shiro (https://github.com/Marc3842h/shiro)
-
-        status_code = curl_easy_perform(curl);
-        curl_easy_cleanup(curl);
+        c.set_callback(callback);
+        c.set_output(&output);
+        status_code = c.perform(buffer);
 
         if (status_code != CURLE_OK) {
             LOG_F(ERROR, "Received invalid response from Bancho API: %s.", curl_easy_strerror(status_code));
