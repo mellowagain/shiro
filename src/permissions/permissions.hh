@@ -42,4 +42,4 @@ namespace shiro::permissions {
 
 }
 
-#endif  // SHIRO_PERMISSIONS_HH
+#endif // SHIRO_PERMISSIONS_HH

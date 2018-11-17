@@ -97,4 +97,4 @@ namespace shiro::tables {
 
 }
 
-#endif  // SHIRO_USER_TABLE_HH
+#endif // SHIRO_USER_TABLE_HH

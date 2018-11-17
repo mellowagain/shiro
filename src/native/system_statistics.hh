@@ -49,4 +49,4 @@ namespace shiro::native::system_stats {
 
 }
 
-#endif  // SHIRO_SYSTEM_STATISTICS_HH
+#endif // SHIRO_SYSTEM_STATISTICS_HH

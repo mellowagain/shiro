@@ -75,4 +75,4 @@ namespace shiro::utils::clients {
 
 }
 
-#endif  // SHIRO_OSU_CLIENT_HH
+#endif // SHIRO_OSU_CLIENT_HH

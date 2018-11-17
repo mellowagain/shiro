@@ -45,4 +45,4 @@ namespace shiro::geoloc {
 
 }
 
-#endif  // SHIRO_LOCATION_INFO_HH
+#endif // SHIRO_LOCATION_INFO_HH

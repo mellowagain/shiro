@@ -76,4 +76,4 @@ namespace shiro::tables {
 
 }
 
-#endif  // SHIRO_SCORE_TABLE_HH
+#endif // SHIRO_SCORE_TABLE_HH

@@ -55,4 +55,4 @@ namespace shiro::tables {
 
 }
 
-#endif  // SHIRO_ROLES_TABLE_HH
+#endif // SHIRO_ROLES_TABLE_HH

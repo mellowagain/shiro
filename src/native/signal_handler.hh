@@ -25,4 +25,4 @@ namespace shiro::native::signal_handler {
 
 }
 
-#endif  // SHIRO_SIGNAL_HANDLER_HH
+#endif // SHIRO_SIGNAL_HANDLER_HH

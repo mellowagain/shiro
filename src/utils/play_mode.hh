@@ -36,4 +36,4 @@ namespace shiro::utils {
 
 }
 
-#endif  //SHIRO_PLAY_MODE_HH
+#endif //SHIRO_PLAY_MODE_HH

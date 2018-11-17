@@ -35,4 +35,4 @@ namespace shiro::utils {
 
 }
 
-#endif  // SHIRO_OSU_PERMISSIONS_HH
+#endif // SHIRO_OSU_PERMISSIONS_HH

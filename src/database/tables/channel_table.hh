@@ -60,4 +60,4 @@ namespace shiro::tables {
 
 }
 
-#endif  // SHIRO_CHANNEL_TABLE_HH
+#endif // SHIRO_CHANNEL_TABLE_HH

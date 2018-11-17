@@ -62,4 +62,4 @@ namespace shiro::tables {
 
 }
 
-#endif  // SHIRO_PUNISHMENTS_TABLE_HH
+#endif // SHIRO_PUNISHMENTS_TABLE_HH

@@ -40,4 +40,4 @@
 
 #define object_struct(name, type) object_detailed_struct(#name, name, type)
 
-#endif  // SHIRO_COMMON_TABLES_HH
+#endif // SHIRO_COMMON_TABLES_HH

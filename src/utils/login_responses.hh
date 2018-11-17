@@ -36,4 +36,4 @@ namespace shiro::utils {
 
 }
 
-#endif  // SHIRO_LOGIN_RESPONSES_HH
+#endif // SHIRO_LOGIN_RESPONSES_HH

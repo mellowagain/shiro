@@ -32,4 +32,4 @@ namespace shiro::utils {
 
 }
 
-#endif  // SHIRO_PUNISHMENT_TYPE_HH
+#endif // SHIRO_PUNISHMENT_TYPE_HH

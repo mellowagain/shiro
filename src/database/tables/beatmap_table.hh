@@ -75,4 +75,4 @@ namespace shiro::tables {
 
 }
 
-#endif  // SHIRO_BEATMAP_TABLE_HH
+#endif // SHIRO_BEATMAP_TABLE_HH
