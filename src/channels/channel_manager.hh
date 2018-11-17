@@ -24,10 +24,11 @@
 #include "../io/layouts/channel/channel.hh"
 #include "../io/osu_writer.hh"
 #include "../users/user.hh"
+#include "../utils/thread_safe.hh"
 
 namespace shiro::channels::manager {
 
-    extern std::unordered_map<io::layouts::channel, std::vector<std::shared_ptr<users::user>>> channels;
+    extern std::unordered_map<io::layouts::channel, shiro::utils::thread_safe::locked_vector<std::shared_ptr<users::user>>> channels;
 
     void init();
 

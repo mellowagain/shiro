@@ -40,9 +40,9 @@ void shiro::handler::presence::request_all::handle(shiro::io::osu_packet &in, sh
     }
 
     std::vector<int32_t> online_users;
-    online_users.reserve(users::manager::online_users.size());
+    online_users.reserve(users::manager::get_online_users());
 
-    for (const std::shared_ptr<users::user> &online_user : users::manager::online_users) {
+    for (const std::shared_ptr<users::user> &online_user : users::manager::online_users.iterable()) {
         if (online_user->hidden)
             continue;
 

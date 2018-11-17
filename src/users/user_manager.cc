@@ -22,7 +22,8 @@
 #include "../thirdparty/loguru.hh"
 #include "user_manager.hh"
 
-std::vector<std::shared_ptr<shiro::users::user>> shiro::users::manager::online_users;
+shiro::utils::thread_safe::locked_vector<std::shared_ptr<shiro::users::user>> shiro::users::manager::online_users;
+//std::vector<std::shared_ptr<shiro::users::user>> shiro::users::manager::online_users;
 
 void shiro::users::manager::login_user(std::shared_ptr<shiro::users::user> user) {
     if (user == nullptr || user->token.empty())
@@ -31,7 +32,9 @@ void shiro::users::manager::login_user(std::shared_ptr<shiro::users::user> user)
     if (is_online(user))
         logout_user(user);
 
-    online_users.emplace_back(user);
+    auto [users, lock] = online_users.get();
+
+    users.emplace_back(user);
 
     LOG_F(INFO, "User %s logged in successfully.", user->presence.username.c_str());
 }
@@ -40,13 +43,14 @@ void shiro::users::manager::logout_user(std::shared_ptr<shiro::users::user> user
     if (user == nullptr || !is_online(user))
         return;
 
-    auto iterator = std::find(online_users.begin(), online_users.end(), user);
+    auto [users, lock] = online_users.get();
 
-    if (iterator == online_users.end())
+    auto iterator = std::find(users.begin(), users.end(), user);
+
+    if (iterator == users.end())
         return;
 
-    ptrdiff_t index = std::distance(online_users.begin(), iterator);
-    online_users.erase(online_users.begin() + index);
+	users.erase(iterator);
 
     LOG_F(INFO, "User %s logged out successfully.", user->presence.username.c_str());
 }
@@ -57,7 +61,7 @@ void shiro::users::manager::logout_user(int32_t user_id) {
 
     std::shared_ptr<user> target_user = nullptr;
 
-    for (const std::shared_ptr<user> &user : online_users) {
+    for (const std::shared_ptr<user> &user : online_users.iterable()) {
         if (user->user_id == user_id) {
             target_user = user;
             break;
@@ -74,11 +78,12 @@ bool shiro::users::manager::is_online(std::shared_ptr<shiro::users::user> user) 
     if (user == nullptr)
         return false;
 
-    return std::find(online_users.begin(), online_users.end(), user) != online_users.end();
+    auto [users, lock] = online_users.get();
+    return std::find(users.begin(), users.end(), user) != users.end();
 }
 
 bool shiro::users::manager::is_online(int32_t user_id) {
-    for (const std::shared_ptr<user> &user : online_users) {
+    for (const std::shared_ptr<user> &user : online_users.iterable()) {
         if (user->user_id == user_id)
             return true;
     }
@@ -90,7 +95,7 @@ bool shiro::users::manager::is_online(const std::string &token) {
     if (token.empty())
         return false;
 
-    for (const std::shared_ptr<user> &user : online_users) {
+    for (const std::shared_ptr<user> &user : online_users.iterable()) {
         if (user->token == token)
             return true;
     }
@@ -102,7 +107,7 @@ std::shared_ptr<shiro::users::user> shiro::users::manager::get_user_by_username(
     if (username.empty())
         return nullptr;
 
-    for (const std::shared_ptr<user> &user : online_users) {
+    for (const std::shared_ptr<user> &user : online_users.iterable()) {
         if (user->presence.username == username)
             return user;
     }
@@ -114,7 +119,7 @@ std::shared_ptr<shiro::users::user> shiro::users::manager::get_user_by_id(int32_
     if (!is_online(id))
         return nullptr;
 
-    for (const std::shared_ptr<user> &user : online_users) {
+    for (const std::shared_ptr<user> &user : online_users.iterable()) {
         if (user->user_id == id)
             return user;
     }
@@ -129,7 +134,7 @@ std::shared_ptr<shiro::users::user> shiro::users::manager::get_user_by_token(con
     if (!is_online(token))
         return nullptr;
 
-    for (const std::shared_ptr<user> &user : online_users) {
+    for (const std::shared_ptr<user> &user : online_users.iterable()) {
         if (user->token == token)
             return user;
     }
@@ -144,7 +149,7 @@ std::string shiro::users::manager::get_username_by_id(int32_t id) {
         return user->presence.username;
 
     sqlpp::mysql::connection db(db_connection->get_config());
-    const tables::users user_table {};
+    const tables::users user_table{};
 
     auto result = db(select(all_of(user_table)).from(user_table).where(user_table.id == id));
     bool empty = is_query_empty(result);
@@ -166,7 +171,7 @@ int32_t shiro::users::manager::get_id_by_username(const std::string &username) {
         return user->user_id;
 
     sqlpp::mysql::connection db(db_connection->get_config());
-    const tables::users user_table {};
+    const tables::users user_table{};
 
     auto result = db(select(all_of(user_table)).from(user_table).where(user_table.username == username));
     bool empty = is_query_empty(result);
@@ -182,5 +187,6 @@ int32_t shiro::users::manager::get_id_by_username(const std::string &username) {
 }
 
 size_t shiro::users::manager::get_online_users() {
-    return online_users.size();
+    auto users = online_users.non_locked_get();
+    return users.size();
 }

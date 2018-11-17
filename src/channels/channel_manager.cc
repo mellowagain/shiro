@@ -24,9 +24,10 @@
 #include "../permissions/role_manager.hh"
 #include "../thirdparty/loguru.hh"
 #include "../shiro.hh"
+#include "../utils/thread_safe.hh"
 #include "channel_manager.hh"
 
-std::unordered_map<shiro::io::layouts::channel, std::vector<std::shared_ptr<shiro::users::user>>> shiro::channels::manager::channels;
+std::unordered_map<shiro::io::layouts::channel, shiro::utils::thread_safe::locked_vector<std::shared_ptr<shiro::users::user>>> shiro::channels::manager::channels;
 
 void shiro::channels::manager::init() {
     if (!channels.empty())
@@ -57,15 +58,14 @@ void shiro::channels::manager::init() {
             ).where(channel_table.id == row.id));
         }
 
-        channels.insert(std::make_pair<io::layouts::channel, std::vector<std::shared_ptr<users::user>>>(
-                io::layouts::channel(row.id, row.auto_join, row.hidden, name, row.description, 0, row.read_only, row.permission),
-                std::vector<std::shared_ptr<users::user>>()
-        ));
+        channels.insert(std::make_pair(
+            io::layouts::channel(row.id, row.auto_join, row.hidden, name, row.description, 0, row.read_only, row.permission),
+            shiro::utils::thread_safe::locked_vector<std::shared_ptr<users::user>>()));
     }
 }
 
 void shiro::channels::manager::write_channels(shiro::io::osu_writer &buf, std::shared_ptr<shiro::users::user> user, bool first) {
-    for (auto &[channel, users] : channels) {
+    for (auto &[channel, locked_users] : channels) {
         if (channel.hidden || !has_permissions(user, channel.id))
             continue;
 
@@ -74,12 +74,13 @@ void shiro::channels::manager::write_channels(shiro::io::osu_writer &buf, std::s
         channel_layout.auto_join = channel.auto_join;
         channel_layout.name = channel.name;
         channel_layout.description = channel.description;
-        channel_layout.user_count = users.size();
+        channel_layout.user_count = locked_users.non_locked_get().size();
 
         buf.channel_available(channel_layout);
 
         if (channel.auto_join && first) {
             buf.channel_join(channel.name);
+            auto [users, lock] = locked_users.get();
             users.emplace_back(user);
         }
     }
@@ -89,10 +90,11 @@ bool shiro::channels::manager::join_channel(uint32_t channel_id, std::shared_ptr
     if (in_channel(channel_id, user))
         leave_channel(channel_id, std::move(user));
 
-    for (auto &[channel, users] : channels) {
+    for (auto &[channel, locked_users] : channels) {
         if (channel.id == channel_id || !has_permissions(user, channel.id))
             continue;
 
+        auto [users, lock] = locked_users.get();
         users.emplace_back(user);
         return true;
     }
@@ -104,7 +106,9 @@ bool shiro::channels::manager::leave_channel(uint32_t channel_id, std::shared_pt
     if (!in_channel(channel_id, user))
         return true;
 
-    for (auto &[channel, users] : channels) {
+    for (auto &[channel, locked_users] : channels) {
+        auto [users, lock] = locked_users.get();
+
         if (channel.id == channel_id || !has_permissions(user, channel.id))
             continue;
 
@@ -113,8 +117,7 @@ bool shiro::channels::manager::leave_channel(uint32_t channel_id, std::shared_pt
         if (iterator == users.end())
             return false;
 
-        ptrdiff_t index = std::distance(users.begin(), iterator);
-        users.erase(users.begin() + index);
+        users.erase(iterator);
         return true;
     }
 
@@ -122,7 +125,8 @@ bool shiro::channels::manager::leave_channel(uint32_t channel_id, std::shared_pt
 }
 
 bool shiro::channels::manager::in_channel(uint32_t channel_id, const std::shared_ptr<shiro::users::user> &user) {
-    for (const auto &[channel, users] : channels) {
+    for (auto &[channel, locked_users] : channels) {
+        auto [users, lock] = locked_users.get();
         if (channel.id == channel_id)
             return std::find(users.begin(), users.end(), user) != users.end();
     }
@@ -131,9 +135,9 @@ bool shiro::channels::manager::in_channel(uint32_t channel_id, const std::shared
 }
 
 std::vector<std::shared_ptr<shiro::users::user>> shiro::channels::manager::get_users_in_channel(const std::string &channel_name) {
-    for (const auto &[channel, users] : channels) {
+    for (auto &[channel, locked_users] : channels) {
         if (channel.name == channel_name)
-            return users;
+            return locked_users.get().first;
     }
 
     return {};
@@ -169,7 +173,7 @@ void shiro::channels::manager::insert_if_not_exists(std::string name, std::strin
 }
 
 bool shiro::channels::manager::has_permissions(std::shared_ptr<shiro::users::user> user, uint32_t channel_id) {
-    for (auto &[channel, users] : channels) {
+    for (auto &[channel, locked_users] : channels) {
         if (channel.id != channel_id)
             continue;
 
@@ -192,7 +196,7 @@ bool shiro::channels::manager::is_read_only(uint32_t channel_id) {
 }
 
 bool shiro::channels::manager::is_read_only(std::string channel_name) {
-    for (const auto &[channel, users] : channels) {
+    for (const auto &[channel, locked_users] : channels) {
         if (channel.name == channel_name)
             return channel.read_only;
     }

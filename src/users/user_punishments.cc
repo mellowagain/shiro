@@ -159,7 +159,7 @@ void shiro::users::punishments::silence(int32_t user_id, int32_t origin, uint32_
     io::osu_writer global_writer;
     global_writer.user_silenced(user_id);
 
-    for (const std::shared_ptr<users::user> &online_user : users::manager::online_users) {
+    for (const std::shared_ptr<users::user> &online_user : users::manager::online_users.iterable()) {
         if (online_user->user_id == user_id)
             continue;
 
@@ -224,7 +224,8 @@ void shiro::users::punishments::restrict(int32_t user_id, int32_t origin, const 
 
     writer.user_quit(quit);
 
-    for (const std::shared_ptr<users::user> &online_user : users::manager::online_users) {
+    auto [users, lock] = users::manager::online_users.get();
+    for (const std::shared_ptr<users::user> &online_user : users) {
         if (online_user->user_id == user_id || online_user->user_id == 1)
             continue;
 

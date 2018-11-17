@@ -55,11 +55,13 @@ bool shiro::commands::announce(std::deque<std::string> &args, std::shared_ptr<sh
         return true;
     }
 
-    for (std::shared_ptr<users::user> &online_user : users::manager::online_users) {
-        if (online_user->user_id == 1)
-            continue;
+    {
+        for (std::shared_ptr<users::user> &online_user : users::manager::online_users.iterable()) {
+            if (online_user->user_id == 1)
+                continue;
 
-        online_user->queue.enqueue(writer);
+            online_user->queue.enqueue(writer);
+        }
     }
 
     utils::bot::respond("Successfully sent a announcement to everyone.", user, channel, true);

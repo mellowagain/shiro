@@ -29,7 +29,7 @@ void shiro::users::activity::init() {
         sqlpp::mysql::connection db(db_connection->get_config());
         const tables::users user_table {};
 
-        for (const std::shared_ptr<users::user> &user : users::manager::online_users) {
+        for (const std::shared_ptr<users::user> &user : users::manager::online_users.iterable()) {
             if (user == nullptr || user->user_id == 1)
                 continue;
 

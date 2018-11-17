@@ -46,7 +46,7 @@ bool shiro::commands::clear(std::deque<std::string> &args, std::shared_ptr<shiro
 
     io::osu_writer writer;
 
-    for (const std::shared_ptr<users::user> &online_user : users::manager::online_users) {
+    for (const std::shared_ptr<users::user> &online_user : users::manager::online_users.iterable()) {
         writer.user_silenced(online_user->user_id);
     }
 
@@ -56,7 +56,7 @@ bool shiro::commands::clear(std::deque<std::string> &args, std::shared_ptr<shiro
         return true;
     }
 
-    for (const std::shared_ptr<users::user> &online_user : users::manager::online_users) {
+    for (const std::shared_ptr<users::user> &online_user : users::manager::online_users.iterable()) {
         if (online_user->user_id == 1)
             continue;
 

@@ -27,13 +27,12 @@ void shiro::users::timeout::init() {
     scheduler.Schedule(30s, [](tsc::TaskContext ctx) {
         std::vector<io::osu_writer> logout_queue;
 
-        for (const std::shared_ptr<users::user> &user : users::manager::online_users) {
+        for (const std::shared_ptr<users::user> &user : users::manager::online_users.iterable()) {
             if (user == nullptr || user->user_id == 1)
                 continue;
 
             std::chrono::seconds now = std::chrono::duration_cast<std::chrono::seconds>(
-                    std::chrono::system_clock::now().time_since_epoch()
-            );
+                std::chrono::system_clock::now().time_since_epoch());
 
             if (std::chrono::duration_cast<std::chrono::seconds>(now - user->last_ping).count() >= 30) {
                 LOG_F(WARNING, "User %s didn't send a ping in 30 seconds, timing out.", user->presence.username.c_str());
@@ -51,7 +50,7 @@ void shiro::users::timeout::init() {
             }
         }
 
-        for (const std::shared_ptr<users::user> &user : users::manager::online_users) {
+        for (const std::shared_ptr<users::user> &user : users::manager::online_users.iterable()) {
             for (io::osu_writer writer : logout_queue) {
                 if (user == nullptr || user->user_id == 1)
                     continue;

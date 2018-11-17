@@ -201,7 +201,7 @@ void shiro::handler::login::handle(const crow::request &request, crow::response 
         );
     }
 
-    for (const std::shared_ptr<users::user> &online_user : users::manager::online_users) {
+    for (const std::shared_ptr<users::user> &online_user : users::manager::online_users.iterable()) {
         if (online_user == user)
             continue;
 

@@ -235,7 +235,7 @@ void shiro::ranking::helper::recalculate_ranks(uint8_t mode) {
         writer.user_stats(user->stats);
         writer.user_presence(user->presence);
 
-        for (const std::shared_ptr<users::user> &online_user : users::manager::online_users) {
+        for (const std::shared_ptr<users::user> &online_user : users::manager::online_users.iterable()) {
             if (online_user->user_id == 1 || online_user->hidden)
                 continue;
 
