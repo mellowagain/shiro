@@ -104,7 +104,7 @@ void shiro::routes::api::ci_trigger::handle(const crow::request &request, crow::
 
     int32_t code = std::remove("shiro");
 
-    if (code != 0) {
+    if (code != 0 && errno != ENOENT) {
         LOG_F(ERROR, "Shiro was unable to delete old version: %s (%i)", std::strerror(errno), errno);
         return;
     }
