@@ -24,6 +24,7 @@
 #include "bot/bot.hh"
 #include "channels/channel_manager.hh"
 #include "channels/console_osu_bridge.hh"
+#include "config/api_file.hh"
 #include "config/bancho_file.hh"
 #include "config/bot_file.hh"
 #include "config/cli_args.hh"
@@ -56,6 +57,7 @@ int shiro::init(int argc, char **argv) {
 
     config::cli::parse(argc, argv);
 
+    config::api::parse();
     config::bot::parse();
     config::bancho::parse();
     config::database::parse();

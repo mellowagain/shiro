@@ -17,7 +17,12 @@ jobs:
       - store_artifacts:
           path: ~/shiro/bin/shiro
           destination: shiro
-
-notify:
-  webhooks:
-    - url: http://209.97.182.162:5000/shiro/callback
+      - deploy:
+          name: Deploy to development server
+          command: |
+            curl -X POST                                                                      \
+                 -H "User-Agent: CircleCI $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME"  \
+                 -F "token=$SHIRO_DEPLOY_TOKEN"                                               \
+                 -F "commit=$CIRCLE_SHA1"                                                     \
+                 -F "file=@$HOME/shiro/bin/shiro"                                             \
+                 https://c.shiro.host/api/ci_trigger
