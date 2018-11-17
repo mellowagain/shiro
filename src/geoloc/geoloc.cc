@@ -46,7 +46,7 @@ shiro::geoloc::location_info shiro::geoloc::get_location(const std::string &ip_a
 
     if (curl != nullptr) {
         char buffer[512];
-        std::snprintf(buffer, sizeof(buffer), "https://ip.zxq.co/%s", ip_address.c_str());
+        std::snprintf(buffer, sizeof(buffer), "https://ip.zxq.co/%s", ip_address == "127.0.0.1" ? "" : ip_address.c_str());
 
         curl_easy_setopt(curl, CURLOPT_URL, buffer);
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, callback);
