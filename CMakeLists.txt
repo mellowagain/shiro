@@ -10,7 +10,7 @@ file(GLOB_RECURSE SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cc ${CMAKE_CURRENT_SOURC
 
 if (NOT CMAKE_BUILD_TYPE)
     message(WARNING "No build type has been selected, defaulting to Release.")
-    set(CMAKE_BUILD_TYPE RELEASE)
+    set(CMAKE_BUILD_TYPE DEBUG)
 endif()
 
 if (NOT CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
