@@ -1,0 +1,5 @@
+# API configuration file for shiro
+
+[deploy]
+enabled = false
+tokens = [ "" ]
