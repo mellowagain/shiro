@@ -20,6 +20,8 @@ endif()
 if (NOT CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wextra -Wno-unused-variable -Wno-unused-parameter")
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D_DEBUG")
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${CMAKE_CXX_FLAGS} -O0 -g3 -ggdb")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${CMAKE_CXX_FLAGS} -O3 -DNDEBUG=1")
 endif()
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
@@ -38,6 +40,8 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
 
     find_path(MYSQL_LIB_DIR NAMES libmysql.lib PATH_SUFFIXES lib)
     link_directories("${MYSQL_LIB_DIR}")
+
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS} /DNDEBUG=1 /MP")
 endif()
 
 # Disable use of avx2 in cppcrypto algorithms
@@ -91,9 +95,6 @@ if (Tcmalloc_FOUND)
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-builtin-realloc -fno-builtin-free")
     endif()
 endif()
-
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${CMAKE_CXX_FLAGS} -O0 -g3 -ggdb")
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${CMAKE_CXX_FLAGS} -O3 -DNDEBUG=1")
 
 # Enable logging with streams in Loguru
 add_definitions(-DLOGURU_WITH_STREAMS=1 -DLOGURU_REDEFINE_ASSERT=1)
