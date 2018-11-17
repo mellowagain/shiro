@@ -40,12 +40,12 @@ shiro::utils::curler::~curler() {
     curl_easy_cleanup(c);
 }
 
-void shiro::utils::curler::set_callback(void *c) {
-    curl_easy_setopt(c, CURLOPT_WRITEFUNCTION, c);
+void shiro::utils::curler::set_callback(void *callback) {
+    curl_easy_setopt(c, CURLOPT_WRITEFUNCTION, callback);
 }
 
-void shiro::utils::curler::set_output(void *o) {
-    curl_easy_setopt(c, CURLOPT_WRITEDATA, o);
+void shiro::utils::curler::set_output(void *output) {
+    curl_easy_setopt(c, CURLOPT_WRITEDATA, output);
 }
 
 void shiro::utils::curler::set_user_agent(const std::string &user_agent) {
