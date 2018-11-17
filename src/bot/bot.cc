@@ -107,7 +107,7 @@ void shiro::bot::init() {
     bot_user->client_build = 19700101;
     bot_user->client_type = utils::clients::osu_client::aschente;
 
-    bot_user->presence.country_id = (uint8_t) geoloc::country_id::JP;
+    bot_user->presence.country_id = 111;
     bot_user->presence.time_zone = 9;
     bot_user->presence.latitude = 35.6895f;
     bot_user->presence.longitude = 139.6917f;

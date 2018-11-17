@@ -32,7 +32,7 @@ namespace shiro::geoloc {
         float latitude;
         float longitude;
 
-        explicit location_info(uint8_t country = (uint8_t) country_id::JP, float latitude = 0.0f, float longitude = 0.0f)
+        explicit location_info(uint8_t country = 111, float latitude = 0.0f, float longitude = 0.0f)
                 : country(country)
                 , latitude(latitude)
                 , longitude(longitude) {

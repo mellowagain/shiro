@@ -16,7 +16,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <cerrno>
+#include <cstdio>
 #include <cstdlib>
+#include <cstring>
 
 #include "../../../config/api_file.hh"
 #include "../../../thirdparty/loguru.hh"
@@ -99,9 +102,21 @@ void shiro::routes::api::ci_trigger::handle(const crow::request &request, crow::
     response.code = 200;
     response.end();
 
+    int32_t code = std::remove("shiro");
+
+    if (code != 0 && errno != ENOENT) {
+        LOG_F(ERROR, "Shiro was unable to delete old version: %s (%i)", std::strerror(errno), errno);
+        return;
+    }
+
     std::ofstream stream("shiro", std::ios::binary | std::ios::trunc);
     stream << fields.at("shiro").body;
     stream.close();
+
+    #if defined(__unix__)
+        // Fix file permissions on unix
+        chmod("shiro", S_IRWXO | (S_IRGRP | S_IXGRP) | (S_IRGRP | S_IXGRP));
+    #endif
 
     std::string short_hash = fields.at("commit").body.substr(0, 7);
 
