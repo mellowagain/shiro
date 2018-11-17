@@ -51,6 +51,7 @@ shiro::geoloc::location_info shiro::geoloc::get_location(const std::string &ip_a
 
         curl.set_callback(callback);
         curl.set_output(&output);
+        curl.set_user_agent("shiro (https://github.com/Marc3842h/shiro)");
 
         status_code = curl.perform(buffer);
 
