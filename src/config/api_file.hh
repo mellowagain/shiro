@@ -26,6 +26,7 @@ namespace shiro::config::api {
 
     extern bool deploy_enabled;
     extern std::string deploy_key;
+    extern std::string deploy_command;
 
     void parse();
 

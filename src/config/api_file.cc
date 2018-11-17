@@ -24,6 +24,7 @@ static std::shared_ptr<cpptoml::table> config_file = nullptr;
 
 bool shiro::config::api::deploy_enabled = false;
 std::string shiro::config::api::deploy_key = "";
+std::string shiro::config::api::deploy_command = "";
 
 void shiro::config::api::parse() {
     if (config_file != nullptr)
@@ -37,6 +38,7 @@ void shiro::config::api::parse() {
 
     deploy_enabled = config_file->get_qualified_as<bool>("deploy.enabled").value_or(false);
     deploy_key = config_file->get_qualified_as<std::string>("deploy.token").value_or("");
+    deploy_command = config_file->get_qualified_as<std::string>("deploy.command").value_or("");
 
     // Passing arrays and booleans is not fully supported in CLI.
     // Thus, these options can't be configured like that.

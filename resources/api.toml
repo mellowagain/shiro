@@ -3,3 +3,4 @@
 [deploy]
 enabled = false
 tokens = ""
+command = "systemctl restart shiro"
