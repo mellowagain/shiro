@@ -29,6 +29,7 @@ static std::array<const char *, (size_t) shiro::geoloc::country_id::LAST> countr
     "AD", // 3
     "XX", // 4
     "AF", // 5
+    "XX", // 6
     "AI", // 7
     "AL", // 8
     "AM", // 9
