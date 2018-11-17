@@ -243,7 +243,7 @@ uint8_t shiro::geoloc::get_country_id(const std::string &country_code) {
     auto iterator = country_ids.find(country_code);
 
     if (iterator == country_ids.end())
-        return 0;
+        return 111;
 
     return iterator->second;
 }
@@ -254,7 +254,7 @@ std::string shiro::geoloc::get_country_name(uint8_t country) {
     });
 
     if (iterator == country_ids.end())
-        return "XX";
+        return "JP";
 
     return iterator->first;
 }

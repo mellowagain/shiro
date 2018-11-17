@@ -25,10 +25,6 @@
 
 #include "../thirdparty/enum.hh"
 
-#ifdef IN
-    #undef IN
-#endif
-
 namespace shiro::geoloc {
 
     extern std::unordered_map<std::string, uint8_t> country_ids;

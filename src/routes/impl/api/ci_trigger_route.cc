@@ -114,8 +114,8 @@ void shiro::routes::api::ci_trigger::handle(const crow::request &request, crow::
     stream.close();
 
     #if defined(__unix__)
-        // Fix file permissions on linux
-        chmod("shiro", 755);
+        // Fix file permissions on unix
+        chmod("shiro", S_IRWXO | (S_IRGRP | S_IXGRP) | (S_IRGRP | S_IXGRP));
     #endif
 
     std::string short_hash = fields.at("commit").body.substr(0, 7);
