@@ -34,7 +34,18 @@ namespace shiro::utils {
         bool valid();
 
         void set_callback(void *c);
+
+        template <typename T>
+        void set_callback(T c) {
+            set_callback((void *) c);
+        }
+
         void set_output(void *o);
+
+        template <typename T>
+        void set_output(T c) {
+            set_output((void *) c);
+        }
 
         void set_user_agent(const std::string &user_agent);
 
