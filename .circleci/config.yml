@@ -18,6 +18,7 @@ jobs:
           path: ~/shiro/bin/shiro
           destination: shiro
       - deploy:
+          name: Deploy to development server
           command: |
             curl -X POST                                                                      \
                  -H "User-Agent: CircleCI $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME"  \
