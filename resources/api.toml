@@ -2,4 +2,4 @@
 
 [deploy]
 enabled = false
-tokens = [ "" ]
+tokens = ""
