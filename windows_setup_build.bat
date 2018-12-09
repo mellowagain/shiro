@@ -4,26 +4,32 @@ for /f "tokens=*" %%a in ('where vcpkg.exe') do set VCPKG_ROOT=%%~dpa
 
 if "%VCPKG_ROOT%"=="" (
     echo === UNABLE TO FIND vcpkg.exe ===
-    echo Please make sure that you have installed vcpkg.exe, run `vcpkg integrate install`
-    echo and placed the vcpkg root into your PATH
+    echo Please make sure that you have installed vcpkg.exe, run `vcpkg integrate install` and placed the vcpkg root into your PATH
     exit
 )
 
-echo === === VCPKG_ROOT is %VCPKG_ROOT% === ===
-
+echo === VCPKG_ROOT is %VCPKG_ROOT% ===
 
 REM install 64bit packages that we need
 vcpkg install --triplet x64-windows "boost" "curl" "cryptopp" "zlib" "liblzma" "date" "libmysql"
 
 pushd "%~dp0"
-    mkdir external
-
     pushd external
         git clone "https://github.com/HowardHinnant/date"
-        git clone "https://github.com/josh33901/sqlpp11.git"
-        git clone "https://github.com/josh33901/sqlpp11-connector-mysql.git"
 
+        git clone "https://github.com/rbock/sqlpp11.git"
+        cd "sqlpp11"
+
+        git checkout da5cf192e951c8d276d45a9960503a3d5d02e440 .
+        git apply ../sqlpp11.patch
+
+        cd ..
+        git clone "https://github.com/rbock/sqlpp11-connector-mysql.git"
         cd "sqlpp11-connector-mysql"
+
+        git checkout 9ab936a217708a30998686d9b4061cbb0ffa547d .
+        git apply ../sqlpp11-connector-mysql.patch
+
         mkdir build
         cd build
 

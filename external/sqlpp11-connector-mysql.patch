@@ -1,0 +1,87 @@
+From dbc588b43dfe71158a468f77247ebcef1ecd7c14 Mon Sep 17 00:00:00 2001
+From: F1ssi0N <josh33901@gmail.com>
+Date: Tue, 9 Oct 2018 09:18:35 +0100
+Subject: [PATCH] Correct cmakelists.txt for vcpkg
+
+---
+ CMakeLists.txt    | 14 ++++++++++----
+ src/sqlpp_mysql.h |  6 +++---
+ 2 files changed, 13 insertions(+), 7 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 947fcc7..d94e3d1 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -24,7 +24,7 @@
+ 
+ cmake_minimum_required(VERSION 3.2)
+ include(CheckCXXSymbolExists)
+-project (sqlpp11-connector-mysql)
++project (sqlpp11-connector-mysql CXX)
+ enable_testing()
+ 
+ option(ENABLE_TESTS "Build unit tests" On)
+@@ -32,14 +32,19 @@ set(CMAKE_CXX_STANDARD 11)
+ 
+ find_package(Threads REQUIRED)
+ 
++#
++# find_package(ZLIB REQUIRED)
++
+ if (APPLE)
+ 	message("Apple XCode does not have thread_local, thus we need to wrap that via boost thread")
+ 	find_package(Boost COMPONENTS thread system)
+ endif()
+ 
++if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
++    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /DNOMINMAX")
++endif()
+ 
+ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+-find_package(MySql REQUIRED)
+ 
+ message(STATUS "Using ${CMAKE_CXX_COMPILER} (compiler id: ${CMAKE_CXX_COMPILER_ID})")
+ 
+@@ -72,9 +77,11 @@ else()
+ 	message("including sqlpp11 from ${SQLPP11_INCLUDE_DIR}")
+ endif()
+ 
++set(VCPKG_INCLUDE_DIR CACHE FILEPATH "")
++
+ include_directories("${SQLPP11_INCLUDE_DIR}")
++include_directories("${VCPKG_INCLUDE_DIR}")
+ include_directories("${DATE_INCLUDE_DIR}")
+-include_directories("${MYSQL_INCLUDE_DIRS}")
+ set(include_dir "${PROJECT_SOURCE_DIR}/include")
+ file(GLOB_RECURSE sqlpp_headers ${include_dir}/*.h ${SQLPP11_INCLUDE_DIR}/*.h)
+ include_directories(${include_dir})
+@@ -88,6 +95,5 @@ if(ENABLE_TESTS)
+   add_subdirectory(tests)
+ endif()
+ 
+-
+ install(DIRECTORY "${PROJECT_SOURCE_DIR}/include/sqlpp11" DESTINATION include)
+ 
+diff --git a/src/sqlpp_mysql.h b/src/sqlpp_mysql.h
+index f497e44..77bc338 100644
+--- a/src/sqlpp_mysql.h
++++ b/src/sqlpp_mysql.h
+@@ -27,7 +27,7 @@
+ #ifndef SQLPP_MYSQL_MYSQL_H
+ #define SQLPP_MYSQL_MYSQL_H
+ 
+-#include <mysql.h>
++#include <mysql/mysql.h>
+ 
+ namespace sqlpp
+ {
+@@ -36,7 +36,7 @@ namespace sqlpp
+ #if LIBMYSQL_VERSION_ID >= 80000
+     using my_bool = bool;
+ #endif
+-  }
+-}
++  }  // namespace mysql
++}  // namespace sqlpp
+ 
+ #endif
