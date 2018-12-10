@@ -22,10 +22,12 @@
 #include <openssl/evp.h>
 #include <openssl/md5.h>
 #include <openssl/sha.h>
+#include <ctime>
 
 #include "../thirdparty/cppcrypto/cbc.hh"
 #include "../thirdparty/cppcrypto/rijndael.hh"
 #include "crypto.hh"
+#include "../native/process_info.hh"
 
 std::vector<unsigned char> shiro::utils::crypto::base64::decode(const char *base64) {
     const size_t max_len = std::strlen(base64) / 4 * 3 + 1;
@@ -140,4 +142,48 @@ uint32_t shiro::utils::crypto::get_highest_bit(uint32_t bitwise) {
     }
 
     return result;
+}
+
+uint32_t shiro::utils::crypto::make_seed() {
+    int32_t a = (int32_t) std::clock();
+    int32_t b = (int32_t) std::time(nullptr);
+    int32_t c = native::process_info::get_pid();
+
+    a = a - b;
+    a = a - c;
+    a = a ^ (c >> 13);
+
+    b = b - c;
+    b = b - a;
+    b = b ^ (a << 8);
+
+    c = c - a;
+    c = c - b;
+    c = c ^ (b >> 13);
+
+    a = a - b;
+    a = a - c;
+    a = a ^ (c >> 12);
+
+    b = b - c;
+    b = b - a;
+    b = b ^ (a << 16);
+
+    c = c - a;
+    c = c - b;
+    c = c ^ (b >> 5);
+
+    a = a - b;
+    a = a - c;
+    a = a ^ (c >> 3);
+
+    b = b - c;
+    b = b - a;
+    b = b ^ (a << 10);
+
+    c = c - a;
+    c = c - b;
+    c = c ^ (b >> 15);
+
+    return (uint32_t) c;
 }

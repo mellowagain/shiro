@@ -49,34 +49,33 @@ bool shiro::beatmaps::beatmap::fetch_db() {
     sqlpp::mysql::connection db(db_connection->get_config());
     const tables::beatmaps beatmaps_table {};
 
-    auto result = db(select(all_of(beatmaps_table)).from(beatmaps_table).where(beatmaps_table.beatmap_md5 == this->beatmap_md5));
-    bool empty = is_query_empty(result);
+    auto result = db(select(all_of(beatmaps_table)).from(beatmaps_table).where(beatmaps_table.beatmap_md5 == this->beatmap_md5).limit(1u));
 
-    if (empty)
+    if (result.empty())
         return false;
 
-    for (const auto &row : result) {
-        this->id = row.id;
-        this->beatmap_id = row.beatmap_id;
-        this->beatmapset_id = row.beatmapset_id;
-        this->play_mode = row.game_mode;
-        this->beatmap_md5 = row.beatmap_md5;
-        this->song_name = row.song_name;
-        this->ar = row.ar;
-        this->od = row.od;
-        this->diff_std = row.diff_std;
-        this->diff_taiko = row.diff_taiko;
-        this->diff_ctb = row.diff_ctb;
-        this->diff_mania = row.diff_mania;
-        this->max_combo = row.max_combo;
-        this->hit_length = row.hit_length;
-        this->bpm = row.bpm;
-        this->ranked_status = row.ranked_status;
-        this->ranked_status_freezed = row.ranked_status_freezed;
-        this->last_update = row.last_update;
-        this->play_count = row.play_count;
-        this->pass_count = row.pass_count;
-    }
+    const auto &row = result.front();
+
+    this->id = row.id;
+    this->beatmap_id = row.beatmap_id;
+    this->beatmapset_id = row.beatmapset_id;
+    this->play_mode = row.game_mode;
+    this->beatmap_md5 = row.beatmap_md5;
+    this->song_name = row.song_name;
+    this->ar = row.ar;
+    this->od = row.od;
+    this->diff_std = row.diff_std;
+    this->diff_taiko = row.diff_taiko;
+    this->diff_ctb = row.diff_ctb;
+    this->diff_mania = row.diff_mania;
+    this->max_combo = row.max_combo;
+    this->hit_length = row.hit_length;
+    this->bpm = row.bpm;
+    this->ranked_status = row.ranked_status;
+    this->ranked_status_freezed = row.ranked_status_freezed;
+    this->last_update = row.last_update;
+    this->play_count = row.play_count;
+    this->pass_count = row.pass_count;
 
     return true;
 }

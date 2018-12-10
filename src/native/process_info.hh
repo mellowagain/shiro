@@ -16,39 +16,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef SHIRO_DATABASE_HH
-#define SHIRO_DATABASE_HH
+#ifndef SHIRO_PROCESS_INFO_HH
+#define SHIRO_PROCESS_INFO_HH
 
-#include <sqlpp11/mysql/mysql.h>
-#include <sqlpp11/sqlpp11.h>
+#include <cstdint>
 
-#include <memory>
-#include <string>
+namespace shiro::native::process_info {
 
-namespace shiro {
-
-    class database {
-    private:
-        std::shared_ptr<sqlpp::mysql::connection_config> config = nullptr;
-
-        std::string address;
-        uint32_t port;
-        std::string db;
-
-        std::string username;
-        std::string password;
-
-    public:
-        database(const std::string &address, uint32_t port, const std::string &db, const std::string &username, const std::string &password);
-
-        void connect();
-        void setup();
-
-        bool is_connected(bool abort = false);
-        std::shared_ptr<sqlpp::mysql::connection_config> get_config();
-
-    };
+    int32_t get_pid();
 
 }
 
-#endif //SHIRO_DATABASE_HH
+#endif  // SHIRO_PROCESS_INFO_HH

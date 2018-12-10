@@ -40,9 +40,8 @@ void shiro::channels::manager::init() {
     insert_if_not_exists("#console", "", true, false, true, (uint64_t) permissions::perms::channel_console);
 
     auto result = db(select(all_of(channel_table)).from(channel_table).unconditionally());
-    bool empty = is_query_empty(result);
 
-    if (empty)
+    if (result.empty())
         return;
 
     for (const auto &row : result) {
@@ -152,10 +151,9 @@ void shiro::channels::manager::insert_if_not_exists(std::string name, std::strin
     sqlpp::mysql::connection db(db_connection->get_config());
     const tables::channels channel_table {};
 
-    auto result = db(select(all_of(channel_table)).from(channel_table).where(channel_table.name == name));
-    bool empty = is_query_empty(result);
+    auto result = db(select(all_of(channel_table)).from(channel_table).where(channel_table.name == name).limit(1u));
 
-    if (!empty)
+    if (!result.empty())
         return;
 
     db(insert_into(channel_table).set(

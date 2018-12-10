@@ -33,9 +33,8 @@ shiro::scores::score shiro::scores::helper::fetch_top_score_user(std::string bea
     const tables::scores score_table {};
 
     auto result = db(select(all_of(score_table)).from(score_table).where(score_table.beatmap_md5 == beatmap_md5sum and score_table.user_id == user->user_id));
-    bool empty = is_query_empty(result);
 
-    if (empty)
+    if (result.empty())
         return score(-1);
 
     std::vector<score> scores;
@@ -93,9 +92,8 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_all_scores(std::s
     const tables::scores score_table {};
 
     auto result = db(select(all_of(score_table)).from(score_table).where(score_table.beatmap_md5 == beatmap_md5sum));
-    bool empty = is_query_empty(result);
 
-    if (empty)
+    if (result.empty())
         return {};
 
     beatmaps::beatmap map;
@@ -179,9 +177,8 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_country_scores(st
     const tables::scores score_table {};
 
     auto result = db(select(all_of(score_table)).from(score_table).where(score_table.beatmap_md5 == beatmap_md5sum));
-    bool empty = is_query_empty(result);
 
-    if (empty)
+    if (result.empty())
         return {};
 
     beatmaps::beatmap map;
@@ -278,9 +275,8 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_mod_scores(std::s
     const tables::scores score_table {};
 
     auto result = db(select(all_of(score_table)).from(score_table).where(score_table.beatmap_md5 == beatmap_md5sum));
-    bool empty = is_query_empty(result);
 
-    if (empty)
+    if (result.empty())
         return {};
 
     beatmaps::beatmap map;
@@ -367,9 +363,8 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_friend_scores(std
     const tables::scores score_table {};
 
     auto result = db(select(all_of(score_table)).from(score_table).where(score_table.beatmap_md5 == beatmap_md5sum));
-    bool empty = is_query_empty(result);
 
-    if (empty)
+    if (result.empty())
         return {};
 
     beatmaps::beatmap map;
@@ -470,10 +465,9 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_user_scores(std::
 
     auto result = db(select(all_of(score_table)).from(score_table).where(
             score_table.beatmap_md5 == beatmap_md5sum and score_table.user_id == user->user_id
-    ));
-    bool empty = is_query_empty(result);
+    ).limit(limit));
 
-    if (empty)
+    if (result.empty())
         return {};
 
     beatmaps::beatmap map;
@@ -531,9 +525,6 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_user_scores(std::
         return s_left.total_score > s_right.total_score;
     });
 
-    if (scores.size() > limit)
-        scores.resize(limit);
-
     return scores;
 }
 
@@ -541,10 +532,9 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_all_user_scores(i
     sqlpp::mysql::connection db(db_connection->get_config());
     const tables::scores score_table {};
 
-    auto result = db(select(all_of(score_table)).from(score_table).where(score_table.user_id == user_id));
-    bool empty = is_query_empty(result);
+    auto result = db(select(all_of(score_table)).from(score_table).where(score_table.user_id == user_id).limit(limit));
 
-    if (empty)
+    if (result.empty())
         return {};
 
     std::vector<score> scores;
@@ -585,9 +575,6 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_all_user_scores(i
         return s_left.total_score > s_right.total_score;
     });
 
-    if (scores.size() > limit)
-        scores.resize(limit);
-
     return scores;
 }
 
@@ -596,9 +583,8 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_top100_user(shiro
     const tables::scores score_table {};
 
     auto result = db(select(all_of(score_table)).from(score_table).where(score_table.user_id == user_id and score_table.play_mode == (uint8_t) mode));
-    bool empty = is_query_empty(result);
 
-    if (empty)
+    if (result.empty())
         return {};
 
     std::vector<score> scores;
@@ -679,45 +665,41 @@ shiro::scores::score shiro::scores::helper::get_score(int32_t id) {
     sqlpp::mysql::connection db(db_connection->get_config());
     const tables::scores score_table {};
 
-    auto result = db(select(all_of(score_table)).from(score_table).where(score_table.id == id));
-    bool empty = is_query_empty(result);
+    auto result = db(select(all_of(score_table)).from(score_table).where(score_table.id == id).limit(1u));
 
-    if (empty)
+    if (result.empty())
         return score(-1);
 
-    for (const auto &row : result) {
-        score s;
+    const auto &row = result.front();
+    score s(-1);
 
-        s.id = row.id;
-        s.user_id = row.user_id;
-        s.hash = row.hash;
-        s.beatmap_md5 = row.beatmap_md5;
+    s.id = row.id;
+    s.user_id = row.user_id;
+    s.hash = row.hash;
+    s.beatmap_md5 = row.beatmap_md5;
 
-        s.rank = row.ranking;
-        s.total_score = row.score;
-        s.max_combo = row.max_combo;
-        s.pp = row.pp;
+    s.rank = row.ranking;
+    s.total_score = row.score;
+    s.max_combo = row.max_combo;
+    s.pp = row.pp;
 
-        s.accuracy = row.accuracy;
-        s.mods = row.mods;
+    s.accuracy = row.accuracy;
+    s.mods = row.mods;
 
-        s.fc = row.fc;
-        s.passed = row.passed;
+    s.fc = row.fc;
+    s.passed = row.passed;
 
-        s._300_count = row._300_count;
-        s._100_count = row._100_count;
-        s._50_count = row._50_count;
-        s.katus_count = row.katus_count;
-        s.gekis_count = row.gekis_count;
-        s.miss_count = row.miss_count;
+    s._300_count = row._300_count;
+    s._100_count = row._100_count;
+    s._50_count = row._50_count;
+    s.katus_count = row.katus_count;
+    s.gekis_count = row.gekis_count;
+    s.miss_count = row.miss_count;
 
-        s.play_mode = row.play_mode;
-        s.time = row.time;
+    s.play_mode = row.play_mode;
+    s.time = row.time;
 
-        return s;
-    }
-
-    return score(-1);
+    return s;
 }
 
 int32_t shiro::scores::helper::get_scoreboard_position(const shiro::scores::score &s, std::vector<score> scores) {

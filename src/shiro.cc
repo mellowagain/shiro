@@ -32,6 +32,7 @@
 #include "config/score_submission_file.hh"
 #include "geoloc/country_ids.hh"
 #include "logger/logger.hh"
+#include "native/process_info.hh"
 #include "native/signal_handler.hh"
 #include "native/system_statistics.hh"
 #include "permissions/role_manager.hh"
@@ -42,6 +43,7 @@
 #include "users/user_activity.hh"
 #include "users/user_punishments.hh"
 #include "users/user_timeout.hh"
+#include "utils/crypto.hh"
 #include "shiro.hh"
 
 std::shared_ptr<shiro::database> shiro::db_connection = nullptr;
@@ -53,7 +55,7 @@ int shiro::init(int argc, char **argv) {
 
     curl_global_init(CURL_GLOBAL_DEFAULT);
 
-    std::srand((uint32_t) std::time(nullptr));
+    std::srand(utils::crypto::make_seed());
 
     config::cli::parse(argc, argv);
 
