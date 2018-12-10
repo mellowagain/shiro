@@ -47,6 +47,8 @@ namespace shiro::utils::crypto {
 
     uint32_t get_highest_bit(uint32_t bitwise);
 
+    uint32_t make_seed();
+
     // Anonymous utility namespace
     namespace {
         struct bio_free_all {
