@@ -223,11 +223,10 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
             score.gekis_count, score.katus_count, score.miss_count
     );
 
-    auto db_result = db(select(all_of(score_table)).from(score_table).where(score_table.hash == score.hash));
-    bool empty = is_query_empty(db_result);
+    auto db_result = db(select(all_of(score_table)).from(score_table).where(score_table.hash == score.hash).limit(1u));
 
     // Score has already been submitted
-    if (!empty) {
+    if (!db_result.empty()) {
         response.end("error: dup");
 
         LOG_F(WARNING, "%s resubmitted a previously submitted score.", user->presence.username.c_str());
@@ -385,10 +384,9 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
             score_table.time = score.time
     ));
 
-    db_result = db(select(all_of(score_table)).from(score_table).where(score_table.hash == score.hash));
-    empty = is_query_empty(db_result);
+    db_result = db(select(all_of(score_table)).from(score_table).where(score_table.hash == score.hash).limit(1u));
 
-    if (empty) {
+    if (db_result.empty()) {
         response.end("error: invalid");
         return;
     }

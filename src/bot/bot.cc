@@ -50,10 +50,9 @@ void shiro::bot::init() {
     sqlpp::mysql::connection db(db_connection->get_config());
     const tables::users user_table {};
 
-    auto result = db(select(all_of(user_table)).from(user_table).where(user_table.id == 1));
-    bool empty = is_query_empty(result);
+    auto result = db(select(all_of(user_table)).from(user_table).where(user_table.id == 1).limit(1u));
 
-    if (empty) {
+    if (result.empty()) {
         // Bot user doesn't exist
         db(insert_into(user_table).set(
                 user_table.id = 1,

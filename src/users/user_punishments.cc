@@ -33,9 +33,8 @@ void shiro::users::punishments::init() {
         auto result = db(select(all_of(punishments_table)).from(punishments_table).where(
                 punishments_table.active == true
         ));
-        bool empty = is_query_empty(result);
 
-        if (empty) {
+        if (result.empty()) {
             ctx.Repeat();
             return;
         }
@@ -277,9 +276,9 @@ bool shiro::users::punishments::is_silenced(int32_t user_id) {
             punishments_table.user_id == user_id and
             punishments_table.type == (uint16_t) utils::punishment_type::silence and
             punishments_table.active == true
-    ));
+    ).limit(1u));
 
-    return !is_query_empty(result);
+    return !result.empty();
 }
 
 bool shiro::users::punishments::is_restricted(int32_t user_id) {
@@ -290,9 +289,9 @@ bool shiro::users::punishments::is_restricted(int32_t user_id) {
             punishments_table.user_id == user_id and
             punishments_table.type == (uint16_t) utils::punishment_type::restrict and
             punishments_table.active == true
-    ));
+    ).limit(1u));
 
-    return !is_query_empty(result);
+    return !result.empty();
 }
 
 bool shiro::users::punishments::is_banned(int32_t user_id) {
@@ -303,9 +302,9 @@ bool shiro::users::punishments::is_banned(int32_t user_id) {
             punishments_table.user_id == user_id and
             punishments_table.type == (uint16_t) utils::punishment_type::ban and
             punishments_table.active == true
-    ));
+    ).limit(1u));
 
-    return !is_query_empty(result);
+    return !result.empty();
 }
 
 bool shiro::users::punishments::can_chat(int32_t user_id) {
@@ -335,15 +334,12 @@ std::tuple<int32_t, uint32_t> shiro::users::punishments::get_silence_time(int32_
             punishments_table.user_id == user_id and
             punishments_table.type == (uint16_t) utils::punishment_type::silence and
             punishments_table.active == true
-    ));
-    bool empty = is_query_empty(result);
+    ).limit(1u));
 
-    if (empty)
+    if (result.empty())
         return {};
 
-    for (const auto &row : result) {
-        return std::make_pair(row.time, row.duration);
-    }
+    const auto &row = result.front();
 
-    return {};
+    return std::make_pair(row.time, row.duration);
 }

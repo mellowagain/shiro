@@ -30,9 +30,8 @@ int32_t shiro::ranking::helper::get_leaderboard_position(uint8_t mode, std::stri
     const tables::users user_table {};
 
     auto result = db(select(all_of(user_table)).from(user_table).unconditionally());
-    bool empty = is_query_empty(result);
 
-    if (empty)
+    if (result.empty())
         return 0;
 
     std::vector<std::pair<std::string, float>> users;
@@ -82,9 +81,8 @@ std::string shiro::ranking::helper::get_leaderboard_user(uint8_t mode, int32_t p
     const tables::users user_table {};
 
     auto result = db(select(all_of(user_table)).from(user_table).unconditionally());
-    bool empty = is_query_empty(result);
 
-    if (empty)
+    if (result.empty())
         return "";
 
     std::vector<std::pair<std::string, float>> users;
@@ -127,29 +125,22 @@ int16_t shiro::ranking::helper::get_pp_for_user(uint8_t mode, std::string userna
     sqlpp::mysql::connection db(db_connection->get_config());
     const tables::users user_table {};
 
-    auto result = db(select(all_of(user_table)).from(user_table).where(user_table.username == username));
-    bool empty = is_query_empty(result);
+    auto result = db(select(all_of(user_table)).from(user_table).where(user_table.username == username).limit(1u));
 
-    if (empty)
+    if (result.empty())
         return 0;
 
-    for (const auto &row : result) {
-        if ((int32_t) row.id == 1)
-            continue;
+    const auto &row = result.front();
 
-        if (!users::punishments::has_scores(row.id))
-            continue;
-
-        switch (mode) {
-            case (uint8_t) utils::play_mode::standard:
-                return row.pp_std;
-            case (uint8_t) utils::play_mode::taiko:
-                return row.pp_taiko;
-            case (uint8_t) utils::play_mode::fruits:
-                return row.pp_ctb;
-            case (uint8_t) utils::play_mode::mania:
-                return row.pp_mania;
-        }
+    switch (mode) {
+        case (uint8_t) utils::play_mode::standard:
+            return row.pp_std;
+        case (uint8_t) utils::play_mode::taiko:
+            return row.pp_taiko;
+        case (uint8_t) utils::play_mode::fruits:
+            return row.pp_ctb;
+        case (uint8_t) utils::play_mode::mania:
+            return row.pp_mania;
     }
 
     return 0;
@@ -160,9 +151,8 @@ void shiro::ranking::helper::recalculate_ranks(uint8_t mode) {
     const tables::users user_table {};
 
     auto result = db(select(all_of(user_table)).from(user_table).unconditionally());
-    bool empty = is_query_empty(result);
 
-    if (empty)
+    if (result.empty())
         return;
 
     for (const auto &row : result) {

@@ -146,17 +146,12 @@ std::string shiro::users::manager::get_username_by_id(int32_t id) {
     sqlpp::mysql::connection db(db_connection->get_config());
     const tables::users user_table {};
 
-    auto result = db(select(all_of(user_table)).from(user_table).where(user_table.id == id));
-    bool empty = is_query_empty(result);
+    auto result = db(select(all_of(user_table)).from(user_table).where(user_table.id == id).limit(1u));
 
-    if (empty)
+    if (result.empty())
         return "";
 
-    for (const auto &row : result) {
-        return row.username;
-    }
-
-    return "";
+    return result.front().username;
 }
 
 int32_t shiro::users::manager::get_id_by_username(const std::string &username) {
@@ -168,17 +163,12 @@ int32_t shiro::users::manager::get_id_by_username(const std::string &username) {
     sqlpp::mysql::connection db(db_connection->get_config());
     const tables::users user_table {};
 
-    auto result = db(select(all_of(user_table)).from(user_table).where(user_table.username == username));
-    bool empty = is_query_empty(result);
+    auto result = db(select(all_of(user_table)).from(user_table).where(user_table.username == username).limit(1u));
 
-    if (empty)
+    if (result.empty())
         return -1;
 
-    for (const auto &row : result) {
-        return row.id;
-    }
-
-    return -1;
+    return result.front().id;
 }
 
 size_t shiro::users::manager::get_online_users() {
