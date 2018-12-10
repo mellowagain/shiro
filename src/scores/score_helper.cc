@@ -525,9 +525,6 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_user_scores(std::
         return s_left.total_score > s_right.total_score;
     });
 
-    if (scores.size() > limit)
-        scores.resize(limit);
-
     return scores;
 }
 
@@ -577,9 +574,6 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_all_user_scores(i
     std::sort(scores.begin(), scores.end(), [](const score &s_left, const score &s_right) {
         return s_left.total_score > s_right.total_score;
     });
-
-    if (scores.size() > limit)
-        scores.resize(limit);
 
     return scores;
 }
