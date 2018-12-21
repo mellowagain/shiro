@@ -38,11 +38,13 @@ void shiro::routes::init() {
     init_routes();
 
     try {
+        server.multithreaded();
         server.concurrency(config::bancho::concurrency);
+
         server.bindaddr(config::bancho::host);
         server.port(config::bancho::port);
 
-        server.multithreaded().run();
+        server.run();
     } catch (const boost::system::system_error &ex) {
         LOG_S(FATAL) << "Unable to start server: " << ex.what() << ".";
     }
@@ -52,9 +54,14 @@ void shiro::routes::init_routes() {
     CROW_ROUTE(server, "/").methods("GET"_method, "POST"_method)(shiro_route(root::handle));
 
     CROW_ROUTE(server, "/web/bancho_connect.php").methods("GET"_method)(shiro_route(web::bancho_connect::handle));
-    CROW_ROUTE(server, "/web/osu-osz2-getscores.php").methods("GET"_method)(shiro_route(web::get_scores::handle));
     CROW_ROUTE(server, "/web/osu-getreplay.php").methods("GET"_method)(shiro_route(web::get_replay::handle));
-    CROW_ROUTE(server, "/web/osu-submit-modular.php").methods("POST"_method)(shiro_route(web::submit_score::handle));
 
+    // Score submission routes
+    // submit-modular.php: Legacy route with old table display, prior to b20181221.4
+    // submit-modular-selector.php: Up-to-date route with new table display, after b20181221.4
+    CROW_ROUTE(server, "/web/osu-submit-modular.php").methods("POST"_method)(shiro_route(web::submit_score::handle));
+    CROW_ROUTE(server, "/web/osu-submit-modular-selector.php").methods("POST"_method)(shiro_route(web::submit_score::handle));
+
+    // Non osu! routes
     CROW_ROUTE(server, "/api/ci_trigger").methods("POST"_method)(shiro_route(api::ci_trigger::handle));
 }
