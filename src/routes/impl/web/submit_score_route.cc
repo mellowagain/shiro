@@ -16,8 +16,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#define OPPAI_IMPLEMENTATION
-
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
 
@@ -25,12 +23,12 @@
 #include "../../../beatmaps/beatmap_helper.hh"
 #include "../../../config/score_submission_file.hh"
 #include "../../../database/tables/score_table.hh"
+#include "../../../pp/pp_score_metric.hh"
 #include "../../../ranking/ranking_helper.hh"
 #include "../../../replays/replay_manager.hh"
 #include "../../../scores/score.hh"
 #include "../../../scores/score_helper.hh"
 #include "../../../thirdparty/loguru.hh"
-#include "../../../thirdparty/oppai.hh"
 #include "../../../users/user.hh"
 #include "../../../users/user_manager.hh"
 #include "../../../users/user_punishments.hh"
@@ -257,6 +255,9 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
         return;
     }
 
+    if (beatmaps::helper::awards_pp(beatmaps::helper::fix_beatmap_status(beatmap.ranked_status)))
+        score.pp = pp::calculate(beatmap, score);
+
     std::vector<scores::score> previous_scores = scores::helper::fetch_user_scores(beatmap.beatmap_md5, user);
     bool overwrite = true;
 
@@ -284,54 +285,6 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
 
     if (!score.passed)
         overwrite = false;
-
-    // oppai-ng for std and taiko (non-converted)
-    // TODO: Replace with libakame (https://github.com/Marc3842h/libakame)
-    if ((score.play_mode == (uint8_t) utils::play_mode::standard || score.play_mode == (uint8_t) utils::play_mode::taiko) &&
-        beatmaps::helper::awards_pp(beatmaps::helper::fix_beatmap_status(beatmap.ranked_status))) {
-        struct parser parser_state;
-        struct beatmap map;
-
-        struct diff_calc difficulty;
-        struct pp_calc pp;
-
-        struct pp_params params;
-
-        FILE *map_file = beatmaps::helper::download(beatmap.beatmap_id);
-
-        p_init(&parser_state);
-        p_map(&parser_state, &map, map_file);
-
-        d_init(&difficulty);
-        d_calc(&difficulty, &map, score.mods);
-
-        params.aim = difficulty.aim;
-        params.speed = difficulty.speed;
-        params.max_combo = beatmap.max_combo;
-        params.nsliders = map.nsliders;
-        params.ncircles = map.ncircles;
-        params.nobjects = map.nobjects;
-
-        params.mode = score.play_mode;
-        params.mods = score.mods;
-        params.combo = score.max_combo;
-        params.n300 = score._300_count;
-        params.n100 = score._100_count;
-        params.n50 = score._50_count;
-        params.nmiss = score.miss_count;
-        params.score_version = PP_DEFAULT_SCORING;
-
-        ppv2p(&pp, &params);
-
-        score.pp = pp.total;
-
-        d_free(&difficulty);
-        p_free(&parser_state);
-
-        std::fclose(map_file);
-    } else {
-        score.pp = 0;
-    }
 
     // Auto restriction for weird things enabled in score_submission.toml
     auto [flagged, reason] = scores::helper::is_flagged(score, beatmap);
