@@ -54,6 +54,7 @@ void shiro::routes::init_routes() {
     CROW_ROUTE(server, "/").methods("GET"_method, "POST"_method)(shiro_route(root::handle));
 
     CROW_ROUTE(server, "/web/bancho_connect.php").methods("GET"_method)(shiro_route(web::bancho_connect::handle));
+    CROW_ROUTE(server, "/web/osu-osz2-getscores.php").methods("GET"_method)(shiro_route(web::get_scores::handle));
     CROW_ROUTE(server, "/web/osu-getreplay.php").methods("GET"_method)(shiro_route(web::get_replay::handle));
 
     // Score submission routes
