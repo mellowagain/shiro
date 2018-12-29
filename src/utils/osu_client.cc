@@ -22,8 +22,6 @@
 #include "osu_client.hh"
 
 shiro::utils::clients::osu_client shiro::utils::clients::parse_version(const std::string &client_version, const int32_t &client_build) {
-    boost::algorithm::to_lower(client_version);
-
     // 3rd party osu! clients
     if (client_build == 20161205 && client_version.find("cuttingedge"))
         return osu_client::osu_fx;
@@ -37,7 +35,7 @@ shiro::utils::clients::osu_client shiro::utils::clients::parse_version(const std
     if (client_version.find("version") != std::string::npos)
         return osu_client::tsuki;
 
-    if (client_version.find("yozora") != std::string::npos)
+    if (boost::algorithm::to_lower_copy(client_version).find("yozora") != std::string::npos)
         return osu_client::yozora;
 
     // osu!fallback and very outdated versions
