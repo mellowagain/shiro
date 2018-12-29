@@ -49,7 +49,8 @@ namespace shiro::utils::clients {
         // Third party osu! clients
         osu_fx = 11,
         banana_client = 12,
-        tsuki = 13
+        tsuki = 13,
+        yozora = 14
     );
 
     osu_client parse_version(const std::string &client_version, const int32_t &client_build);
