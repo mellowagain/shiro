@@ -18,6 +18,7 @@
 
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
+#include <memory>
 
 #include "../../../beatmaps/beatmap.hh"
 #include "../../../beatmaps/beatmap_helper.hh"
@@ -28,6 +29,7 @@
 #include "../../../replays/replay_manager.hh"
 #include "../../../scores/score.hh"
 #include "../../../scores/score_helper.hh"
+#include "../../../scores/table_display.hh"
 #include "../../../thirdparty/loguru.hh"
 #include "../../../users/user.hh"
 #include "../../../users/user_manager.hh"
@@ -309,11 +311,11 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
             users::punishments::restrict(user->user_id, 1, "Mismatching bmk and bml (notepad hack, " + bmk + " != " + bml + ")");
     }
 
-    scores::score old_top_score = scores::helper::fetch_top_score_user(beatmap.beatmap_md5, user);
-    int32_t old_scoreboard_pos = scores::helper::get_scoreboard_position(old_top_score, scores::helper::fetch_all_scores(beatmap.beatmap_md5, 5));
+    // Legacy table display (<20181221.4)
+    bool legacy = request.url == "/web/osu-submit-modular.php";
 
-    if (old_scoreboard_pos == -1)
-        old_scoreboard_pos = 0;
+    std::unique_ptr<scores::table_display> display = std::make_unique<scores::table_display>(user, beatmap, score, legacy);
+    display->init();
 
     db(insert_into(score_table).set(
             score_table.user_id = score.user_id,
@@ -382,61 +384,18 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
         }
     }
 
+    display->set_scoreboard_position(scoreboard_position);
+
     if (overwrite)
         user->stats.ranked_score += score.total_score;
 
     user->stats.recalculate_pp();
-
-    float old_acc = user->stats.accuracy;
     user->stats.recalculate_accuracy();
 
     user->save_stats();
 
-    int32_t old_rank = user->stats.rank;
-
     if (overwrite && !user->hidden)
         ranking::helper::recalculate_ranks(user->stats.play_mode);
 
-    std::string user_above = ranking::helper::get_leaderboard_user(user->stats.play_mode, user->stats.rank - 1);
-    int16_t user_above_pp = ranking::helper::get_pp_for_user(user->stats.play_mode, user_above);
-
-    uint32_t timestamp = static_cast<uint32_t>(beatmap.last_update);
-    std::time_t time = timestamp;
-
-    int32_t to_next_rank = user_above_pp - user->stats.pp;
-
-    if (to_next_rank < 0)
-        to_next_rank = 0;
-
-    struct std::tm *tm = std::gmtime(&time);
-    std::stringstream out;
-
-    out << std::setprecision(12);
-    out << "beatmapId:" << beatmap.beatmap_id << "|";
-    out << "beatmapSetId:" << beatmap.beatmapset_id << "|";
-    out << "beatmapPlaycount:" << beatmap.play_count << "|";
-    out << "beatmapPasscount:" << beatmap.pass_count << "|";
-    out << "approvedDate:" << std::put_time(tm, "%F %X") << std::endl;
-    out << "chartId:overall" << "|";
-    out << "chartName:Overall Ranking" << "|";
-    out << "chartEndDate:" << "|";
-    out << "beatmapRankingBefore:" << old_scoreboard_pos << "|";
-    out << "beatmapRankingAfter:" << scoreboard_position << "|";
-    out << "rankedScoreBefore:" << user->stats.ranked_score - score.total_score << "|";
-    out << "rankedScoreAfter:" << user->stats.ranked_score << "|";
-    out << "totalScoreBefore:" << user->stats.total_score - score.total_score << "|";
-    out << "totalScoreAfter:" << user->stats.total_score << "|";
-    out << "playCountBefore:" << user->stats.play_count << "|";
-    out << "accuracyBefore:" << (old_acc / 100) << "|";
-    out << "accuracyAfter:" << (user->stats.accuracy / 100) << "|";
-    out << "rankBefore:" << old_rank << "|";
-    out << "rankAfter:" << user->stats.rank << "|";
-    out << "toNextRank:" << to_next_rank << "|";
-    out << "toNextRankUser:" << user_above << "|";
-    out << "achievements:" << "|";
-    out << "achievements-new:" << "|";
-    out << "onlineScoreId:" << score.id;
-    out << std::endl;
-
-    response.end(out.str());
+    response.end(display->build());
 }

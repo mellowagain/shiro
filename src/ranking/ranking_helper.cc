@@ -122,6 +122,9 @@ std::string shiro::ranking::helper::get_leaderboard_user(uint8_t mode, int32_t p
 }
 
 int16_t shiro::ranking::helper::get_pp_for_user(uint8_t mode, std::string username) {
+    if (username.empty())
+        return 0;
+
     sqlpp::mysql::connection db(db_connection->get_config());
     const tables::users user_table {};
 
