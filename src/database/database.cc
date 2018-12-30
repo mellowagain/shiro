@@ -17,6 +17,7 @@
  */
 
 #include "../config/cli_args.hh"
+#include "../logger/sentry_logger.hh"
 #include "../thirdparty/loguru.hh"
 #include "../shiro.hh"
 #include "database.hh"
@@ -139,6 +140,8 @@ bool shiro::database::is_connected(bool abort) {
 
         return db.is_valid();
     } catch (const sqlpp::exception &ex) {
+        logging::sentry::exception(ex);
+
         if (abort)
             LOG_S(FATAL) << "Unable to connect to database: " << ex.what();
 

@@ -24,6 +24,7 @@
 #include "../../../beatmaps/beatmap_helper.hh"
 #include "../../../config/score_submission_file.hh"
 #include "../../../database/tables/score_table.hh"
+#include "../../../logger/sentry_logger.hh"
 #include "../../../pp/pp_score_metric.hh"
 #include "../../../ranking/ranking_helper.hh"
 #include "../../../replays/replay_manager.hh"
@@ -181,6 +182,8 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
         score.mods = boost::lexical_cast<int32_t>(score_metadata.at(13));
         score.play_mode = static_cast<uint8_t>(boost::lexical_cast<int32_t>(score_metadata.at(15)));
     } catch (const boost::bad_lexical_cast &ex) {
+        logging::sentry::exception(ex);
+
         response.code = 500;
         response.end();
 
@@ -192,6 +195,7 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
         game_version = boost::lexical_cast<int32_t>(score_metadata.at(17));
     } catch (const boost::bad_lexical_cast &ex) {
         LOG_S(WARNING) << "Unable to convert " << score_metadata.at(17) << " to game version: " << ex.what();
+        logging::sentry::exception(ex);
 
         // Give the client a chance to resubmit so the player doesn't get restricted for a fail on our side.
         if (config::score_submission::restrict_mismatching_client_version) {

@@ -16,6 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "../logger/sentry_logger.hh"
 #include "../thirdparty/cpptoml.hh"
 #include "../thirdparty/loguru.hh"
 #include "api_file.hh"
@@ -33,6 +34,7 @@ void shiro::config::api::parse() {
     try {
         config_file = cpptoml::parse_file("api.toml");
     } catch (const cpptoml::parse_exception &ex) {
+        logging::sentry::exception(ex);
         LOG_S(FATAL) << "Failed to parse api.toml file: " << ex.what() << ".";
     }
 

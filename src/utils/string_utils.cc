@@ -17,6 +17,7 @@
  */
 
 #include <boost/lexical_cast.hpp>
+
 #include "string_utils.hh"
 
 bool shiro::utils::strings::to_bool(std::string src) {

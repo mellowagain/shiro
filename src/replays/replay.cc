@@ -22,6 +22,7 @@
 #include <sstream>
 #include <utility>
 
+#include "../logger/sentry_logger.hh"
 #include "../thirdparty/loguru.hh"
 #include "../utils/crypto.hh"
 #include "../utils/string_utils.hh"
@@ -65,6 +66,7 @@ void shiro::replays::replay::parse() {
             a.z = boost::lexical_cast<int32_t>(pieces.at(3));
         } catch (const boost::bad_lexical_cast &ex) {
             LOG_S(ERROR) << "Unable to cast action values into correct data types:" << ex.what();
+            logging::sentry::exception(ex);
             continue;
         }
 

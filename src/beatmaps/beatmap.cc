@@ -23,6 +23,7 @@
 
 #include "../config/bancho_file.hh"
 #include "../database/tables/beatmap_table.hh"
+#include "../logger/sentry_logger.hh"
 #include "../thirdparty/json.hh"
 #include "../thirdparty/loguru.hh"
 #include "../utils/curler.hh"
@@ -101,6 +102,7 @@ bool shiro::beatmaps::beatmap::fetch_api() {
             json_result = json::parse(output);
         } catch (const json::parse_error &ex) {
             LOG_F(ERROR, "Unable to parse json response from osu! api: %s.", ex.what());
+            logging::sentry::exception(ex);
 
             this->ranked_status = (int32_t) status::unknown;
             return false;
@@ -111,6 +113,7 @@ bool shiro::beatmaps::beatmap::fetch_api() {
                 this->beatmapset_id = boost::lexical_cast<int32_t>(std::string(part["beatmapset_id"]));
             } catch (const boost::bad_lexical_cast &ex) {
                 LOG_F(ERROR, "Unable to cast response of osu! API to valid data types: %s.", ex.what());
+                logging::sentry::exception(ex);
 
                 this->ranked_status = (int32_t) status::unknown;
                 return false;
@@ -136,6 +139,7 @@ bool shiro::beatmaps::beatmap::fetch_api() {
         json_result = json::parse(output);
     } catch (const json::parse_error &ex) {
         LOG_F(ERROR, "Unable to parse json response from osu! api: %s.", ex.what());
+        logging::sentry::exception(ex);
 
         this->ranked_status = (int32_t) status::unknown;
         return false;
@@ -184,6 +188,7 @@ bool shiro::beatmaps::beatmap::fetch_api() {
                 this->ranked_status = (int32_t) status::latest_pending;
         } catch (const boost::bad_lexical_cast &ex) {
             LOG_S(ERROR) << "Unable to cast response of Bancho API to valid data types: " << ex.what() << ".";
+            logging::sentry::exception(ex);
 
             this->ranked_status = (int32_t) status::unknown;
             return false;

@@ -16,6 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "../logger/sentry_logger.hh"
 #include "../thirdparty/cpptoml.hh"
 #include "../thirdparty/loguru.hh"
 #include "bancho_file.hh"
@@ -38,6 +39,7 @@ void shiro::config::bancho::parse() {
     try {
         config_file = cpptoml::parse_file("bancho.toml");
     } catch (const cpptoml::parse_exception &ex) {
+        logging::sentry::exception(ex);
         LOG_S(FATAL) << "Failed to parse bancho.toml file: " << ex.what() << ".";
     }
 
