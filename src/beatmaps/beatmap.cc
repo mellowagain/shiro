@@ -19,13 +19,13 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
 #include <chrono>
-#include <curl/curl.h>
 #include <iomanip>
 
 #include "../config/bancho_file.hh"
 #include "../database/tables/beatmap_table.hh"
 #include "../thirdparty/json.hh"
 #include "../thirdparty/loguru.hh"
+#include "../utils/curler.hh"
 #include "../shiro.hh"
 #include "beatmap.hh"
 #include "beatmap_helper.hh"
@@ -80,99 +80,68 @@ bool shiro::beatmaps::beatmap::fetch_db() {
     return true;
 }
 
-size_t callback(void *raw_data, size_t size, size_t memory, std::string *ptr) {
-    size_t new_length = size * memory;
-    size_t old_length = ptr->size();
-
-    try {
-        ptr->resize(old_length + new_length);
-    } catch (const std::bad_alloc &ex) {
-        LOG_F(ERROR, "Unable to allocate new memory for callback of beatmap fetching: %s.", ex.what());
-        return 0;
-    }
-
-    std::copy((char*) raw_data, (char*) raw_data + new_length, ptr->begin() + old_length);
-    return size * memory;
-}
-
 bool shiro::beatmaps::beatmap::fetch_api() {
     // For convenience
     using json = nlohmann::json;
 
-    CURL *curl = curl_easy_init();
-    CURLcode status_code;
+    if (this->beatmapset_id == 0) {
+        std::string url = "https://old.ppy.sh/api/get_beatmaps?k=" + config::bancho::api_key + "&b=" + std::to_string(this->beatmap_id);
+        auto [success, output] = utils::curl::get(url);
 
-    std::string output;
-
-    if (curl != nullptr) {
-        char buffer[512];
-
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, callback);
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &output);
-        curl_easy_setopt(curl, CURLOPT_USERAGENT, "Mozilla/5.0 (X11; Linux x86_64; rv:61.0) Gecko/20100101 Firefox/61.0"); // shiro (https://github.com/Marc3842h/shiro)
-
-        if (this->beatmapset_id == 0) {
-            std::snprintf(buffer, sizeof(buffer), "https://old.ppy.sh/api/get_beatmaps?k=%s&b=%i", config::bancho::api_key.c_str(), this->beatmap_id);
-            curl_easy_setopt(curl, CURLOPT_URL, buffer);
-            status_code = curl_easy_perform(curl);
-
-            if (status_code != CURLE_OK) {
-                LOG_F(ERROR, "Received invalid response from Bancho API: %s.", curl_easy_strerror(status_code));
-
-                this->ranked_status = (int32_t) status::unknown;
-                return false;
-            }
-
-            if (!boost::algorithm::starts_with(output, "[")) {
-                LOG_F(ERROR, "Received invalid response from Bancho API: %s.", output.c_str());
-
-                this->ranked_status = (int32_t) status::unknown;
-                return false;
-            }
-
-            auto result = json::parse(output);
-
-            for (auto &part : result) {
-                try {
-                    this->beatmapset_id = boost::lexical_cast<int32_t>(std::string(part["beatmapset_id"]));
-                } catch (const boost::bad_lexical_cast &ex) {
-                    LOG_S(ERROR) << "Unable to cast response of Bancho API to valid data types: " << ex.what() << ".";
-
-                    this->ranked_status = (int32_t) status::unknown;
-                    return false;
-                }
-            }
-
-            std::memset(buffer, 0, sizeof(buffer));
-        }
-
-        std::snprintf(buffer, sizeof(buffer), "https://old.ppy.sh/api/get_beatmaps?k=%s&s=%i", config::bancho::api_key.c_str(), this->beatmapset_id);
-
-        curl_easy_setopt(curl, CURLOPT_URL, buffer);
-
-        status_code = curl_easy_perform(curl);
-        curl_easy_cleanup(curl);
-
-        if (status_code != CURLE_OK) {
-            LOG_F(ERROR, "Received invalid response from Bancho API: %s.", curl_easy_strerror(status_code));
+        if (!success) {
+            LOG_F(ERROR, "Unable to connect to osu! api: %s.", output.c_str());
 
             this->ranked_status = (int32_t) status::unknown;
             return false;
         }
+
+        json json_result;
+
+        try {
+            json_result = json::parse(output);
+        } catch (const json::parse_error &ex) {
+            LOG_F(ERROR, "Unable to parse json response from osu! api: %s.", ex.what());
+
+            this->ranked_status = (int32_t) status::unknown;
+            return false;
+        }
+
+        for (auto &part : json_result) {
+            try {
+                this->beatmapset_id = boost::lexical_cast<int32_t>(std::string(part["beatmapset_id"]));
+            } catch (const boost::bad_lexical_cast &ex) {
+                LOG_F(ERROR, "Unable to cast response of osu! API to valid data types: %s.", ex.what());
+
+                this->ranked_status = (int32_t) status::unknown;
+                return false;
+            }
+        }
     }
 
-    if (!boost::algorithm::starts_with(output, "[")) {
-        LOG_F(ERROR, "Received invalid response from Bancho API: %s.", output.c_str());
+    std::string url = "https://old.ppy.sh/api/get_beatmaps?k=" + config::bancho::api_key + "&s=" + std::to_string(this->beatmapset_id);
+    auto [success, output] = utils::curl::get(url);
+
+    if (!success) {
+        LOG_F(ERROR, "Unable to connect to osu! api: %s.", output.c_str());
 
         this->ranked_status = (int32_t) status::unknown;
         return false;
     }
 
+    json json_result;
     std::string original_md5sum = this->beatmap_md5;
     bool map_found = false;
-    auto result = json::parse(output);
 
-    for (auto &part : result) {
+    try {
+        json_result = json::parse(output);
+    } catch (const json::parse_error &ex) {
+        LOG_F(ERROR, "Unable to parse json response from osu! api: %s.", ex.what());
+
+        this->ranked_status = (int32_t) status::unknown;
+        return false;
+    }
+
+    for (auto &part : json_result) {
         try {
             std::string artist = part["artist"];
             std::string title = part["title"];

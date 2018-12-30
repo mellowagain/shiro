@@ -19,10 +19,10 @@
 #include <algorithm>
 #include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
-#include <curl/curl.h>
 
 #include "../thirdparty/json.hh"
 #include "../thirdparty/loguru.hh"
+#include "../utils/curler.hh"
 #include "../utils/string_utils.hh"
 #include "country_ids.hh"
 #include "geoloc.hh"
@@ -36,38 +36,25 @@ shiro::geoloc::location_info shiro::geoloc::get_location(const std::string &ip_a
     try {
         return location_cache.Get(ip_address);
     } catch (const std::range_error &ex) {
-        // Not in cache, send request to Gitea API and then store result in cache
+        // Not in cache, send request to xzq IP api and then store result in cache
     }
 
-    CURL *curl = curl_easy_init();
-    CURLcode status_code;
+    const std::string &address = ip_address == "127.0.0.1" ? "self" : ip_address;
+    auto [success, output] = utils::curl::get("https://ip.zxq.co/" + address);
 
-    std::string output;
-
-    if (curl != nullptr) {
-        char buffer[512];
-        std::snprintf(buffer, sizeof(buffer), "https://ip.zxq.co/%s", ip_address == "127.0.0.1" ? "" : ip_address.c_str());
-
-        curl_easy_setopt(curl, CURLOPT_URL, buffer);
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, callback);
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &output);
-        curl_easy_setopt(curl, CURLOPT_USERAGENT, "shiro (https://github.com/Marc3842h/shiro)");
-
-        status_code = curl_easy_perform(curl);
-        curl_easy_cleanup(curl);
-
-        if (status_code != CURLE_OK) {
-            LOG_F(ERROR, "Received invalid response from Gitea API: %s.", curl_easy_strerror(status_code));
-            return invalid_location;
-        }
-    }
-
-    if (!boost::algorithm::starts_with(output, "{")) {
-        LOG_F(ERROR, "Received invalid response from Gitea API: %s.", output.c_str());
+    if (!success) {
+        LOG_F(ERROR, "Unable to connect to xzq IP api: %s.", output.c_str());
         return invalid_location;
     }
 
-    auto json_result = json::parse(output);
+    json json_result;
+
+    try {
+        json_result = json::parse(output);
+    } catch (const json::parse_error &ex) {
+        LOG_F(ERROR, "Unable to parse json response from xzq IP api: %s.", ex.what());
+        return invalid_location;
+    }
 
     std::string country;
     std::string location;
@@ -76,12 +63,12 @@ shiro::geoloc::location_info shiro::geoloc::get_location(const std::string &ip_a
         country = json_result["country"];
         location = json_result["loc"];
     } catch (const json::type_error &ex) {
-        LOG_F(ERROR, "Received invalid response from Gitea API: %s.", output.c_str());
+        LOG_F(ERROR, "Received invalid response from xzq IP api: %s.", output.c_str());
         return invalid_location;
     }
 
     if (country.empty() || location.empty()) {
-        LOG_F(ERROR, "Received invalid response from Gitea API: %s.", output.c_str());
+        LOG_F(ERROR, "Received invalid response from xzq IP api: %s.", output.c_str());
         return invalid_location;
     }
 

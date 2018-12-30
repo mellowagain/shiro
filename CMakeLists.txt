@@ -97,15 +97,15 @@ if (Tcmalloc_FOUND)
 endif()
 
 # Enable logging with streams in Loguru
-add_definitions(-DLOGURU_WITH_STREAMS=1 -DLOGURU_REDEFINE_ASSERT=1)
+add_definitions(-DLOGURU_WITH_STREAMS=1 -DLOGURU_REDEFINE_ASSERT=1 -DSHIRO_NO_SQL_DEBUG=1)
 
 # Resources
 file(GLOB_RECURSE RESOURCES ${CMAKE_CURRENT_SOURCE_DIR}/resources/*)
 
-foreach (RESOURCE ${RESOURCES})
-    get_filename_component(RESOURCE_BASENAME ${RESOURCE} NAME)
-    configure_file("${RESOURCE}" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${RESOURCE_BASENAME}" COPYONLY)
-endforeach()
+#foreach (RESOURCE ${RESOURCES})
+#    get_filename_component(RESOURCE_BASENAME ${RESOURCE} NAME)
+#    configure_file("${RESOURCE}" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${RESOURCE_BASENAME}" COPYONLY)
+#endforeach()
 
 if (WIN32)
     set(CMAKE_LINK_LIBS libmysql pdh OpenSSL::Crypto ${CMAKE_LINK_LIBS})
