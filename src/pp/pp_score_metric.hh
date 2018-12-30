@@ -16,27 +16,24 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef SHIRO_BEATMAP_HELPER_HH
-#define SHIRO_BEATMAP_HELPER_HH
+#ifndef SHIRO_PP_SCORE_METRIC_HH
+#define SHIRO_PP_SCORE_METRIC_HH
 
-#include <cstdio>
-#include <string>
+#include "../beatmaps/beatmap.hh"
+#include "../scores/score.hh"
 
-#include "beatmap_ranked_status.hh"
+namespace shiro::pp {
 
-namespace shiro::beatmaps::helper {
+    float calculate(beatmaps::beatmap beatmap, scores::score score);
 
-    void init();
+    float calculate_std(beatmaps::beatmap beatmap, scores::score score);
 
-    int32_t fix_beatmap_status(int32_t status_code);
+    float calculate_taiko(beatmaps::beatmap beatmap, scores::score score);
 
-    bool has_leaderboard(int32_t status_code);
+    float calculate_mania(beatmaps::beatmap beatmap, scores::score score);
 
-    bool awards_pp(int32_t status_code);
-
-    // The handle returned from this method needs to be closed with std::fclose to file descriptor leakage
-    FILE *download(int32_t beatmap_id);
+    float calculate_ctb(beatmaps::beatmap beatmap, scores::score score);
 
 }
 
-#endif //SHIRO_BEATMAP_HELPER_HH
+#endif //SHIRO_PP_SCORE_METRIC_HH

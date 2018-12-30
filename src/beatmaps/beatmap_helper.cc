@@ -16,12 +16,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "../utils/filesystem.hh"
-
-#include <curl/curl.h>
 #include <fstream>
 
 #include "../thirdparty/loguru.hh"
+#include "../utils/curler.hh"
+#include "../utils/filesystem.hh"
 #include "beatmap_helper.hh"
 
 static std::string dir = fs::current_path().u8string() + shiro::utils::filesystem::preferred_separator + "maps";
@@ -52,48 +51,18 @@ bool shiro::beatmaps::helper::awards_pp(int32_t status_code) {
     return status_code == (int32_t) status::ranked;
 }
 
-size_t shiro::beatmaps::helper::callback(void *raw_data, size_t size, size_t memory, std::string *ptr) {
-    size_t new_length = size * memory;
-    size_t old_length = ptr->size();
-
-    try {
-        ptr->resize(old_length + new_length);
-    } catch (const std::bad_alloc &ex) {
-        LOG_F(ERROR, "Unable to allocate new memory for callback of beatmap helper: %s.", ex.what());
-        return 0;
-    }
-
-    std::copy((char*) raw_data, (char*) raw_data + new_length, ptr->begin() + old_length);
-    return size * memory;
-}
-
 FILE *shiro::beatmaps::helper::download(int32_t beatmap_id) {
-    std::string filename = dir + utils::filesystem::preferred_separator + std::to_string(beatmap_id) + ".osu";
+    std::string beatmap_id_str = std::to_string(beatmap_id);
+    std::string filename = dir + utils::filesystem::preferred_separator + beatmap_id_str + ".osu";
 
     if (fs::exists(filename))
         return std::fopen(filename.c_str(), "rb");
 
-    CURL *curl = curl_easy_init();
-    CURLcode status_code;
+    auto [success, output] = utils::curl::get("https://old.ppy.sh/osu/" + beatmap_id_str);
 
-    std::string output;
-
-    if (curl != nullptr) {
-        char buffer[512];
-        std::snprintf(buffer, sizeof(buffer), "https://old.ppy.sh/osu/%i", beatmap_id);
-
-        curl_easy_setopt(curl, CURLOPT_URL, buffer);
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, callback);
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &output);
-        curl_easy_setopt(curl, CURLOPT_USERAGENT, "Mozilla/5.0 (X11; Linux x86_64; rv:61.0) Gecko/20100101 Firefox/61.0"); // shiro (https://github.com/Marc3842h/shiro)
-
-        status_code = curl_easy_perform(curl);
-        curl_easy_cleanup(curl);
-
-        if (status_code != CURLE_OK) {
-            LOG_F(ERROR, "Received invalid response from Bancho API: %s.", curl_easy_strerror(status_code));
-            return nullptr;
-        }
+    if (!success) {
+        LOG_F(ERROR, "Unable to connect to osu! api: %s.", output.c_str());
+        return nullptr;
     }
 
     FILE *map_file = std::fopen(filename.c_str(), "wb");

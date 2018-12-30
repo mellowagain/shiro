@@ -16,6 +16,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <boost/algorithm/string.hpp>
+
 #include "../users/user_manager.hh"
 #include "osu_client.hh"
 
@@ -32,6 +34,9 @@ shiro::utils::clients::osu_client shiro::utils::clients::parse_version(const std
 
     if (client_version.find("version") != std::string::npos)
         return osu_client::tsuki;
+
+    if (boost::algorithm::to_lower_copy(client_version).find("yozora") != std::string::npos)
+        return osu_client::yozora;
 
     // osu!fallback and very outdated versions
     if (client_build <= 20160403)

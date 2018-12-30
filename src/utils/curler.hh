@@ -16,27 +16,19 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef SHIRO_BEATMAP_HELPER_HH
-#define SHIRO_BEATMAP_HELPER_HH
+#ifndef SHIRO_CURLER_HH
+#define SHIRO_CURLER_HH
 
-#include <cstdio>
+#include <tuple>
 #include <string>
 
-#include "beatmap_ranked_status.hh"
+namespace shiro::utils::curl {
 
-namespace shiro::beatmaps::helper {
+    // Returns a boolean indicating if the request was successful and the response as a string if it was successful.
+    std::tuple<bool, std::string> get(const std::string &url);
 
-    void init();
-
-    int32_t fix_beatmap_status(int32_t status_code);
-
-    bool has_leaderboard(int32_t status_code);
-
-    bool awards_pp(int32_t status_code);
-
-    // The handle returned from this method needs to be closed with std::fclose to file descriptor leakage
-    FILE *download(int32_t beatmap_id);
+    size_t internal_callback(void *raw_data, size_t size, size_t memory, std::string *ptr);
 
 }
 
-#endif //SHIRO_BEATMAP_HELPER_HH
+#endif //SHIRO_CURLER_HH
