@@ -184,18 +184,21 @@ nlohmann::crow::crow(const std::string& dsn,
         m_jobs.reserve(m_maximal_jobs);
     }
 
-    void nlohmann::crow::add_breadcrumb(const std::string& message,
+    void nlohmann::crow::add_breadcrumb(const std::string& message = "",
                               const json& attributes)
     {
         json breadcrumb =
                 {
                         {"event_id", crow_utilities::generate_uuid()},
-                        {"message", message},
+                        //{"message", message},
                         {"level", "info"},
                         {"type", "default"},
                         {"category", "log"},
                         {"timestamp", crow_utilities::get_timestamp()}
                 };
+
+        if (!message.empty())
+            breadcrumb["message"] = message;
 
         if (attributes.is_object())
         {
@@ -305,6 +308,7 @@ nlohmann::crow::crow(const std::string& dsn,
         m_payload["platform"] = "c";
         m_payload["sdk"]["name"] = "crow";
         m_payload["sdk"]["version"] = "0.0.6";
+        m_payload["sdk"]["integrations"] = { "shiro" }; // Tell sentry we're using Shiro specific changes
 
         // add context: app
 #if defined(_DEBUG) && !defined(NDEBUG)

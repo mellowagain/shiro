@@ -32,6 +32,7 @@
 #include "config/score_submission_file.hh"
 #include "geoloc/country_ids.hh"
 #include "logger/logger.hh"
+#include "logger/sentry_logger.hh"
 #include "native/process_info.hh"
 #include "native/signal_handler.hh"
 #include "native/system_statistics.hh"
@@ -52,6 +53,7 @@ std::time_t shiro::start_time = std::time(nullptr);
 
 int shiro::init(int argc, char **argv) {
     logging::init(argc, argv);
+    logging::sentry::init();
 
     curl_global_init(CURL_GLOBAL_DEFAULT);
 
