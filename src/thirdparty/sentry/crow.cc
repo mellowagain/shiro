@@ -38,12 +38,14 @@ SOFTWARE.
 #include <regex> // regex, regex_match, smatch
 #include <stdexcept> // invalid_argument
 #include <sstream> // stringstream
+#include <iostream>
 #include "crow.hh"
 #include "crow_config.hh"
 #include "crow_utilities.hh"
 #include "curl_wrapper.hh"
 #include "../json.hh"
-//#include "../../native/system_statistics.hh"
+#include "../../native/system_info.hh"
+#include "../../native/system_statistics.hh"
 
 using json = nlohmann::json;
 
@@ -64,7 +66,9 @@ nlohmann::crow::crow(const std::string& dsn,
         // process DSN
         if (not dsn.empty())
         {
-            const std::regex dsn_regex("(http[s]?)://([^:]+):([^@]+)@([^/]+)/([0-9]+)");
+            std::regex dsn_regex("(http[s]?)://([^:]+):([^@]+)@([^/]+)/([0-9]+)");
+            std::regex dsn_public_regex("(http[s]?)://([^:]+)@([^/]+)/([0-9]+)");
+
             std::smatch pieces_match;
 
             if (std::regex_match(dsn, pieces_match, dsn_regex) and pieces_match.size() == 6)
@@ -76,9 +80,19 @@ nlohmann::crow::crow(const std::string& dsn,
                 const auto project_id = pieces_match.str(5);
                 m_store_url = scheme + "://" + host + "/api/" + project_id + "/store/";
             }
+            else if (std::regex_match(dsn, pieces_match, dsn_public_regex) and pieces_match.size() == 5)
+            {
+                dsn_regex = std::regex("(http[s]?)://([^:]+)@([^/]+)/([0-9]+)");
+                const auto scheme = pieces_match.str(1);
+                m_public_key = pieces_match.str(2);
+                m_secret_key = "";
+                const auto host = pieces_match.str(3);
+                const auto project_id = pieces_match.str(4);
+                m_store_url = scheme + "://" + host + "/api/" + project_id + "/store/";
+            }
             else
             {
-                throw std::invalid_argument("DNS " + dsn + " is invalid");
+                throw std::invalid_argument("DSN " + dsn + " is invalid");
             }
         }
 
@@ -299,38 +313,46 @@ nlohmann::crow::crow(const std::string& dsn,
         m_payload["contexts"]["app"]["build_type"] = "release";
 #endif
 
-        m_payload["contexts"]["app"]["pointer_size"] = sizeof(void*) * 8;
-
         // add context: device
-        m_payload["contexts"]["device"]["arch"] = "x86_64";//NLOHMANN_CROW_CMAKE_SYSTEM_PROCESSOR;
-        m_payload["contexts"]["device"]["name"] = "marc-main-machine";//NLOHMANN_CROW_HOSTNAME;
-        m_payload["contexts"]["device"]["model"] = "";//NLOHMANN_CROW_SYSCTL_HW_MODEL;
-        m_payload["contexts"]["device"]["memory_size"] = 15258.8;//shiro::native::system_stats::get_total_physical_memory();
+        m_payload["contexts"]["device"]["arch"] = shiro::native::system_info::get_architecture();
+        m_payload["contexts"]["device"]["name"] = shiro::native::system_info::get_host_name();
+        m_payload["contexts"]["device"]["model"] = shiro::native::system_info::get_hw_model();
+        m_payload["contexts"]["device"]["memory_size"] = shiro::native::system_stats::get_total_physical_memory();
 
         // add context: os
-        m_payload["contexts"]["os"]["name"] = "linux";//NLOHMANN_CROW_CMAKE_SYSTEM_NAME;
-        m_payload["contexts"]["os"]["version"] = "4.19.12-zen1-1-zen";//NLOHMANN_CROW_OS_RELEASE;
-        /*if (not std::string(NLOHMANN_CROW_OS_VERSION).empty())
-        {*/
-            m_payload["contexts"]["os"]["build"] = "zen1-1-zen";//NLOHMANN_CROW_OS_VERSION;
-        /*}
-        else
-        {
-            m_payload["contexts"]["os"]["build"] = NLOHMANN_CROW_CMAKE_SYSTEM_VERSION;
-        }*/
-        /*if (not std::string(NLOHMANN_CROW_UNAME).empty())
-        {*/
-            m_payload["contexts"]["os"]["kernel_version"] = "4.19.12";//NLOHMANN_CROW_UNAME;
-        /*}
-        else if (not std::string(NLOHMANN_CROW_SYSTEMINFO).empty())
-        {
-            m_payload["contexts"]["os"]["kernel_version"] = NLOHMANN_CROW_SYSTEMINFO;
-        }*/
+#if defined(_WIN32)
+        m_payload["contexts"]["os"]["name"] = "windows";
+#elif defined(__APPLE__)
+        m_payload["contexts"]["os"]["name"] = "macos";
+#elif defined(__linux__)
+        m_payload["contexts"]["os"]["name"] = "linux";
+#else
+        m_payload["contexts"]["os"]["name"] = "unknown";
+#endif
 
-        // add context: runtime
-        m_payload["contexts"]["runtime"]["name"] = "clang";//NLOHMANN_CROW_CMAKE_CXX_COMPILER_ID;
-        m_payload["contexts"]["runtime"]["version"] = "7.0.1";//NLOHMANN_CROW_CMAKE_CXX_COMPILER_VERSION;
-        m_payload["contexts"]["runtime"]["detail"] = "clang";//NLOHMANN_CROW_CXX;
+        // important
+        m_payload["contexts"]["os"]["version"] = shiro::native::system_info::get_os_version();
+        m_payload["contexts"]["os"]["build"] = shiro::native::system_info::get_os_build();
+        m_payload["contexts"]["os"]["kernel_version"] = shiro::native::system_info::get_os_version();
+
+// Utilities for strings in compiler
+#define str_helper(x) #x
+#define str(x) str_helper(x)
+
+#if defined(_MSC_VER)
+        m_payload["contexts"]["runtime"]["name"] = "msvc";
+        m_payload["contexts"]["runtime"]["version"] = str(_MSC_FULL_VER) " (" str(_MSC_VER) ")";
+#elif defined(__clang__)
+        m_payload["contexts"]["runtime"]["name"] = "clang";
+        m_payload["contexts"]["runtime"]["version"] = __clang_version__;
+#elif defined(__GNUC__)
+        m_payload["contexts"]["runtime"]["name"] = "gcc";
+        m_payload["contexts"]["runtime"]["version"] = str(__GNUC__) "." str(__GNUC_MINOR__) "." str(__GNUC_PATCHLEVEL__);
+#endif
+
+// Undefine utilities for strings defined above
+#undef str_helper
+#undef str
 
         // add context: user
         const char* user = getenv("USER");
@@ -340,7 +362,7 @@ nlohmann::crow::crow(const std::string& dsn,
         }
         if (user)
         {
-            m_payload["user"]["id"] = std::string(user) + "@marc-main-machine";// + NLOHMANN_CROW_HOSTNAME;
+            m_payload["user"]["id"] = std::string(user) + "@" + shiro::native::system_info::get_host_name();
             m_payload["user"]["username"] = user;
         }
     }
@@ -353,7 +375,11 @@ nlohmann::crow::crow(const std::string& dsn,
         std::string security_header = "X-Sentry-Auth: Sentry sentry_version=5,sentry_client=crow/0.0.6,sentry_timestamp=";
         security_header += std::to_string(crow_utilities::get_timestamp());
         security_header += ",sentry_key=" + m_public_key;
-        security_header += ",sentry_secret=" + m_secret_key;
+
+        if (!m_secret_key.empty()) {
+            security_header += ",sentry_secret=" + m_secret_key;
+        }
+
         curl.set_header(security_header.c_str());
 
         return curl.post(m_store_url, payload, true).data;
