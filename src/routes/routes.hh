@@ -19,6 +19,7 @@
 #ifndef SHIRO_ROUTES_HH
 #define SHIRO_ROUTES_HH
 
+#include "../logger/sentry_logger.hh"
 #include "../thirdparty/crow.hh"
 #include "../shiro.hh"
 
@@ -34,9 +35,12 @@ namespace shiro::routes {
 
 #define shiro_route(handler)                                                                                                \
     [](const crow::request &request, crow::response &response) {                                                            \
+        logging::sentry::http_request_in(request);                                                                          \
+                                                                                                                            \
         try {                                                                                                               \
             handler(request, response);                                                                                     \
         } catch (...) {                                                                                                     \
+            logging::sentry::exception(std::current_exception());                                                           \
             LOG_S(ERROR) << "A exception occurred in " #handler ": " << boost::current_exception_diagnostic_information();  \
                                                                                                                             \
             response.code = 500;                                                                                            \
