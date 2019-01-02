@@ -17,6 +17,7 @@
  */
 
 #include "../../../database/tables/score_table.hh"
+#include "../../../logger/sentry_logger.hh"
 #include "../../../replays/replay_manager.hh"
 #include "../../../scores/score.hh"
 #include "../../../scores/score_helper.hh"
@@ -58,6 +59,7 @@ void shiro::routes::web::get_replay::handle(const crow::request &request, crow::
         id = boost::lexical_cast<int32_t>(score_id);
     } catch (const boost::bad_lexical_cast &ex) {
         LOG_S(WARNING) << "Unable to convert score id " << score_id << " to int32_t: " << ex.what();
+        logging::sentry::exception(ex);
 
         response.code = 500;
         response.end();

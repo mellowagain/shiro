@@ -46,6 +46,7 @@ void shiro::routes::init() {
 
         server.run();
     } catch (const boost::system::system_error &ex) {
+        logging::sentry::exception(ex);
         LOG_S(FATAL) << "Unable to start server: " << ex.what() << ".";
     }
 }

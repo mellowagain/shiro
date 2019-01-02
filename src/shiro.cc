@@ -32,6 +32,7 @@
 #include "config/score_submission_file.hh"
 #include "geoloc/country_ids.hh"
 #include "logger/logger.hh"
+#include "logger/sentry_logger.hh"
 #include "native/process_info.hh"
 #include "native/signal_handler.hh"
 #include "native/system_statistics.hh"
@@ -59,9 +60,14 @@ int shiro::init(int argc, char **argv) {
 
     config::cli::parse(argc, argv);
 
+    // Parse Bancho config before every other config to check if integrations are enabled
+    config::bancho::parse();
+
+    // Launch Sentry.io and DataDog integrations
+    logging::sentry::init();
+
     config::api::parse();
     config::bot::parse();
-    config::bancho::parse();
     config::database::parse();
     config::score_submission::parse();
 

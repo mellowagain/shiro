@@ -18,6 +18,7 @@
 
 #include <curl/curl.h>
 
+#include "../logger/sentry_logger.hh"
 #include "../thirdparty/loguru.hh"
 #include "curler.hh"
 
@@ -38,10 +39,15 @@ std::tuple<bool, std::string> shiro::utils::curl::get(const std::string &url) {
     status_code = curl_easy_perform(curl);
     curl_easy_cleanup(curl);
 
-    if (status_code == CURLE_OK)
+    if (status_code == CURLE_OK) {
+        logging::sentry::http_request_out(url, "GET", status_code, url.find("/osu/") == std::string::npos ? output : "");
         return { true, output };
+    }
 
-    return { false, curl_easy_strerror(status_code) };
+    output = curl_easy_strerror(status_code);
+
+    logging::sentry::http_request_out(url, "GET", status_code, output);
+    return { false, output };
 }
 
 size_t shiro::utils::curl::internal_callback(void *raw_data, size_t size, size_t memory, std::string *ptr) {
@@ -52,6 +58,8 @@ size_t shiro::utils::curl::internal_callback(void *raw_data, size_t size, size_t
         ptr->resize(old_length + new_length);
     } catch (const std::bad_alloc &ex) {
         LOG_F(ERROR, "Unable to allocate new memory for http response: %s.", ex.what());
+        logging::sentry::exception(ex);
+
         return 0;
     }
 

@@ -16,6 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "../logger/sentry_logger.hh"
 #include "../thirdparty/cpptoml.hh"
 #include "../thirdparty/loguru.hh"
 #include "bancho_file.hh"
@@ -31,6 +32,8 @@ bool shiro::config::bancho::default_supporter = false;
 
 std::string shiro::config::bancho::api_key = "osu! API key";
 
+bool shiro::config::bancho::sentry_integration = true;
+
 void shiro::config::bancho::parse() {
     if (config_file != nullptr)
         LOG_S(INFO) << "Re-parsing bancho.toml file...";
@@ -38,6 +41,7 @@ void shiro::config::bancho::parse() {
     try {
         config_file = cpptoml::parse_file("bancho.toml");
     } catch (const cpptoml::parse_exception &ex) {
+        logging::sentry::exception(ex);
         LOG_S(FATAL) << "Failed to parse bancho.toml file: " << ex.what() << ".";
     }
 
@@ -49,6 +53,8 @@ void shiro::config::bancho::parse() {
 
     api_key = config_file->get_qualified_as<std::string>("api.key").value_or("osu! API key");
 
+    sentry_integration = config_file->get_qualified_as<bool>("integrations.sentry").value_or(true);
+
     LOG_S(INFO) << "Successfully parsed bancho.toml.";
 
     cli::cli_app.add_option("--bancho-host", host, "Host that Bancho should bind to");
@@ -59,4 +65,7 @@ void shiro::config::bancho::parse() {
     //cli::cli_app.add_option("--bancho-default-supporter", default_Supporter, "Allow users with no roles / permissions to have supporer in-game?");
 
     cli::cli_app.add_option("--bancho-api-key", api_key, "API key for accessing official osu!Bancho API");
+
+    // Boolean flags are not yet supported fully in cli, see above
+    //cli::cli_app.add_option("--bancho-sentry-integration", sentry_integration, "Integrate Shiro with Sentry.io error reporting?");
 }

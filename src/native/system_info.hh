@@ -16,15 +16,23 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <boost/lexical_cast.hpp>
+#ifndef SHIRO_SYSTEM_INFO_HH
+#define SHIRO_SYSTEM_INFO_HH
 
-#include "string_utils.hh"
+#include <string>
 
-bool shiro::utils::strings::to_bool(std::string src) {
-    try {
-        return boost::lexical_cast<bool>(src);
-    } catch (const boost::bad_lexical_cast &ex) {
-        std::transform(src.begin(), src.end(), src.begin(), ::tolower);
-        return src == "true";
-    }
+namespace shiro::native::system_info {
+
+    std::string get_architecture();
+
+    std::string get_host_name();
+
+    std::string get_hw_model();
+
+    std::string get_os_version();
+
+    std::string get_os_build();
+
 }
+
+#endif  // SHIRO_SYSTEM_INFO_HH

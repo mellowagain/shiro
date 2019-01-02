@@ -26,6 +26,7 @@
 #include "../geoloc/location_info.hh"
 #include "../io/layouts/packets.hh"
 #include "../io/osu_writer.hh"
+#include "../logger/sentry_logger.hh"
 #include "../thirdparty/digestpp.hh"
 #include "../thirdparty/loguru.hh"
 #include "../thirdparty/uuid.hh"
@@ -124,6 +125,7 @@ void shiro::handler::login::handle(const crow::request &request, crow::response 
         build = boost::lexical_cast<int32_t>(parseable_version);
     } catch (const boost::bad_lexical_cast &ex) {
         LOG_S(WARNING) << "Unable to cast " << version << " to int32_t: " << ex.what();
+        logging::sentry::exception(ex);
 
         if (config::score_submission::restrict_mismatching_client_version) {
             writer.login_reply((int32_t) utils::login_responses::server_error);
@@ -133,6 +135,7 @@ void shiro::handler::login::handle(const crow::request &request, crow::response 
         }
     } catch (const std::out_of_range &ex) {
         LOG_S(WARNING) << "Unable to convert client version " << version << " to valid build: " << ex.what();
+        logging::sentry::exception(ex);
 
         if (config::score_submission::restrict_mismatching_client_version) {
             writer.login_reply((int32_t) utils::login_responses::server_error);
@@ -160,6 +163,7 @@ void shiro::handler::login::handle(const crow::request &request, crow::response 
         time_zone = boost::lexical_cast<uint8_t>(utc_offset);
     } catch (const boost::bad_lexical_cast &ex) {
         LOG_S(WARNING) << "Unable to cast " << utc_offset << " to uint8_t: " << ex.what() << ".";
+        logging::sentry::exception(ex);
     }
 
     geoloc::location_info info = geoloc::get_location(request.get_ip_address());

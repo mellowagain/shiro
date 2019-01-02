@@ -19,6 +19,7 @@
 #include "../../../beatmaps/beatmap.hh"
 #include "../../../beatmaps/beatmap_helper.hh"
 #include "../../../geoloc/country_ids.hh"
+#include "../../../logger/sentry_logger.hh"
 #include "../../../scores/score_helper.hh"
 #include "../../../thirdparty/loguru.hh"
 #include "../../../users/user_manager.hh"
@@ -69,6 +70,8 @@ void shiro::routes::web::get_scores::handle(const crow::request &request, crow::
         scoreboard_type = boost::lexical_cast<int32_t>(type);
     } catch (const boost::bad_lexical_cast &ex) {
         LOG_S(ERROR) << "Unable to convert sent values to beatmap metadata: " << ex.what() << ".";
+        logging::sentry::exception(ex);
+
         response.code = 500;
         response.end();
         return;
@@ -97,6 +100,8 @@ void shiro::routes::web::get_scores::handle(const crow::request &request, crow::
                 mods_list = boost::lexical_cast<int32_t>(mods);
             } catch (const boost::bad_lexical_cast &ex) {
                 LOG_S(ERROR) << "Unable to convert sent values to mods: " << ex.what() << ".";
+                logging::sentry::exception(ex);
+
                 response.code = 500;
                 response.end();
                 return;

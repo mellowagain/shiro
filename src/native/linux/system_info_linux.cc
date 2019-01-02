@@ -16,25 +16,44 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef SHIRO_BANCHO_FILE_HH
-#define SHIRO_BANCHO_FILE_HH
+#if defined(__linux__)
 
-#include <string>
+#include <sys/utsname.h>
+#include <unistd.h>
+#include <limits.h>
 
-namespace shiro::config::bancho {
+#include "../system_info.hh"
 
-    extern std::string host;
-    extern uint16_t port;
-    extern uint16_t concurrency;
+std::string shiro::native::system_info::get_architecture() {
+    struct utsname uname_data;
+    uname(&uname_data);
 
-    extern bool default_supporter;
-
-    extern std::string api_key;
-
-    extern bool sentry_integration;
-
-    void parse();
-
+    return uname_data.machine;
 }
 
-#endif //SHIRO_BANCHO_FILE_HH
+std::string shiro::native::system_info::get_host_name() {
+    char hostname[HOST_NAME_MAX];
+    gethostname(hostname, HOST_NAME_MAX);
+
+    return hostname;
+}
+
+std::string shiro::native::system_info::get_hw_model() {
+    return "";
+}
+
+std::string shiro::native::system_info::get_os_version() {
+    struct utsname uname_data;
+    uname(&uname_data);
+
+    return uname_data.release;
+}
+
+std::string shiro::native::system_info::get_os_build() {
+    struct utsname uname_data;
+    uname(&uname_data);
+
+    return uname_data.version;
+}
+
+#endif
