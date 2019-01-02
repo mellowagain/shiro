@@ -87,11 +87,9 @@ void shiro::logging::sentry::exception(const std::exception_ptr &ptr) {
 
 void shiro::logging::sentry::http_request_out(const std::string &url, const std::string &method, int32_t status_code, const std::string &reason) {
     json req = {
-        {
-            { "url", url },
-            { "method", method },
-            { "status_code", status_code }
-        }
+        { "url", url },
+        { "method", method },
+        { "status_code", status_code }
     };
 
     if (!reason.empty())
