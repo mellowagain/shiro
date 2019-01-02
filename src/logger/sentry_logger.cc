@@ -16,11 +16,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "../config/bancho_file.hh"
 #include "sentry_logger.hh"
 
 nlohmann::crow shiro::logging::sentry::client("https://da055b9caaf34778a93db094a1f8b6c2@sentry.io/1277337");
 
 void shiro::logging::sentry::init() {
+    if (!config::bancho::sentry_integration) {
+        LOG_F(WARNING, "Sentry.io error reporting is currently disabled.");
+        return;
+    }
+
     loguru::add_callback("sentry.io", logging::sentry::callback, nullptr, loguru::Verbosity_INFO);
     loguru::set_fatal_handler(logging::sentry::fatal_callback);
     client.add_breadcrumb("Successfully started communication with sentry.io.");
@@ -78,6 +84,9 @@ void shiro::logging::sentry::exception(const std::exception &ex) {
 }
 
 void shiro::logging::sentry::exception(const std::exception_ptr &ptr) {
+    if (!config::bancho::sentry_integration)
+        return;
+
     try {
         std::rethrow_exception(ptr);
     } catch (const std::exception &ex) {
@@ -86,6 +95,9 @@ void shiro::logging::sentry::exception(const std::exception_ptr &ptr) {
 }
 
 void shiro::logging::sentry::http_request_out(const std::string &url, const std::string &method, int32_t status_code, const std::string &reason) {
+    if (!config::bancho::sentry_integration)
+        return;
+
     json req = {
         { "url", url },
         { "method", method },
@@ -103,6 +115,9 @@ void shiro::logging::sentry::http_request_out(const std::string &url, const std:
 }
 
 void shiro::logging::sentry::http_request_in(const ::crow::request &request) {
+    if (!config::bancho::sentry_integration)
+        return;
+
     json req = {
         { "url", request.url },
         { "method", ::crow::method_name(request.method) },

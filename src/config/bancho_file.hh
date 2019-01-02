@@ -31,6 +31,8 @@ namespace shiro::config::bancho {
 
     extern std::string api_key;
 
+    extern bool sentry_integration;
+
     void parse();
 
 }

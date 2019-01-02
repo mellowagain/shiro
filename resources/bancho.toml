@@ -13,3 +13,6 @@ default_supporter = true
 
 [api]
 key = "osu!Bancho token"
+
+[integrations]
+sentry = true

@@ -53,7 +53,6 @@ std::time_t shiro::start_time = std::time(nullptr);
 
 int shiro::init(int argc, char **argv) {
     logging::init(argc, argv);
-    logging::sentry::init();
 
     curl_global_init(CURL_GLOBAL_DEFAULT);
 
@@ -61,9 +60,14 @@ int shiro::init(int argc, char **argv) {
 
     config::cli::parse(argc, argv);
 
+    // Parse Bancho config before every other config to check if integrations are enabled
+    config::bancho::parse();
+
+    // Launch Sentry.io and DataDog integrations
+    logging::sentry::init();
+
     config::api::parse();
     config::bot::parse();
-    config::bancho::parse();
     config::database::parse();
     config::score_submission::parse();
 
