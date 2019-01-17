@@ -30,7 +30,7 @@
 #include "config/cli_args.hh"
 #include "config/db_file.hh"
 #include "config/score_submission_file.hh"
-#include "geoloc/country_ids.hh"
+#include "geoloc/maxmind_resolver.hh"
 #include "logger/logger.hh"
 #include "logger/sentry_logger.hh"
 #include "native/process_info.hh"
@@ -72,6 +72,7 @@ int shiro::init(int argc, char **argv) {
     config::score_submission::parse();
 
     beatmaps::helper::init();
+    geoloc::maxmind::init();
 
     db_connection = std::make_shared<database>(
             config::database::address, config::database::port, config::database::database,
@@ -116,6 +117,8 @@ int shiro::init(int argc, char **argv) {
 
 void shiro::destroy() {
     curl_global_cleanup();
+
+    geoloc::maxmind::destroy();
 
     scheduler.CancelAll();
 
