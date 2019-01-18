@@ -16,14 +16,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <boost/algorithm/string.hpp>
-#include <boost/asio/io_service.hpp>
-#include <boost/asio/ip/host_name.hpp>
-#include <boost/asio/ip/tcp.hpp>
 #include <cstring>
 #include <maxminddb.h>
 
 #include "../thirdparty/loguru.hh"
+#include "../utils/curler.hh"
 #include "maxmind_resolver.hh"
 
 static MMDB_s mmdb;
@@ -43,30 +40,15 @@ void shiro::geoloc::maxmind::destroy() {
 
 std::tuple<std::string, int, int> shiro::geoloc::maxmind::locate(std::string ip_address) {
     // The IP address is localhost, resolve our own geolocation
-    // TODO: Make it actually work
     if (ip_address == "127.0.0.1" || ip_address.empty()) {
-        ip_address.clear();
+        auto [success, output] = utils::curl::get("https://api.ipify.org/");
 
-        boost::asio::io_service io_service;
-        boost::asio::ip::tcp::resolver resolver(io_service);
-
-        std::for_each(resolver.resolve({ boost::asio::ip::host_name(), "" }), {}, [&ip_address](const auto &request) {
-            // Quick exit way to check if we already found our own address
-            if (!ip_address.empty())
-                return;
-
-            std::string address = request.endpoint().address().to_string();
-
-            if (address.empty() || address == "127.0.0.1" || boost::starts_with(address, "192.168"))
-                return;
-
-            ip_address = address;
-        });
-
-        if (ip_address.empty()) {
-            LOG_F(WARNING, "Unable to resolve own local IP address.");
+        if (!success) {
+            LOG_F(WARNING, "Unable to resolve own local IP address: %s", output.c_str());
             return { "XX", 0, 0 };
         }
+
+        ip_address = output;
     }
 
     int gai_error = 0;
