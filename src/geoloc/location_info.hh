@@ -28,11 +28,11 @@ namespace shiro::geoloc {
 
     class location_info {
     public:
-        uint8_t country;
-        float latitude;
-        float longitude;
+        uint8_t country = 0;
+        float latitude = 0.0f;
+        float longitude = 0.0f;
 
-        explicit location_info(uint8_t country = 111, float latitude = 0.0f, float longitude = 0.0f)
+        explicit location_info(uint8_t country, float latitude, float longitude)
                 : country(country)
                 , latitude(latitude)
                 , longitude(longitude) {
@@ -40,8 +40,6 @@ namespace shiro::geoloc {
         }
 
     };
-
-    static location_info invalid_location;
 
 }
 

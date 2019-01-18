@@ -166,11 +166,17 @@ void shiro::handler::login::handle(const crow::request &request, crow::response 
         logging::sentry::exception(ex);
     }
 
-    geoloc::location_info info = geoloc::get_location(request.get_ip_address());
-    user->presence.country_id = info.country;
+    std::optional<geoloc::location_info> info = geoloc::get_location(request.get_ip_address());
+
+    if (info.has_value()) {
+        geoloc::location_info location_info = info.value();
+
+        user->presence.country_id = location_info.country;
+        user->presence.latitude = location_info.latitude;
+        user->presence.longitude = location_info.longitude;
+    }
+
     user->presence.time_zone = time_zone;
-    user->presence.latitude = info.latitude;
-    user->presence.longitude = info.longitude;
 
     users::manager::login_user(user);
 

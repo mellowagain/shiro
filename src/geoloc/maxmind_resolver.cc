@@ -39,18 +39,6 @@ void shiro::geoloc::maxmind::destroy() {
 }
 
 std::tuple<std::string, int, int> shiro::geoloc::maxmind::locate(std::string ip_address) {
-    // The IP address is localhost, resolve our own geolocation
-    if (ip_address == "127.0.0.1" || ip_address.empty()) {
-        auto [success, output] = utils::curl::get("https://api.ipify.org/");
-
-        if (!success) {
-            LOG_F(WARNING, "Unable to resolve own local IP address: %s", output.c_str());
-            return { "XX", 0, 0 };
-        }
-
-        ip_address = output;
-    }
-
     int gai_error = 0;
     int mmdb_error = 0;
 

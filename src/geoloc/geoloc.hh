@@ -20,16 +20,13 @@
 #define SHIRO_GEOLOC_HH
 
 #include <string>
+#include <optional>
 
-#include "../thirdparty/cache/cache.hh"
 #include "location_info.hh"
 
 namespace shiro::geoloc {
 
-    // Limit cache to 256 locations, oldest ones will be overriden once we go over this
-    extern caches::fixed_sized_cache<std::string, location_info> location_cache;
-
-    location_info get_location(const std::string &ip_address);
+    std::optional<location_info> get_location(std::string ip_address);
 
 }
 
