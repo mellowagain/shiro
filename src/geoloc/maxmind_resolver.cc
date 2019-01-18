@@ -28,10 +28,10 @@ static MMDB_s mmdb;
 void shiro::geoloc::maxmind::init() {
     int code = MMDB_open("geolite2_city.mmdb", MMDB_MODE_MMAP, &mmdb);
 
-    if (code != MMDB_SUCCESS) {
-        LOG_F(FATAL, "Unable to open maxmind db database: %s", MMDB_strerror(code));
+    if (code == MMDB_SUCCESS)
         return;
-    }
+
+    LOG_F(FATAL, "Unable to open maxmind db database: %s", MMDB_strerror(code));
 }
 
 void shiro::geoloc::maxmind::destroy() {
@@ -84,15 +84,18 @@ std::tuple<std::string, int, int> shiro::geoloc::maxmind::locate(std::string ip_
         return { "XX", 0, 0 };
     }
 
+    std::string country = country_entry_data.utf8_string;
+    country.resize(2, 'X');
+
     if (latitude_status != MMDB_SUCCESS || !latitude_entry_data.has_data) {
         LOG_F(WARNING, "Unable to resolve latitude for address %s", ip_address.c_str());
-        return { country_entry_data.utf8_string, 0, 0 };
+        return { country, 0, 0 };
     }
 
     if (longitude_status != MMDB_SUCCESS || !longitude_entry_data.has_data) {
         LOG_F(WARNING, "Unable to resolve longitude for address %s", ip_address.c_str());
-        return { country_entry_data.utf8_string, latitude_entry_data.double_value, 0 };
+        return { country, latitude_entry_data.double_value, 0 };
     }
 
-    return { country_entry_data.utf8_string, latitude_entry_data.double_value, longitude_entry_data.double_value };
+    return { country, latitude_entry_data.double_value, longitude_entry_data.double_value };
 }
