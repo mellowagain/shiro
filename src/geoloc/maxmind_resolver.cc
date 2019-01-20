@@ -38,7 +38,7 @@ void shiro::geoloc::maxmind::destroy() {
     MMDB_close(&mmdb);
 }
 
-std::tuple<std::string, int, int> shiro::geoloc::maxmind::locate(std::string ip_address) {
+std::tuple<std::string, int, int> shiro::geoloc::maxmind::locate(const std::string &ip_address) {
     int gai_error = 0;
     int mmdb_error = 0;
 
