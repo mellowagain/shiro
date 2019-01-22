@@ -16,82 +16,27 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <algorithm>
-#include <boost/algorithm/string.hpp>
-#include <boost/lexical_cast.hpp>
-
-#include "../logger/sentry_logger.hh"
-#include "../thirdparty/json.hh"
 #include "../thirdparty/loguru.hh"
 #include "../utils/curler.hh"
-#include "../utils/string_utils.hh"
 #include "country_ids.hh"
 #include "geoloc.hh"
+#include "maxmind_resolver.hh"
 
-caches::fixed_sized_cache<std::string, shiro::geoloc::location_info> shiro::geoloc::location_cache(512);
+std::optional<shiro::geoloc::location_info> shiro::geoloc::get_location(std::string ip_address) {
+    // The IP address is localhost, resolve our own geolocation
+    if (ip_address == "127.0.0.1" || ip_address.empty()) {
+        auto [success, output] = utils::curl::get("https://api.ipify.org/");
 
-shiro::geoloc::location_info shiro::geoloc::get_location(const std::string &ip_address) {
-    // For convenience
-    using json = nlohmann::json;
+        if (!success) {
+            LOG_F(WARNING, "Unable to resolve own local IP address: %s", output.c_str());
+            return std::nullopt;
+        }
 
-    try {
-        return location_cache.Get(ip_address);
-    } catch (const std::range_error &ex) {
-        // Not in cache, send request to xzq IP api and then store result in cache
+        ip_address = output;
     }
 
-    const std::string &address = ip_address == "127.0.0.1" ? "self" : ip_address;
-    auto [success, output] = utils::curl::get("https://ip.zxq.co/" + address);
+    auto [country, latitude, longitude] = maxmind::locate(ip_address);
+    uint8_t country_id = get_country_id(country);
 
-    if (!success) {
-        LOG_F(ERROR, "Unable to connect to xzq IP api: %s.", output.c_str());
-        return invalid_location;
-    }
-
-    json json_result;
-
-    try {
-        json_result = json::parse(output);
-    } catch (const json::parse_error &ex) {
-        LOG_F(ERROR, "Unable to parse json response from xzq IP api: %s.", ex.what());
-        logging::sentry::exception(ex);
-
-        return invalid_location;
-    }
-
-    std::string country;
-    std::string location;
-
-    try {
-        country = json_result["country"];
-        location = json_result["loc"];
-    } catch (const json::type_error &ex) {
-        LOG_F(ERROR, "Received invalid response from xzq IP api: %s.", output.c_str());
-        logging::sentry::exception(ex);
-
-        return invalid_location;
-    }
-
-    if (country.empty() || location.empty()) {
-        LOG_F(ERROR, "Received invalid response from xzq IP api: %s.", output.c_str());
-        return invalid_location;
-    }
-
-    std::vector<std::string> result;
-    boost::split(result, location, boost::is_any_of(","));
-
-    float latitude = 0.0f;
-    float longitude = 0.0f;
-
-    try {
-        latitude = boost::lexical_cast<float>(result.at(0));
-        longitude = boost::lexical_cast<float>(result.at(1));
-    } catch (const boost::bad_lexical_cast &ex) {
-        LOG_F(WARNING, "Unable to convert latitude %s or longitude %s to float.", result.at(0).c_str(), result.at(1).c_str());
-        logging::sentry::exception(ex);
-    }
-
-    location_info info(get_country_id(country), latitude, longitude);
-    location_cache.Put(ip_address, info);
-    return info;
+    return location_info(country_id, latitude, longitude);
 }

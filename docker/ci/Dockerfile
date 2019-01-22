@@ -2,7 +2,7 @@ FROM ubuntu:rolling
 
 # Dependencies installable throught official repositories
 RUN apt-get update -qq && \
-    apt-get install -y g++ cmake git wget curl ssh libmysqlclient20 default-libmysqlclient-dev libboost-all-dev libtcmalloc-minimal4 libcurl4-openssl-dev libssl-dev liblzma-dev && \
+    apt-get install -y g++ cmake git wget curl ssh libmysqlclient20 default-libmysqlclient-dev libboost-all-dev libtcmalloc-minimal4 libcurl4-openssl-dev libssl-dev liblzma-dev libmaxminddb-dev && \
     rm -rf /var/lib/apt/lists/*
 
 # HinnantDate

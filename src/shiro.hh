@@ -22,6 +22,7 @@
 #include <chrono>
 #include <ctime>
 #include <memory>
+#include <string>
 
 #include "database/database.hh"
 #include "thirdparty/taskscheduler.hh"
@@ -34,6 +35,7 @@ namespace shiro {
     extern tsc::TaskScheduler scheduler;
 
     extern std::time_t start_time;
+    extern std::string commit;
 
     int init(int argc, char **argv);
 

@@ -87,6 +87,8 @@ set(LIBOSU_LIBRARIES "")
 set(AKAME_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/libakame/include/")
 set(AKAME_LIBRARIES "")
 
+set(CMAKE_LINK_LIBS ${CMAKE_LINK_LIBS} maxminddb)
+
 if (Tcmalloc_FOUND)
     set(CMAKE_LINK_LIBS ${CMAKE_LINK_LIBS} ${Tcmalloc_LIBRARIES})
 
