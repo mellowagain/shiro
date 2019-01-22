@@ -120,6 +120,10 @@ void shiro::routes::api::ci_trigger::handle(const crow::request &request, crow::
 
     std::string short_hash = fields.at("commit").body.substr(0, 7);
 
+    std::ofstream commit_stream("commit.txt", std::ios::trunc);
+    commit_stream << short_hash;
+    commit_stream.close();
+
     LOG_F(INFO, "A new version of Shiro has been deployed by CI (%s).", short_hash.c_str());
 
     io::osu_writer announce_writer;

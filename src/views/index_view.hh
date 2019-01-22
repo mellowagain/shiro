@@ -23,6 +23,10 @@
 
 namespace shiro::views::index {
 
+    void replace_hash(std::string &view);
+
+    void replace_time(std::string &view);
+
     std::string get_view();
 
 }

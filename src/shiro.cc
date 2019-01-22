@@ -50,6 +50,7 @@
 std::shared_ptr<shiro::database> shiro::db_connection = nullptr;
 tsc::TaskScheduler shiro::scheduler;
 std::time_t shiro::start_time = std::time(nullptr);
+std::string shiro::commit = "78f8303";
 
 int shiro::init(int argc, char **argv) {
     logging::init(argc, argv);
