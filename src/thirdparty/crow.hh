@@ -9577,8 +9577,7 @@ namespace crow
         }
 
         template <uint64_t Tag>
-        auto route(std::string&& rule)
-        -> typename std::result_of<decltype(&Router::new_rule_tagged<Tag>)(Router, std::string&&)>::type
+        auto& route(std::string&& rule)
         {
             return router_.new_rule_tagged<Tag>(std::move(rule));
         }

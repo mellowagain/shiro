@@ -22,6 +22,13 @@
 #include <unordered_map>
 #include <vector>
 
+// Disable all warnings from gcc/clang:
+#if defined(__clang__)
+#pragma clang system_header
+#elif defined(__GNUC__)
+#pragma GCC system_header
+#endif
+
 #if __cplusplus > 201103L
 #define CPPTOML_DEPRECATED(reason) [[deprecated(reason)]]
 #elif defined(__clang__)

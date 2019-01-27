@@ -88,6 +88,9 @@ static const char header_field_chars[256] = {
     'x',    'y',    'z',    0,      '|',     0,     '~',    0
 };
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wstringop-truncation"
+
 void multipartparser_init(multipartparser* parser, const char* boundary)
 {
     memset(parser, 0, sizeof(*parser));
@@ -98,10 +101,17 @@ void multipartparser_init(multipartparser* parser, const char* boundary)
     parser->state = s_preamble;
 }
 
+#pragma GCC diagnostic pop
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wclass-memaccess"
+
 void multipartparser_callbacks_init(multipartparser_callbacks* callbacks)
 {
     memset(callbacks, 0, sizeof(*callbacks));
 }
+
+#pragma GCC diagnostic pop
 
 size_t multipartparser_execute(multipartparser* parser,
                                multipartparser_callbacks* callbacks,
