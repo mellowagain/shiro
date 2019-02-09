@@ -60,8 +60,8 @@ extern "C" {
 #define OPPAI_IMPLEMENTATION
 #endif
 
-OPPAIAPI void oppai_version(int* major, int* minor, int* patch);
-OPPAIAPI char* oppai_version_str();
+OPPAIAPI void oppai_version(int *major, int *minor, int *patch);
+OPPAIAPI char *oppai_version_str();
 
 /* simple interface ---------------------------------------------------- */
 
@@ -69,7 +69,7 @@ struct ezpp;
 typedef struct ezpp ezpp_t;
 
 /* populate ezpp_t with default settings */
-OPPAIAPI void ezpp_init(ezpp_t* ez);
+OPPAIAPI void ezpp_init(ezpp_t *ez);
 
 /*
  * parse map and calculate difficulty and pp with advanced parameters,
@@ -79,7 +79,7 @@ OPPAIAPI void ezpp_init(ezpp_t* ez);
  * - if data_size is specified in ez, map is interpreted as raw beatmap
  *   data in memory
  */
-OPPAIAPI int ezpp(ezpp_t* ez, char* map);
+OPPAIAPI int ezpp(ezpp_t *ez, char *map);
 
 /*
  * - if data_size is  set, ezpp will interpret map as raw .osu file data
@@ -131,7 +131,7 @@ struct ezpp {
 #define ERR_FORMAT (-6)
 #define ERR_OOM (-7)
 
-OPPAIAPI char* errstr(int err);
+OPPAIAPI char *errstr(int err);
 
 /* array --------------------------------------------------------------- */
 
@@ -173,9 +173,9 @@ OPPAIAPI char* errstr(int err);
   (void**)&(arr)->data, \
   (int)sizeof((arr)->data[0])
 
-OPPAIAPI int array_reserve_i(int n, int* cap, int* len, void** data,
+OPPAIAPI int array_reserve_i(int n, int *cap, int *len, void **data,
                              int esize);
-OPPAIAPI void array_free_i(int* cap, int* len, void** data, int esize);
+OPPAIAPI void array_free_i(int *cap, int *len, void **data, int esize);
 
 /* memory arena -------------------------------------------------------- */
 
@@ -192,16 +192,16 @@ OPPAIAPI void array_free_i(int* cap, int* len, void** data, int esize);
 #define ARENA_BLOCK_SIZE 4096
 
 typedef struct {
-    char* block;
-    char* end_of_block;
+    char *block;
+    char *end_of_block;
     array_t(char*) blocks;
 } arena_t;
 
 /* ensures that there are at least min_size bytes reserved */
-OPPAIAPI int arena_reserve(arena_t* arena, int min_size);
-OPPAIAPI void* arena_alloc(arena_t* arena, int size);
-OPPAIAPI char* arena_strndup(arena_t* m, char* s, int n);
-OPPAIAPI void arena_free(arena_t* arena);
+OPPAIAPI int arena_reserve(arena_t *arena, int min_size);
+OPPAIAPI void *arena_alloc(arena_t *arena, int size);
+OPPAIAPI char *arena_strndup(arena_t *m, char *s, int n);
+OPPAIAPI void arena_free(arena_t *arena);
 
 /* beatmap utils ------------------------------------------------------- */
 
@@ -223,7 +223,7 @@ typedef struct object {
 
     /* only parsed for taiko maps */
     int nsound_types;
-    int* sound_types;
+    int *sound_types;
 
     /* only used by d_calc */
     float normpos[2];
@@ -253,17 +253,17 @@ typedef struct beatmap {
     int mode;
     int original_mode; /* the mode the beatmap was meant for */
 
-    char* title;
-    char* title_unicode;
-    char* artist;
-    char* artist_unicode;
-    char* creator;
-    char* version;
+    char *title;
+    char *title_unicode;
+    char *artist;
+    char *artist_unicode;
+    char *creator;
+    char *version;
 
     int nobjects;
-    object_t* objects;
+    object_t *objects;
     int ntiming_points;
-    timing_t* timing_points;
+    timing_t *timing_points;
 
     int ncircles, nsliders, nspinners;
     float hp, cs, od, ar, sv;
@@ -274,8 +274,8 @@ typedef struct beatmap {
 
 /* non-null terminated string, used internally for parsing */
 typedef struct slice {
-    char* start;
-    char* end; /* *(end - 1) is the last character */
+    char *start;
+    char *end; /* *(end - 1) is the last character */
 } slice_t;
 
 #define PARSER_OVERRIDE_MODE (1<<0) /* mode_override */
@@ -301,11 +301,11 @@ typedef struct parser {
     array_t(object_t) objects;
     array_t(timing_t) timing_points;
 
-    beatmap_t* b;
+    beatmap_t *b;
 } parser_t;
 
-OPPAIAPI int p_init(parser_t* pa);
-OPPAIAPI void p_free(parser_t* pa);
+OPPAIAPI int p_init(parser_t *pa);
+OPPAIAPI void p_free(parser_t *pa);
 
 /*
  * parses a beatmap file and stores results in b.
@@ -316,8 +316,8 @@ OPPAIAPI void p_free(parser_t* pa);
  *
  * returns n. bytes processed on success, < 0 on failure
  */
-OPPAIAPI int p_map(parser_t* pa, beatmap_t* b, FILE* f);
-OPPAIAPI int p_map_mem(parser_t* pa, beatmap_t* b, char* data,
+OPPAIAPI int p_map(parser_t *pa, beatmap_t *b, FILE *f);
+OPPAIAPI int p_map_mem(parser_t *pa, beatmap_t *b, char *data,
                        int data_size);
 
 /* mods utils ---------------------------------------------------------- */
@@ -388,10 +388,10 @@ typedef struct beatmap_stats {
  *    // s.ar is now 10.33f, s.speed is now 1.5f
  */
 OPPAIAPI
-int mods_apply_m(int mode, int mods, beatmap_stats_t* s, int flags);
+int mods_apply_m(int mode, int mods, beatmap_stats_t *s, int flags);
 
 /* legacy function, calls mods_apply(MODE_STD, mods, s, flags) */
-OPPAIAPI void mods_apply(int mods, beatmap_stats_t* s, int flags);
+OPPAIAPI void mods_apply(int mods, beatmap_stats_t *s, int flags);
 
 /* diff calc ----------------------------------------------------------- */
 
@@ -404,7 +404,7 @@ typedef struct diff_calc {
     float interval_end;
     float max_strain;
     array_t(float) highest_strains;
-    beatmap_t* b;
+    beatmap_t *b;
 
     /*
      * set this to the milliseconds interval for the maximum bpm
@@ -425,9 +425,9 @@ typedef struct diff_calc {
     int nsingles_threshold;
 } diff_calc_t;
 
-OPPAIAPI int d_init(diff_calc_t* d);
-OPPAIAPI void d_free(diff_calc_t* d);
-OPPAIAPI int d_calc(diff_calc_t* d, beatmap_t* b, int mods);
+OPPAIAPI int d_init(diff_calc_t *d);
+OPPAIAPI void d_free(diff_calc_t *d);
+OPPAIAPI int d_calc(diff_calc_t *d, beatmap_t *b, int mods);
 
 /* pp calc ------------------------------------------------------------- */
 
@@ -447,13 +447,13 @@ typedef struct pp_calc {
  * - taiko only uses pp, mode, speed, max_combo, base_od, mods
  */
 OPPAIAPI
-int ppv2(pp_calc_t* pp, int mode, float aim, float speed,
+int ppv2(pp_calc_t *pp, int mode, float aim, float speed,
          float base_ar, float base_od, int max_combo, int nsliders, int ncircles,
          int nobjects, int mods);
 
 /* simplest possible call for taiko ppv2 SS */
 OPPAIAPI
-int taiko_ppv2(pp_calc_t* pp, float speed, int max_combo,
+int taiko_ppv2(pp_calc_t *pp, float speed, int max_combo,
                float base_od, int mods);
 
 /* parameters for ppv2p */
@@ -479,21 +479,21 @@ typedef struct pp_params {
  * initialize struct pp_params with the default values.
  * required values are left untouched
  */
-OPPAIAPI void pp_init(pp_params_t* p);
+OPPAIAPI void pp_init(pp_params_t *p);
 
 /* calculate ppv2 with advanced parameters, see struct pp_params */
-OPPAIAPI int ppv2p(pp_calc_t* pp, pp_params_t* p);
+OPPAIAPI int ppv2p(pp_calc_t *pp, pp_params_t *p);
 
 /*
  * same as ppv2p but fills params automatically with the map's
  * base_ar, base_od, max_combo, nsliders, ncircles, nobjects
  * so you only need to provide aim and speed
  */
-OPPAIAPI int b_ppv2p(beatmap_t* map, pp_calc_t* pp, pp_params_t* p);
+OPPAIAPI int b_ppv2p(beatmap_t *map, pp_calc_t *pp, pp_params_t *p);
 
 /* same as ppv2 but fills params like b_ppv2p */
 OPPAIAPI
-int b_ppv2(beatmap_t* map, pp_calc_t* pp, float aim, float speed,
+int b_ppv2(beatmap_t *map, pp_calc_t *pp, float aim, float speed,
            int mods);
 
 /* --------------------------------------------------------------------- */
@@ -506,13 +506,13 @@ OPPAIAPI float taiko_acc_calc(int n300, int n150, int nmisses);
 
 /* round percent accuracy to closest amount of 300s, 100s, 50s */
 OPPAIAPI
-void acc_round(float acc_percent, int nobjects, int nmisses, int* n300,
-               int* n100, int* n50);
+void acc_round(float acc_percent, int nobjects, int nmisses, int *n300,
+               int *n100, int *n50);
 
 /* round percent accuracy to closest amount of 300s and 150s (taiko) */
 OPPAIAPI
 void taiko_acc_round(float acc_percent, int nobjects, int nmisses,
-                     int* n300, int* n150);
+                     int *n300, int *n150);
 
 /* --------------------------------------------------------------------- */
 
@@ -543,19 +543,19 @@ void taiko_acc_round(float acc_percent, int nobjects, int nmisses,
   STRINGIFY(OPPAI_VERSION_MINOR) "." \
   STRINGIFY(OPPAI_VERSION_PATCH)
 
-OPPAIAPI void oppai_version(int* major, int* minor, int* patch) {
+OPPAIAPI void oppai_version(int *major, int *minor, int *patch) {
     *major = OPPAI_VERSION_MAJOR;
     *minor = OPPAI_VERSION_MINOR;
     *patch = OPPAI_VERSION_PATCH;
 }
 
-OPPAIAPI char* oppai_version_str() {
+OPPAIAPI char *oppai_version_str() {
     return OPPAI_VERSION_STRING;
 }
 
 /* error utils --------------------------------------------------------- */
 
-int info(char* fmt, ...) {
+int info(char *fmt, ...) {
     int res;
     va_list va;
     va_start(va, fmt);
@@ -565,17 +565,22 @@ int info(char* fmt, ...) {
 }
 
 OPPAIAPI
-char* errstr(int err) {
+char *errstr(int err) {
     switch (err) {
-        case ERR_MORE: return "call me again with more data";
-        case ERR_SYNTAX: return "syntax error";
+        case ERR_MORE:
+            return "call me again with more data";
+        case ERR_SYNTAX:
+            return "syntax error";
         case ERR_TRUNCATED:
             return "data was truncated, possibly because it was too big";
         case ERR_NOTIMPLEMENTED:
             return "requested a feature that isn't implemented";
-        case ERR_IO: return "i/o error";
-        case ERR_FORMAT: return "invalid input format";
-        case ERR_OOM: return "out of memory";
+        case ERR_IO:
+            return "i/o error";
+        case ERR_FORMAT:
+            return "invalid input format";
+        case ERR_OOM:
+            return "out of memory";
     }
     info("W: got unknown error %d\n", err);
     return "unknown error";
@@ -589,34 +594,34 @@ char* errstr(int err) {
 
 float get_inf() {
     static unsigned raw = 0x7F800000;
-    float* p = (float*)&raw;
+    float *p = (float *) &raw;
     return *p;
 }
 
 float get_nan() {
     static unsigned raw = 0x7FFFFFFF;
-    float* p = (float*)&raw;
+    float *p = (float *) &raw;
     return *p;
 }
 
 /* dst = a - b */
-void v2f_sub(float* dst, float* a, float* b) {
+void v2f_sub(float *dst, float *a, float *b) {
     dst[0] = a[0] - b[0];
     dst[1] = a[1] - b[1];
 }
 
-float v2f_len(float* v) {
-    return (float)sqrt(v[0] * v[0] + v[1] * v[1]);
+float v2f_len(float *v) {
+    return (float) sqrt(v[0] * v[0] + v[1] * v[1]);
 }
 
-float v2f_dot(float* a, float* b) {
+float v2f_dot(float *a, float *b) {
     return a[0] * b[0] + a[1] * b[1];
 }
 
 /* https://www.doc.ic.ac.uk/%7Eeedwards/compsys/float/nan.html */
 
 int is_nan(float b) {
-    int* p = (int*)&b;
+    int *p = (int *) &b;
     return (
             (*p > 0x7F800000 && *p < 0x80000000) ||
             (*p > 0x7FBFFFFF && *p <= 0xFFFFFFFF)
@@ -636,12 +641,12 @@ int whitespace(char c) {
     return 0;
 }
 
-int slice_write(slice_t* s, FILE* f) {
-    return (int)fwrite(s->start, 1, s->end - s->start, f);
+int slice_write(slice_t *s, FILE *f) {
+    return (int) fwrite(s->start, 1, s->end - s->start, f);
 }
 
-int slice_whitespace(slice_t* s) {
-    char* p = s->start;
+int slice_whitespace(slice_t *s) {
+    char *p = s->start;
     for (; p < s->end; ++p) {
         if (!whitespace(*p)) {
             return 0;
@@ -651,14 +656,14 @@ int slice_whitespace(slice_t* s) {
 }
 
 /* trims leading and trailing whitespace */
-void slice_trim(slice_t* s) {
+void slice_trim(slice_t *s) {
     for (; s->start < s->end && whitespace(*s->start); ++s->start);
-    for (; s->end > s->start && whitespace(*(s->end-1)); --s->end);
+    for (; s->end > s->start && whitespace(*(s->end - 1)); --s->end);
 }
 
-int slice_cmp(slice_t* s, char* str) {
-    int len = (int)strlen(str);
-    int s_len = (int)(s->end - s->start);
+int slice_cmp(slice_t *s, char *str) {
+    int len = (int) strlen(str);
+    int s_len = (int) (s->end - s->start);
     if (len < s_len) {
         return -1;
     }
@@ -668,8 +673,8 @@ int slice_cmp(slice_t* s, char* str) {
     return strncmp(s->start, str, len);
 }
 
-int slice_len(slice_t* s) {
-    return (int)(s->end - s->start);
+int slice_len(slice_t *s) {
+    return (int) (s->end - s->start);
 }
 
 /*
@@ -679,12 +684,11 @@ int slice_len(slice_t* s) {
  * if more elements than nmax are found, err is set to
  * ERR_TRUNCATED
  */
-int slice_split(slice_t* s, char* separator_list, slice_t* arr,
-                int nmax, int* err)
-{
+int slice_split(slice_t *s, char *separator_list, slice_t *arr,
+                int nmax, int *err) {
     int res = 0;
-    char* p = s->start;
-    char* pprev = p;
+    char *p = s->start;
+    char *pprev = p;
     if (!nmax) {
         return 0;
     }
@@ -693,7 +697,7 @@ int slice_split(slice_t* s, char* separator_list, slice_t* arr,
         return 1;
     }
     for (; p <= s->end; ++p) {
-        char* sep = separator_list;
+        char *sep = separator_list;
         for (; *sep; ++sep) {
             if (p >= s->end || *sep == *p) {
                 if (res >= nmax) {
@@ -721,10 +725,10 @@ int slice_split(slice_t* s, char* separator_list, slice_t* arr,
  */
 
 OPPAIAPI
-int array_reserve_i(int n, int* cap, int* len, void** data, int esize) {
-    (void)len;
+int array_reserve_i(int n, int *cap, int *len, void **data, int esize) {
+    (void) len;
     if (*cap <= n) {
-        void* newdata;
+        void *newdata;
         int newcap = *cap ? *cap * 2 : 16;
         newdata = realloc(*data, esize * newcap);
         if (!newdata) {
@@ -737,8 +741,8 @@ int array_reserve_i(int n, int* cap, int* len, void** data, int esize) {
 }
 
 OPPAIAPI
-void array_free_i(int* cap, int* len, void** data, int esize) {
-    (void)esize;
+void array_free_i(int *cap, int *len, void **data, int esize) {
+    (void) esize;
     free(*data);
     *cap = 0;
     *len = 0;
@@ -756,9 +760,9 @@ void array_free_i(int* cap, int* len, void** data, int esize) {
   bit_align_down((x) + (a) - 1, a)
 
 OPPAIAPI
-int arena_reserve(arena_t* arena, int min_size) {
+int arena_reserve(arena_t *arena, int min_size) {
     int size;
-    char* new_block;
+    char *new_block;
     if (arena->end_of_block - arena->block >= min_size) {
         return 1;
     }
@@ -774,8 +778,8 @@ int arena_reserve(arena_t* arena, int min_size) {
 }
 
 OPPAIAPI
-void* arena_alloc(arena_t* arena, int size) {
-    void* res;
+void *arena_alloc(arena_t *arena, int size) {
+    void *res;
     if (!arena_reserve(arena, size)) {
         return 0;
     }
@@ -786,8 +790,8 @@ void* arena_alloc(arena_t* arena, int size) {
 }
 
 OPPAIAPI
-char* arena_strndup(arena_t* m, char* s, int n) {
-    char* res = reinterpret_cast<char*>(arena_alloc(m, n + 1));
+char *arena_strndup(arena_t *m, char *s, int n) {
+    char *res = reinterpret_cast<char*>(arena_alloc(m, n + 1));
     if (res) {
         memcpy(res, s, n);
         res[n] = 0;
@@ -796,7 +800,7 @@ char* arena_strndup(arena_t* m, char* s, int n) {
 }
 
 OPPAIAPI
-void arena_free(arena_t* arena) {
+void arena_free(arena_t *arena) {
     int i;
     for (i = 0; i < arena->blocks.len; ++i) {
         free(arena->blocks.data[i]);
@@ -808,18 +812,18 @@ void arena_free(arena_t* arena) {
 
 /* mods ---------------------------------------------------------------- */
 
-float od10_ms[] = { 19.5f, 19.5f }; /* std, taiko */
-float od0_ms[] = { 79.5f, 49.5f };
+float od10_ms[] = {19.5f, 19.5f}; /* std, taiko */
+float od0_ms[] = {79.5f, 49.5f};
 #define AR0_MS 1800.0f
 #define AR5_MS 1200.0f
 #define AR10_MS 450.0f
 
-float od_ms_step[] = { 6.0f, 3.0f };
+float od_ms_step[] = {6.0f, 3.0f};
 #define AR_MS_STEP1 120.f /* ar0-5 */
 #define AR_MS_STEP2 150.f /* ar5-10 */
 
 OPPAIAPI
-int mods_apply_m(int mode, int mods, beatmap_stats_t* s, int flags) {
+int mods_apply_m(int mode, int mods, beatmap_stats_t *s, int flags) {
     float od_ar_hp_multiplier;
 
     switch (mode) {
@@ -836,7 +840,7 @@ int mods_apply_m(int mode, int mods, beatmap_stats_t* s, int flags) {
     if (!(mods & MODS_MAP_CHANGING)) {
         int m = mode;
         if (flags & APPLY_OD) {
-            s->odms = od0_ms[m] - (float)ceil(od_ms_step[m] * s->od);
+            s->odms = od0_ms[m] - (float) ceil(od_ms_step[m] * s->od);
         }
         return 0;
     }
@@ -870,7 +874,7 @@ int mods_apply_m(int mode, int mods, beatmap_stats_t* s, int flags) {
     if (flags & APPLY_OD) {
         int m = mode;
         s->od *= od_ar_hp_multiplier;
-        s->odms = od0_ms[m] - (float)ceil(od_ms_step[m] * s->od);
+        s->odms = od0_ms[m] - (float) ceil(od_ms_step[m] * s->od);
         s->odms = mymin(od0_ms[m], mymax(od10_ms[m], s->odms));
         s->odms /= s->speed; /* apply speed-changing mods */
         s->od = (od0_ms[m] - s->odms) / od_ms_step[m]; /* back to stat */
@@ -915,7 +919,7 @@ int mods_apply_m(int mode, int mods, beatmap_stats_t* s, int flags) {
 }
 
 OPPAIAPI
-void mods_apply(int mods, beatmap_stats_t* s, int flags) {
+void mods_apply(int mods, beatmap_stats_t *s, int flags) {
     int n;
     n = mods_apply_m(MODE_STD, mods, s, flags);
     if (n < 0) {
@@ -942,7 +946,7 @@ void mods_apply(int mods, beatmap_stats_t* s, int flags) {
  */
 
 OPPAIAPI
-int b_max_combo(beatmap_t* b) {
+int b_max_combo(beatmap_t *b) {
     int res = b->nobjects;
     int i;
 
@@ -970,7 +974,7 @@ int b_max_combo(beatmap_t* b) {
 
     /* slider ticks */
     for (i = 0; i < b->nobjects; ++i) {
-        object_t* o = &b->objects[i];
+        object_t *o = &b->objects[i];
         int ticks;
         float num_beats;
 
@@ -980,7 +984,7 @@ int b_max_combo(beatmap_t* b) {
 
         while (o->time >= tnext) {
             float sv_multiplier;
-            timing_t* t;
+            timing_t *t;
             ++tindex;
 
             if (b->ntiming_points > tindex + 1) {
@@ -1036,7 +1040,7 @@ int b_max_combo(beatmap_t* b) {
 
         if (b->mode == MODE_TAIKO) {
             if (tick_spacing > 0 && duration < 2 * beat_len) {
-                res += (int)ceil((duration + tick_spacing / 8) / tick_spacing);
+                res += (int) ceil((duration + tick_spacing / 8) / tick_spacing);
             }
             continue;
         }
@@ -1044,7 +1048,7 @@ int b_max_combo(beatmap_t* b) {
         /* std slider ticks */
         num_beats = (o->distance * o->repetitions) / px_per_beat;
 
-        ticks = (int)ceil((num_beats - 0.1f) / o->repetitions * b->tick_rate);
+        ticks = (int) ceil((num_beats - 0.1f) / o->repetitions * b->tick_rate);
         --ticks;
 
         ticks *= o->repetitions;     /* account for repetitions */
@@ -1063,7 +1067,7 @@ int b_max_combo(beatmap_t* b) {
 /* beatmap parser ------------------------------------------------------ */
 
 /* sets up parser for reuse. must have already been inited with p_init */
-void p_reset(parser_t* pa, beatmap_t* b) {
+void p_reset(parser_t *pa, beatmap_t *b) {
     memset(pa->section, 0, sizeof(pa->section));
     memset(&pa->lastpos, 0, sizeof(pa->lastpos));
     memset(&pa->lastline, 0, sizeof(pa->lastline));
@@ -1083,14 +1087,14 @@ void p_reset(parser_t* pa, beatmap_t* b) {
 }
 
 OPPAIAPI
-int p_init(parser_t* pa) {
+int p_init(parser_t *pa) {
     memset(pa, 0, sizeof(parser_t));
     p_reset(pa, 0);
     return 0;
 }
 
 OPPAIAPI
-void p_free(parser_t* pa) {
+void p_free(parser_t *pa) {
     arena_free(&pa->arena);
     array_free(&pa->objects);
     array_free(&pa->timing_points);
@@ -1115,17 +1119,16 @@ int nop(int x) { return x; }
   info(e), info("\n"), print_line(line), nop(0)
 
 /* consume until any of the characters in separators is found */
-int consume_until(parser_t* pa, slice_t* s, char* separators,
-                  slice_t* dst)
-{
-    char* p = s->start;
+int consume_until(parser_t *pa, slice_t *s, char *separators,
+                  slice_t *dst) {
+    char *p = s->start;
     for (; p < s->end; ++p) {
-        char* sep;
+        char *sep;
         for (sep = separators; *sep; ++sep) {
             if (*p == *sep) {
                 dst->start = s->start;
                 dst->end = p;
-                return (int)(p - s->start);
+                return (int) (p - s->start);
             }
         }
     }
@@ -1147,7 +1150,7 @@ int consume_until(parser_t* pa, slice_t* s, char* separators,
   info("\n")
 
 /* [name] */
-int p_section_name(parser_t* pa, slice_t* s, slice_t* name) {
+int p_section_name(parser_t *pa, slice_t *s, slice_t *name) {
     int n;
     slice_t p = *s;
     if (*p.start++ != '[') {
@@ -1161,13 +1164,13 @@ int p_section_name(parser_t* pa, slice_t* s, slice_t* name) {
     if (p.start != p.end - 1) { /* must end in ] */
         return parse_err(SYNTAX, p);
     }
-    return (int)(p.start - s->start);
+    return (int) (p.start - s->start);
 }
 
 /* name: value (results are trimmed) */
-int p_property(parser_t* pa, slice_t* s, slice_t* name, slice_t* value) {
+int p_property(parser_t *pa, slice_t *s, slice_t *name, slice_t *value) {
     int n;
-    char* p = s->start;
+    char *p = s->start;
     n = consume_until(pa, s, ":", name);
     if (n < 0) {
         return n;
@@ -1178,43 +1181,38 @@ int p_property(parser_t* pa, slice_t* s, slice_t* name, slice_t* value) {
     value->end = s->end;
     slice_trim(name);
     slice_trim(value);
-    return (int)(s->end - s->start);
+    return (int) (s->end - s->start);
 }
 
-char* p_slicedup(parser_t* pa, slice_t* s) {
+char *p_slicedup(parser_t *pa, slice_t *s) {
     return arena_strndup(&pa->arena, s->start, slice_len(s));
 }
 
-int p_metadata(parser_t* pa, slice_t* line) {
+int p_metadata(parser_t *pa, slice_t *line) {
     slice_t name, value;
-    beatmap_t* b = pa->b;
+    beatmap_t *b = pa->b;
     int n = p_property(pa, line, &name, &value);
     if (n < 0) {
         return parse_warn("W: malformed metadata line", line);
     }
     if (!slice_cmp(&name, "Title")) {
         b->title = p_slicedup(pa, &value);
-    }
-    else if (!slice_cmp(&name, "TitleUnicode")) {
+    } else if (!slice_cmp(&name, "TitleUnicode")) {
         b->title_unicode = p_slicedup(pa, &value);
-    }
-    else if (!slice_cmp(&name, "Artist")) {
+    } else if (!slice_cmp(&name, "Artist")) {
         b->artist = p_slicedup(pa, &value);
-    }
-    else if (!slice_cmp(&name, "ArtistUnicode")) {
+    } else if (!slice_cmp(&name, "ArtistUnicode")) {
         b->artist_unicode = p_slicedup(pa, &value);
-    }
-    else if (!slice_cmp(&name, "Creator")) {
+    } else if (!slice_cmp(&name, "Creator")) {
         b->creator = p_slicedup(pa, &value);
-    }
-    else if (!slice_cmp(&name, "Version")) {
+    } else if (!slice_cmp(&name, "Version")) {
         b->version = p_slicedup(pa, &value);
     }
     return n;
 }
 
-int p_general(parser_t* pa, slice_t* line) {
-    beatmap_t* b = pa->b;
+int p_general(parser_t *pa, slice_t *line) {
+    beatmap_t *b = pa->b;
     slice_t name, value;
     int n;
     n = p_property(pa, line, &name, &value);
@@ -1223,7 +1221,7 @@ int p_general(parser_t* pa, slice_t* line) {
     }
 
     if (!slice_cmp(&name, "Mode")) {
-        if (sscanf(value.start, "%d", &b->original_mode) != 1){
+        if (sscanf(value.start, "%d", &b->original_mode) != 1) {
             return parse_err(SYNTAX, value);
         }
         if (pa->flags & PARSER_OVERRIDE_MODE) {
@@ -1243,9 +1241,9 @@ int p_general(parser_t* pa, slice_t* line) {
     return n;
 }
 
-float p_float(slice_t* value, int* success) {
+float p_float(slice_t *value, int *success) {
     float res;
-    char* p = value->start;
+    char *p = value->start;
     if (*p == '-') {
         res = -1;
         ++p;
@@ -1265,8 +1263,8 @@ float p_float(slice_t* value, int* success) {
     return res;
 }
 
-int p_difficulty(parser_t* pa, slice_t* line) {
-    float* dst = 0;
+int p_difficulty(parser_t *pa, slice_t *line) {
+    float *dst = 0;
     slice_t name, value;
     int n = p_property(pa, line, &name, &value);
     if (n < 0) {
@@ -1275,21 +1273,16 @@ int p_difficulty(parser_t* pa, slice_t* line) {
 
     if (!slice_cmp(&name, "CircleSize")) {
         dst = &pa->b->cs;
-    }
-    else if (!slice_cmp(&name, "OverallDifficulty")) {
+    } else if (!slice_cmp(&name, "OverallDifficulty")) {
         dst = &pa->b->od;
-    }
-    else if (!slice_cmp(&name, "ApproachRate")) {
+    } else if (!slice_cmp(&name, "ApproachRate")) {
         dst = &pa->b->ar;
         pa->flags |= PARSER_FOUND_AR;
-    }
-    else if (!slice_cmp(&name, "HPDrainRate")) {
+    } else if (!slice_cmp(&name, "HPDrainRate")) {
         dst = &pa->b->hp;
-    }
-    else if (!slice_cmp(&name, "SliderMultiplier")) {
+    } else if (!slice_cmp(&name, "SliderMultiplier")) {
         dst = &pa->b->sv;
-    }
-    else if (!slice_cmp(&name, "SliderTickRate")) {
+    } else if (!slice_cmp(&name, "SliderTickRate")) {
         dst = &pa->b->tick_rate;
     }
 
@@ -1308,12 +1301,12 @@ int p_difficulty(parser_t* pa, slice_t* line) {
  *
  * everything after ms_per_beat is optional
  */
-int p_timing(parser_t* pa, slice_t* line) {
+int p_timing(parser_t *pa, slice_t *line) {
     int res = 0;
     int n, i;
     int err = 0;
     slice_t split[8];
-    timing_t* t = array_alloc(&pa->timing_points);
+    timing_t *t = array_alloc(&pa->timing_points);
     int success;
 
     if (!t) {
@@ -1336,7 +1329,7 @@ int p_timing(parser_t* pa, slice_t* line) {
         return parse_warn("W: malformed timing point", line);
     }
 
-    res = (int)(split[n - 1].end - line->start);
+    res = (int) (split[n - 1].end - line->start);
     for (i = 0; i < n; ++i) {
         slice_trim(&split[i]);
     }
@@ -1363,9 +1356,9 @@ int p_timing(parser_t* pa, slice_t* line) {
     return res;
 }
 
-int p_objects(parser_t* pa, slice_t* line) {
-    beatmap_t* b = pa->b;
-    object_t* o = array_alloc(&pa->objects);
+int p_objects(parser_t *pa, slice_t *line) {
+    beatmap_t *b = pa->b;
+    object_t *o = array_alloc(&pa->objects);
     int err = 0;
     int ne;
     slice_t e[11];
@@ -1402,7 +1395,7 @@ int p_objects(parser_t* pa, slice_t* line) {
     }
 
     if (b->mode == MODE_TAIKO) {
-        int* sound_type = reinterpret_cast<int*>(arena_alloc(&pa->arena, sizeof(int)));
+        int *sound_type = reinterpret_cast<int*>(arena_alloc(&pa->arena, sizeof(int)));
         if (!sound_type) {
             return ERR_OOM;
         }
@@ -1509,10 +1502,10 @@ int p_objects(parser_t* pa, slice_t* line) {
         }
     }
 
-    return (int)(e[ne - 1].end - line->start);
+    return (int) (e[ne - 1].end - line->start);
 }
 
-int p_line(parser_t* pa, slice_t* line) {
+int p_line(parser_t *pa, slice_t *line) {
     int n = 0;
 
     if (line->start >= line->end) {
@@ -1521,14 +1514,14 @@ int p_line(parser_t* pa, slice_t* line) {
     }
 
     if (slice_whitespace(line)) {
-        return (int)(line->end - line->start);
+        return (int) (line->end - line->start);
     }
 
     /* comments (according to lazer) */
     switch (*line->start) {
         case ' ':
         case '_':
-            return (int)(line->end - line->start);
+            return (int) (line->end - line->start);
     }
 
     /* from here on we don't care about leading or trailing whitespace */
@@ -1551,7 +1544,7 @@ int p_line(parser_t* pa, slice_t* line) {
         if (section.end - section.start >= sizeof(pa->section)) {
             parse_warn("W: truncated long section name", line);
         }
-        len = (int)mymin(sizeof(pa->section) - 1, section.end - section.start);
+        len = (int) mymin(sizeof(pa->section) - 1, section.end - section.start);
         memcpy(pa->section, section.start, len);
         pa->section[len] = 0;
         return n;
@@ -1559,26 +1552,22 @@ int p_line(parser_t* pa, slice_t* line) {
 
     if (!strcmp(pa->section, "Metadata")) {
         n = p_metadata(pa, line);
-    }
-    else if (!strcmp(pa->section, "General")) {
+    } else if (!strcmp(pa->section, "General")) {
         n = p_general(pa, line);
-    }
-    else if (!strcmp(pa->section, "Difficulty")) {
+    } else if (!strcmp(pa->section, "Difficulty")) {
         n = p_difficulty(pa, line);
-    }
-    else if (!strcmp(pa->section, "TimingPoints")) {
+    } else if (!strcmp(pa->section, "TimingPoints")) {
         n = p_timing(pa, line);
-    }
-    else if (!strcmp(pa->section, "HitObjects")) {
+    } else if (!strcmp(pa->section, "HitObjects")) {
         n = p_objects(pa, line);
     } else {
-        char* p = line->start;
-        char* fmt_str = "file format v";
+        char *p = line->start;
+        char *fmt_str = "file format v";
         for (; p < line->end && strncmp(p, fmt_str, 13); ++p);
         p += 13;
         if (p < line->end) {
             if (sscanf(p, "%d", &pa->b->format_version) == 1) {
-                return (int)(line->end - line->start);
+                return (int) (line->end - line->start);
             }
         }
     }
@@ -1586,12 +1575,12 @@ int p_line(parser_t* pa, slice_t* line) {
     return n;
 }
 
-void p_begin(parser_t* pa, beatmap_t* b) {
+void p_begin(parser_t *pa, beatmap_t *b) {
     b->sv = b->tick_rate = 1;
     p_reset(pa, b);
 }
 
-void p_end(parser_t* pa, beatmap_t* b) {
+void p_end(parser_t *pa, beatmap_t *b) {
     if (!(pa->flags & PARSER_FOUND_AR)) {
         /* in old maps ar = od */
         b->ar = b->od;
@@ -1623,9 +1612,9 @@ void p_end(parser_t* pa, beatmap_t* b) {
 }
 
 OPPAIAPI
-int p_map(parser_t* pa, beatmap_t* b, FILE* f) {
+int p_map(parser_t *pa, beatmap_t *b, FILE *f) {
     int res = 0;
-    char* pbuf;
+    char *pbuf;
     int bufsize;
     int n;
     int nread;
@@ -1645,8 +1634,8 @@ int p_map(parser_t* pa, beatmap_t* b, FILE* f) {
         slice_t s;      /* points to the remaining data in buf */
         int more_data;
 
-        bufsize = (int)sizeof(pa->buf) - (int)(pbuf - pa->buf);
-        nread = (int)fread(pbuf, 1, bufsize, f);
+        bufsize = (int) sizeof(pa->buf) - (int) (pbuf - pa->buf);
+        nread = (int) fread(pbuf, 1, bufsize, f);
         if (!nread) {
             /* eof */
             break;
@@ -1657,7 +1646,7 @@ int p_map(parser_t* pa, beatmap_t* b, FILE* f) {
         s.end = pbuf + nread;
 
         /* parsing loop */
-        for (; s.start < s.end; ) {
+        for (; s.start < s.end;) {
             slice_t line;
             n = consume_until(pa, &s, "\n", &line);
 
@@ -1675,7 +1664,7 @@ int p_map(parser_t* pa, beatmap_t* b, FILE* f) {
                 }
                 /* EOF, so we must process the remaining data as a line */
                 line = s;
-                n = (int)(s.end - s.start);
+                n = (int) (s.end - s.start);
             } else {
                 ++n; /* also skip the \n */
             }
@@ -1707,9 +1696,8 @@ int p_map(parser_t* pa, beatmap_t* b, FILE* f) {
 }
 
 OPPAIAPI
-int p_map_mem(parser_t* pa, beatmap_t* b, char* data,
-              int data_size)
-{
+int p_map_mem(parser_t *pa, beatmap_t *b, char *data,
+              int data_size) {
     int res = 0;
     int n;
     int nlines = 0; /* complete lines in the current chunk */
@@ -1725,7 +1713,7 @@ int p_map_mem(parser_t* pa, beatmap_t* b, char* data,
     s.end = data + data_size;
 
     /* parsing loop */
-    for (; s.start < s.end; ) {
+    for (; s.start < s.end;) {
         slice_t line;
         n = consume_until(pa, &s, "\n", &line);
 
@@ -1739,7 +1727,7 @@ int p_map_mem(parser_t* pa, beatmap_t* b, char* data,
             }
             /* EOF, so we must process the remaining data as a line */
             line = s;
-            n = (int)(s.end - s.start);
+            n = (int) (s.end - s.start);
         } else {
             ++n; /* also skip the \n */
         }
@@ -1769,7 +1757,7 @@ int p_map_mem(parser_t* pa, beatmap_t* b, char* data,
 #define DIFF_AIM 1
 
 /* how much strains decay per interval */
-float decay_base[] = { 0.3f, 0.15f };
+float decay_base[] = {0.3f, 0.15f};
 
 /*
  * arbitrary thresholds to determine when a stream is spaced enough
@@ -1778,7 +1766,7 @@ float decay_base[] = { 0.3f, 0.15f };
 #define SINGLE_SPACING 125.0f
 
 /* used to keep speed and aim balanced between eachother */
-float weight_scaling[] = { 1400.0f, 26.25f };
+float weight_scaling[] = {1400.0f, 26.25f};
 
 /* non-normalized diameter where the circlesize buff starts */
 #define CIRCLESIZE_BUFF_TRESHOLD 30.0f
@@ -1813,7 +1801,7 @@ float playfield_center[] = {
 #define DECAY_WEIGHT 0.9f
 
 OPPAIAPI
-int d_init(diff_calc_t* d) {
+int d_init(diff_calc_t *d) {
     memset(d, 0, sizeof(diff_calc_t));
     if (!array_reserve(&d->highest_strains, sizeof(float) * 600)) {
         return ERR_OOM;
@@ -1823,7 +1811,7 @@ int d_init(diff_calc_t* d) {
 }
 
 OPPAIAPI
-void d_free(diff_calc_t* d) {
+void d_free(diff_calc_t *d) {
     array_free(&d->highest_strains);
 }
 #define MAX_SPEED_BONUS 45.0f /* ~330BPM 1/4 streams */
@@ -1840,8 +1828,7 @@ void d_free(diff_calc_t* d) {
  */
 float d_spacing_weight(float distance, float delta_time,
                        float prev_distance, float prev_delta_time,
-                       float angle, int type, int* is_single)
-{
+                       float angle, int type, int *is_single) {
     float angle_bonus;
     float strain_time = al_max(delta_time, 50.0f);
     switch (type) {
@@ -1857,25 +1844,24 @@ float d_spacing_weight(float distance, float delta_time,
             }
             angle_bonus = 1.0f;
             if (!is_nan(angle) && angle < SPEED_ANGLE_BONUS_BEGIN) {
-                float s = (float)sin(1.5 * (SPEED_ANGLE_BONUS_BEGIN - angle));
-                angle_bonus += (float)pow(s, 2) / 3.57f;
+                float s = (float) sin(1.5 * (SPEED_ANGLE_BONUS_BEGIN - angle));
+                angle_bonus += (float) pow(s, 2) / 3.57f;
                 if (angle < M_PI / 2) {
                     angle_bonus = 1.28f;
                     if (distance < ANGLE_BONUS_SCALE && angle < M_PI / 4) {
                         angle_bonus += (1 - angle_bonus)
                                        * al_min((ANGLE_BONUS_SCALE - distance) / 10, 1);
-                    }
-                    else if (distance < ANGLE_BONUS_SCALE) {
+                    } else if (distance < ANGLE_BONUS_SCALE) {
                         angle_bonus += (1 - angle_bonus)
                                        * al_min((ANGLE_BONUS_SCALE - distance) / 10, 1)
-                                       * (float)sin((M_PI / 2 - angle) * 4 / M_PI);
+                                       * (float) sin((M_PI / 2 - angle) * 4 / M_PI);
                     }
                 }
             }
             return (
                            (1 + (speed_bonus - 1) * 0.75f) *
                            angle_bonus *
-                           (0.95f + speed_bonus * (float)pow(distance / SINGLE_SPACING, 3.5))
+                           (0.95f + speed_bonus * (float) pow(distance / SINGLE_SPACING, 3.5))
                    ) / strain_time;
         }
         case DIFF_AIM: {
@@ -1883,15 +1869,15 @@ float d_spacing_weight(float distance, float delta_time,
             float weighted_distance;
             float prev_strain_time = al_max(prev_delta_time, 50.0f);
             if (!is_nan(angle) && angle > AIM_ANGLE_BONUS_BEGIN) {
-                angle_bonus = (float)sqrt(
+                angle_bonus = (float) sqrt(
                                 al_max(prev_distance - ANGLE_BONUS_SCALE, 0)
                                 * pow(sin(angle - AIM_ANGLE_BONUS_BEGIN), 2)
                                 * al_max(distance - ANGLE_BONUS_SCALE, 0)
                 );
-                result = 1.5f * (float)pow(al_max(0, angle_bonus), 0.99)
+                result = 1.5f * (float) pow(al_max(0, angle_bonus), 0.99)
                          / al_max(AIM_TIMING_THRESHOLD, prev_strain_time);
             }
-            weighted_distance = (float)pow(distance, 0.99);
+            weighted_distance = (float) pow(distance, 0.99);
             return al_max(
                     result + weighted_distance /
                              al_max(AIM_TIMING_THRESHOLD, strain_time),
@@ -1902,10 +1888,10 @@ float d_spacing_weight(float distance, float delta_time,
     return 0.0f;
 }
 
-void d_calc_strain(int type, object_t* o, object_t* prev, float speedmul) {
+void d_calc_strain(int type, object_t *o, object_t *prev, float speedmul) {
     float res = 0;
     float time_elapsed = (o->time - prev->time) / speedmul;
-    float decay = (float)pow(decay_base[type], time_elapsed / 1000.0f);
+    float decay = (float) pow(decay_base[type], time_elapsed / 1000.0f);
     float scaling = weight_scaling[type];
 
     o->delta_time = time_elapsed;
@@ -1923,9 +1909,9 @@ void d_calc_strain(int type, object_t* o, object_t* prev, float speedmul) {
     o->strains[type] = prev->strains[type] * decay + res;
 }
 
-int dbl_desc(void const* a, void const* b) {
-    float x = *(float const*)a;
-    float y = *(float const*)b;
+int dbl_desc(void const *a, void const *b) {
+    float x = *(float const *) a;
+    float y = *(float const *) b;
     if (x < y) {
         return 1;
     }
@@ -1935,10 +1921,9 @@ int dbl_desc(void const* a, void const* b) {
     return -1;
 }
 
-int d_update_max_strains(diff_calc_t* d, float decay_factor,
+int d_update_max_strains(diff_calc_t *d, float decay_factor,
                          float cur_time, float prev_time, float cur_strain, float prev_strain,
-                         int first_obj)
-{
+                         int first_obj) {
     /* make previous peak strain decay until the current obj */
     while (cur_time > d->interval_end) {
         if (!array_append(&d->highest_strains, d->max_strain)) {
@@ -1948,8 +1933,8 @@ int d_update_max_strains(diff_calc_t* d, float decay_factor,
             d->max_strain = 0;
         } else {
             float decay;
-            decay = (float)pow(decay_factor,
-                               (d->interval_end - prev_time) / 1000.0f);
+            decay = (float) pow(decay_factor,
+                                (d->interval_end - prev_time) / 1000.0f);
             d->max_strain = prev_strain * decay;
         }
         d->interval_end += STRAIN_STEP * d->speed_mul;
@@ -1959,22 +1944,22 @@ int d_update_max_strains(diff_calc_t* d, float decay_factor,
     return 0;
 }
 
-void d_weigh_strains2(diff_calc_t* d, float* pdiff, float* ptotal) {
+void d_weigh_strains2(diff_calc_t *d, float *pdiff, float *ptotal) {
     int i;
     int nstrains = 0;
-    float* strains;
+    float *strains;
     float total = 0;
     float difficulty = 0;
     float weight = 1.0f;
 
-    strains = (float*)d->highest_strains.data;
+    strains = (float *) d->highest_strains.data;
     nstrains = d->highest_strains.len;
 
     /* sort strains from highest to lowest */
     qsort(strains, nstrains, sizeof(float), dbl_desc);
 
     for (i = 0; i < nstrains; ++i) {
-        total += (float)pow(strains[i], 1.2);
+        total += (float) pow(strains[i], 1.2);
         difficulty += strains[i] * weight;
         weight *= DECAY_WEIGHT;
     }
@@ -1985,15 +1970,15 @@ void d_weigh_strains2(diff_calc_t* d, float* pdiff, float* ptotal) {
     }
 }
 
-float d_weigh_strains(diff_calc_t* d) {
+float d_weigh_strains(diff_calc_t *d) {
     float diff;
     d_weigh_strains2(d, &diff, 0);
     return diff;
 }
 
-int d_calc_individual(int type, diff_calc_t* d) {
+int d_calc_individual(int type, diff_calc_t *d) {
     int i;
-    beatmap_t* b = d->b;
+    beatmap_t *b = d->b;
 
     d->max_strain = 0.0f;
     d->interval_end = STRAIN_STEP * d->speed_mul;
@@ -2001,8 +1986,8 @@ int d_calc_individual(int type, diff_calc_t* d) {
 
     for (i = 0; i < b->nobjects; ++i) {
         int err;
-        object_t* o = &b->objects[i];
-        object_t* prev = 0;
+        object_t *o = &b->objects[i];
+        object_t *prev = 0;
         float prev_time = 0, prev_strain = 0;
         if (i > 0) {
             prev = &b->objects[i - 1];
@@ -2034,8 +2019,8 @@ float d_length_bonus(float stars, float difficulty) {
     return 0.32f + 0.5f * (log10f(difficulty + stars) - log10f(stars));
 }
 
-int d_std(diff_calc_t* d, int mods) {
-    beatmap_t* b = d->b;
+int d_std(diff_calc_t *d, int mods) {
+    beatmap_t *b = d->b;
     int i;
     int res;
     float radius;
@@ -2049,7 +2034,7 @@ int d_std(diff_calc_t* d, int mods) {
 
     radius = (
             (PLAYFIELD_WIDTH / 16.0f) *
-            (1.0f - 0.7f * ((float)mapstats.cs - 5.0f) / 5.0f)
+            (1.0f - 0.7f * ((float) mapstats.cs - 5.0f) / 5.0f)
     );
 
     /*
@@ -2061,13 +2046,13 @@ int d_std(diff_calc_t* d, int mods) {
     /* cs buff (originally from osuElements) */
     if (radius < CIRCLESIZE_BUFF_TRESHOLD) {
         scaling_factor *=
-                1.0f + mymin((CIRCLESIZE_BUFF_TRESHOLD - radius), 5.0f) / 30.0f;
+                1.0f + mymin((CIRCLESIZE_BUFF_TRESHOLD - radius), 5.0f) / 50.0f;
     }
 
     /* calculate normalized positions */
     for (i = 0; i < b->nobjects; ++i) {
-        object_t* o = &b->objects[i];
-        float* pos;
+        object_t *o = &b->objects[i];
+        float *pos;
         float dot, det;
         if (o->type & OBJ_SPINNER) {
             pos = playfield_center;
@@ -2078,14 +2063,14 @@ int d_std(diff_calc_t* d, int mods) {
         o->normpos[0] = pos[0] * scaling_factor;
         o->normpos[1] = pos[1] * scaling_factor;
         if (i >= 2) {
-            object_t* prev1 = &b->objects[i - 1];
-            object_t* prev2 = &b->objects[i - 2];
+            object_t *prev1 = &b->objects[i - 1];
+            object_t *prev2 = &b->objects[i - 2];
             float v1[2], v2[2];
             v2f_sub(v1, prev2->normpos, prev1->normpos);
             v2f_sub(v2, o->normpos, prev1->normpos);
             dot = v2f_dot(v1, v2);
             det = v1[0] * v2[1] - v1[1] * v2[0];
-            o->angle = (float)fabs(atan2(det, dot));
+            o->angle = (float) fabs(atan2(det, dot));
         } else {
             o->angle = get_nan();
         }
@@ -2104,25 +2089,25 @@ int d_std(diff_calc_t* d, int mods) {
 
     d->aim_length_bonus = d_length_bonus(d->aim, d->aim_difficulty);
     d->speed_length_bonus = d_length_bonus(d->speed, d->speed_difficulty);
-    d->aim = (float)sqrt(d->aim) * STAR_SCALING_FACTOR;
-    d->speed = (float)sqrt(d->speed) * STAR_SCALING_FACTOR;
+    d->aim = (float) sqrt(d->aim) * STAR_SCALING_FACTOR;
+    d->speed = (float) sqrt(d->speed) * STAR_SCALING_FACTOR;
 
     if (mods & MODS_TOUCH_DEVICE) {
-        d->aim = (float)pow(d->aim, 0.8f);
+        d->aim = (float) pow(d->aim, 0.8f);
     }
 
     /* calculate total star rating */
     d->total = d->aim + d->speed +
-               (float)fabs(d->speed - d->aim) * EXTREME_SCALING_FACTOR;
+               (float) fabs(d->speed - d->aim) * EXTREME_SCALING_FACTOR;
 
     /* singletap stats */
     for (i = 1; i < b->nobjects; ++i) {
-        object_t* o = &b->objects[i];
+        object_t *o = &b->objects[i];
         if (o->is_single) {
             ++d->nsingles;
         }
         if (o->type & (OBJ_CIRCLE | OBJ_SLIDER)) {
-            object_t* prev = &b->objects[i - 1];
+            object_t *prev = &b->objects[i - 1];
             float interval = o->time - prev->time;
             interval /= mapstats.speed;
             if (interval >= d->singletap_threshold) {
@@ -2158,13 +2143,12 @@ typedef struct taiko_object {
 } taiko_object_t;
 
 /* object type change bonus */
-float taiko_change_bonus(taiko_object_t* cur, taiko_object_t* prev) {
+float taiko_change_bonus(taiko_object_t *cur, taiko_object_t *prev) {
     if (prev->rim != cur->rim) {
         cur->last_switch_even = prev->same_since % 2 == 0;
 
         if (prev->last_switch_even >= 0 &&
-            prev->last_switch_even != cur->last_switch_even)
-        {
+            prev->last_switch_even != cur->last_switch_even) {
             return TAIKO_TYPE_CHANGE_BONUS;
         }
     } else {
@@ -2176,7 +2160,7 @@ float taiko_change_bonus(taiko_object_t* cur, taiko_object_t* prev) {
 }
 
 /* rhythm change bonus */
-float taiko_rhythm_bonus(taiko_object_t* cur, taiko_object_t* prev) {
+float taiko_rhythm_bonus(taiko_object_t *cur, taiko_object_t *prev) {
     float ratio;
     float diff;
 
@@ -2192,27 +2176,26 @@ float taiko_rhythm_bonus(taiko_object_t* cur, taiko_object_t* prev) {
     }
 
     /* this is log base TAIKO_RHYTHM_CHANGE_BASE of ratio */
-    diff = (float)fmod(log(ratio) / log(TAIKO_RHYTHM_CHANGE_BASE), 1.0f);
+    diff = (float) fmod(log(ratio) / log(TAIKO_RHYTHM_CHANGE_BASE), 1.0f);
 
     /*
      * threshold that determines whether the rhythm changed enough
      * to be worthy of the bonus
      */
     if (diff > TAIKO_RHYTHM_CHANGE_BASE_THRESHOLD &&
-        diff < 1 - TAIKO_RHYTHM_CHANGE_BASE_THRESHOLD)
-    {
+        diff < 1 - TAIKO_RHYTHM_CHANGE_BASE_THRESHOLD) {
         return TAIKO_RHYTHM_CHANGE_BONUS;
     }
 
     return 0;
 }
 
-void taiko_strain(taiko_object_t* cur, taiko_object_t* prev) {
+void taiko_strain(taiko_object_t *cur, taiko_object_t *prev) {
     float decay;
     float addition = 1.0f;
     float factor = 1.0f;
 
-    decay = (float)pow(decay_base[0], cur->time_elapsed / 1000.0f);
+    decay = (float) pow(decay_base[0], cur->time_elapsed / 1000.0f);
 
     /*
      * we only have strains for hits, also ignore objects that are
@@ -2231,23 +2214,23 @@ void taiko_strain(taiko_object_t* cur, taiko_object_t* prev) {
     cur->strain = prev->strain * decay + addition * factor;
 }
 
-void swap_ptrs(void** a, void** b) {
-    void* tmp;
+void swap_ptrs(void **a, void **b) {
+    void *tmp;
     tmp = *a;
     *a = *b;
     *b = tmp;
 }
 
-int d_taiko(diff_calc_t* d, int mods) {
+int d_taiko(diff_calc_t *d, int mods) {
     float infinity = get_inf();
-    beatmap_t* b = d->b;
+    beatmap_t *b = d->b;
     int i;
     beatmap_stats_t mapstats;
 
     /* this way we can swap cur and prev without copying */
     taiko_object_t curprev[2];
-    taiko_object_t* cur = &curprev[0];
-    taiko_object_t* prev = &curprev[1];
+    taiko_object_t *cur = &curprev[0];
+    taiko_object_t *prev = &curprev[1];
 
     /*
      * these values keep track of the current timing point and
@@ -2282,7 +2265,7 @@ int d_taiko(diff_calc_t* d, int mods) {
      * more modular and more readable
      */
     for (i = 0; i < b->nobjects; ++i) {
-        object_t* o = &b->objects[i];
+        object_t *o = &b->objects[i];
 
         cur->hit = (o->type & OBJ_CIRCLE) != 0;
         cur->time = o->time;
@@ -2296,7 +2279,7 @@ int d_taiko(diff_calc_t* d, int mods) {
         cur->strain = 1;
         cur->same_since = 1;
         cur->last_switch_even = -1;
-        cur->rim = (o->sound_types[0] & (SOUND_CLAP|SOUND_WHISTLE)) != 0;
+        cur->rim = (o->sound_types[0] & (SOUND_CLAP | SOUND_WHISTLE)) != 0;
 
         if (b->original_mode == MODE_TAIKO) {
             goto continue_loop;
@@ -2310,7 +2293,7 @@ int d_taiko(diff_calc_t* d, int mods) {
             while (o->time > tnext) {
                 float sv_multiplier;
                 float velocity;
-                timing_t* t;
+                timing_t *t;
 
                 ++tindex;
                 if (b->ntiming_points > tindex + 1) {
@@ -2324,9 +2307,7 @@ int d_taiko(diff_calc_t* d, int mods) {
 
                 if (t->change) {
                     ms_per_beat = t->ms_per_beat;
-                }
-
-                else if (t->ms_per_beat < 0) {
+                } else if (t->ms_per_beat < 0) {
                     sv_multiplier = -100.0f / t->ms_per_beat;
                 }
 
@@ -2359,8 +2340,7 @@ int d_taiko(diff_calc_t* d, int mods) {
              * become streams of the slider's tick rate
              */
             for (j = o->time; j < o->time + duration + tick_spacing / 8;
-                 j += tick_spacing)
-            {
+                 j += tick_spacing) {
                 int sound_type = o->sound_types[isound];
                 cur->rim = (sound_type & (SOUND_CLAP | SOUND_WHISTLE));
                 cur->hit = 1;
@@ -2388,7 +2368,7 @@ int d_taiko(diff_calc_t* d, int mods) {
                 ++isound;
                 isound %= o->nsound_types;
 
-                swap_ptrs((void**)&prev, (void**)&cur);
+                swap_ptrs((void **) &prev, (void **) &cur);
             }
 
             /*
@@ -2412,7 +2392,7 @@ int d_taiko(diff_calc_t* d, int mods) {
             return result;
         }
 
-        swap_ptrs((void**)&prev, (void**)&cur);
+        swap_ptrs((void **) &prev, (void **) &cur);
     }
 
     d->total =
@@ -2424,7 +2404,7 @@ int d_taiko(diff_calc_t* d, int mods) {
 /* --------------------------------------------------------------------- */
 
 OPPAIAPI
-int d_calc(diff_calc_t* d, beatmap_t* b, int mods) {
+int d_calc(diff_calc_t *d, beatmap_t *b, int mods) {
     d->b = b;
     switch (b->mode) {
         case MODE_STD:
@@ -2450,9 +2430,8 @@ float acc_calc(int n300, int n100, int n50, int misses) {
 }
 
 OPPAIAPI
-void acc_round(float acc_percent, int nobjects, int misses, int* n300,
-               int* n100, int* n50)
-{
+void acc_round(float acc_percent, int nobjects, int misses, int *n300,
+               int *n100, int *n50) {
     int max300;
     float maxacc;
     misses = mymin(nobjects, misses);
@@ -2462,14 +2441,14 @@ void acc_round(float acc_percent, int nobjects, int misses, int* n300,
     *n50 = 0;
 
     /* just some black magic maths from wolfram alpha */
-    *n100 = (int)round_oppai(
+    *n100 = (int) round_oppai(
             -3.0f * ((acc_percent * 0.01f - 1.0f) * nobjects + misses) * 0.5f
     );
 
     if (*n100 > nobjects - misses) {
         /* acc lower than all 100s, use 50s */
         *n100 = 0;
-        *n50 = (int)round_oppai(
+        *n50 = (int) round_oppai(
                 -6.0f * ((acc_percent * 0.01f - 1.0f) * nobjects + misses) * 0.2f
         );
         *n50 = mymin(max300, *n50);
@@ -2492,8 +2471,7 @@ float taiko_acc_calc(int n300, int n150, int nmiss) {
 
 OPPAIAPI
 void taiko_acc_round(float acc_percent, int nobjects, int nmisses,
-                     int* n300, int* n150)
-{
+                     int *n300, int *n150) {
     int max300;
     float maxacc;
     nmisses = mymin(nobjects, nmisses);
@@ -2501,7 +2479,7 @@ void taiko_acc_round(float acc_percent, int nobjects, int nmisses,
     maxacc = acc_calc(max300, 0, 0, nmisses) * 100.0f;
     acc_percent = mymax(0.0f, mymin(maxacc, acc_percent));
     /* just some black magic maths from wolfram alpha */
-    *n150 = (int)round_oppai(
+    *n150 = (int) round_oppai(
             -2.0f * ((acc_percent * 0.01f - 1.0f) * nobjects + nmisses)
     );
     *n150 = mymin(max300, *n150);
@@ -2512,15 +2490,14 @@ void taiko_acc_round(float acc_percent, int nobjects, int nmisses,
 
 /* some kind of formula to get a base pp value from stars */
 float base_pp(float stars) {
-    return (float)pow(5.0f * mymax(1.0f, stars / 0.0675f) - 4.0f, 3.0f)
+    return (float) pow(5.0f * mymax(1.0f, stars / 0.0675f) - 4.0f, 3.0f)
            / 100000.0f;
 }
 
-int ppv2x(pp_calc_t* pp, float aim, float speed, float base_ar,
+int ppv2x(pp_calc_t *pp, float aim, float speed, float base_ar,
           float base_od, int max_combo, int nsliders, int ncircles, int nobjects,
           int mods, int combo, int n300, int n100, int n50, int nmiss,
-          int score_version)
-{
+          int score_version) {
     int nspinners = nobjects - nsliders - ncircles;
     beatmap_stats_t mapstats;
 
@@ -2529,11 +2506,11 @@ int ppv2x(pp_calc_t* pp, float aim, float speed, float base_ar,
     float length_bonus = (
             0.95f +
             0.4f * mymin(1.0f, nobjects_over_2k) +
-            (nobjects > 2000 ? (float)log10(nobjects_over_2k) * 0.5f : 0.0f)
+            (nobjects > 2000 ? (float) log10(nobjects_over_2k) * 0.5f : 0.0f)
     );
-    float miss_penality = (float)pow(0.97f, nmiss);
+    float miss_penality = (float) pow(0.97f, nmiss);
     float combo_break = (
-            (float)pow(combo, 0.8f) / (float)pow(max_combo, 0.8f)
+            (float) pow(combo, 0.8f) / (float) pow(max_combo, 0.8f)
     );
     float ar_bonus;
     float final_multiplier;
@@ -2563,7 +2540,7 @@ int ppv2x(pp_calc_t* pp, float aim, float speed, float base_ar,
              * apparently it also ignores spinners...
              * can go negative if we miss everything
              */
-            real_acc = acc_calc(mymax(0, (int)n300 - nsliders - nspinners),
+            real_acc = acc_calc(mymax(0, (int) n300 - nsliders - nspinners),
                                 n100, n50, nmiss);
             break;
         case 2:
@@ -2625,7 +2602,7 @@ int ppv2x(pp_calc_t* pp, float aim, float speed, float base_ar,
     acc_bonus = 0.5f + pp->accuracy / 2.0f;
 
     /* od bonus (high od requires better aim timing to acc) */
-    od_squared = (float)pow(mapstats.od, 2);
+    od_squared = (float) pow(mapstats.od, 2);
     od_bonus = 0.98f + od_squared / 2500.0f;
 
     pp->aim *= acc_bonus;
@@ -2641,7 +2618,8 @@ int ppv2x(pp_calc_t* pp, float aim, float speed, float base_ar,
 
     /* scale speed with acc and od */
     acc_od_bonus = 1.0f / (
-            1.0f + exp(-20.0f * (pp->accuracy + od_squared / 2310.0f - 0.8733f))
+            1.0f + (float) exp(-20.0f *
+                               (pp->accuracy + od_squared / 2310.0f - 0.8733f))
     ) / 1.89f;
     acc_od_bonus += od_squared / 5000.0f + 0.49f;
 
@@ -2649,11 +2627,11 @@ int ppv2x(pp_calc_t* pp, float aim, float speed, float base_ar,
 
     /* acc pp ---------------------------------------------------------- */
     /* arbitrary values tom crafted out of trial and error */
-    pp->acc = (float)pow(1.52163f, mapstats.od) *
-              (float)pow(real_acc, 24.0f) * 2.83f;
+    pp->acc = (float) pow(1.52163f, mapstats.od) *
+              (float) pow(real_acc, 24.0f) * 2.83f;
 
     /* length bonus (not the same as speed/aim length bonus) */
-    pp->acc *= mymin(1.15f, (float)pow(ncircles / 1000.0f, 0.3f));
+    pp->acc *= mymin(1.15f, (float) pow(ncircles / 1000.0f, 0.3f));
 
     /* hidden bonus */
     if (mods & MODS_HD) {
@@ -2678,7 +2656,7 @@ int ppv2x(pp_calc_t* pp, float aim, float speed, float base_ar,
         final_multiplier *= 0.95f;
     }
 
-    pp->total = (float)(
+    pp->total = (float) (
             pow(
                     pow(pp->aim, 1.1f) +
                     pow(pp->speed, 1.1f) +
@@ -2692,9 +2670,8 @@ int ppv2x(pp_calc_t* pp, float aim, float speed, float base_ar,
 
 /* taiko pp calc ------------------------------------------------------- */
 
-int taiko_ppv2x(pp_calc_t* pp, float stars, int max_combo,
-                float base_od, int n150, int nmiss, int mods)
-{
+int taiko_ppv2x(pp_calc_t *pp, float stars, int max_combo,
+                float base_od, int n150, int nmiss, int mods) {
     beatmap_stats_t mapstats;
     int n300 = mymax(0, max_combo - n150 - nmiss);
     int result;
@@ -2711,14 +2688,14 @@ int taiko_ppv2x(pp_calc_t* pp, float stars, int max_combo,
     pp->accuracy = taiko_acc_calc(n300, n150, nmiss);
 
     /* base acc pp */
-    pp->acc = (float)pow(150.0f / mapstats.odms, 1.1f);
-    pp->acc *= (float)pow(pp->accuracy, 15.0f) * 22.0f;
+    pp->acc = (float) pow(150.0f / mapstats.odms, 1.1f);
+    pp->acc *= (float) pow(pp->accuracy, 15.0f) * 22.0f;
 
     /* length bonus */
-    pp->acc *= mymin(1.15f, (float)pow(max_combo / 1500.0f, 0.3f));
+    pp->acc *= mymin(1.15f, (float) pow(max_combo / 1500.0f, 0.3f));
 
     /* base speed pp */
-    pp->speed = (float)pow(5.0f * mymax(1.0f, stars / 0.0075f) - 4.0f, 2.0f);
+    pp->speed = (float) pow(5.0f * mymax(1.0f, stars / 0.0075f) - 4.0f, 2.0f);
     pp->speed /= 100000.0f;
 
     /* length bonus (not the same as acc length bonus) */
@@ -2726,7 +2703,7 @@ int taiko_ppv2x(pp_calc_t* pp, float stars, int max_combo,
     pp->speed *= length_bonus;
 
     /* miss penality */
-    pp->speed *= (float)pow(0.985f, nmiss);
+    pp->speed *= (float) pow(0.985f, nmiss);
 
 #if 0
     /* combo scaling (removed?) */
@@ -2760,7 +2737,7 @@ int taiko_ppv2x(pp_calc_t* pp, float stars, int max_combo,
     }
 
     pp->total = (
-            (float)pow(
+            (float) pow(
                     pow(pp->speed, 1.1f) +
                     pow(pp->acc, 1.1f),
                     1.0f / 1.1f
@@ -2770,16 +2747,15 @@ int taiko_ppv2x(pp_calc_t* pp, float stars, int max_combo,
 }
 
 OPPAIAPI
-int taiko_ppv2(pp_calc_t* pp, float speed, int max_combo,
-               float base_od, int mods)
-{
+int taiko_ppv2(pp_calc_t *pp, float speed, int max_combo,
+               float base_od, int mods) {
     return taiko_ppv2x(pp, speed, max_combo, base_od, 0, 0, mods);
 }
 
 /* common pp calc stuff ------------------------------------------------ */
 
 OPPAIAPI
-void pp_init(pp_params_t* p) {
+void pp_init(pp_params_t *p) {
     p->mode = MODE_STD;
     p->mods = MODS_NOMOD;
     p->combo = -1;
@@ -2789,7 +2765,7 @@ void pp_init(pp_params_t* p) {
 }
 
 /* should be called inside ppv2p before calling ppv2x */
-void pp_handle_default_params(pp_params_t* p) {
+void pp_handle_default_params(pp_params_t *p) {
     if (p->combo < 0) {
         p->combo = p->max_combo - p->nmiss;
     }
@@ -2799,10 +2775,9 @@ void pp_handle_default_params(pp_params_t* p) {
 }
 
 OPPAIAPI
-int ppv2(pp_calc_t* pp, int mode, float aim, float speed, float base_ar,
+int ppv2(pp_calc_t *pp, int mode, float aim, float speed, float base_ar,
          float base_od, int max_combo, int nsliders, int ncircles, int nobjects,
-         int mods)
-{
+         int mods) {
     pp_params_t params;
     pp_init(&params);
     params.mode = mode;
@@ -2819,7 +2794,7 @@ int ppv2(pp_calc_t* pp, int mode, float aim, float speed, float base_ar,
 
 /* TODO: replace ppv2x with this? */
 OPPAIAPI
-int ppv2p(pp_calc_t* pp, pp_params_t* p) {
+int ppv2p(pp_calc_t *pp, pp_params_t *p) {
     pp_handle_default_params(p);
     switch (p->mode) {
         case MODE_STD:
@@ -2835,7 +2810,7 @@ int ppv2p(pp_calc_t* pp, pp_params_t* p) {
 }
 
 OPPAIAPI
-int b_ppv2(beatmap_t* b, pp_calc_t* pp, float aim, float speed, int mods) {
+int b_ppv2(beatmap_t *b, pp_calc_t *pp, float aim, float speed, int mods) {
     pp_params_t params;
     int max_combo = b_max_combo(b);
     if (max_combo < 0) {
@@ -2855,7 +2830,7 @@ int b_ppv2(beatmap_t* b, pp_calc_t* pp, float aim, float speed, int mods) {
 }
 
 OPPAIAPI
-int b_ppv2p(beatmap_t* map, pp_calc_t* pp, pp_params_t* p) {
+int b_ppv2p(beatmap_t *map, pp_calc_t *pp, pp_params_t *p) {
     p->base_ar = map->ar;
     p->base_od = map->od;
     p->max_combo = b_max_combo(map);
@@ -2870,7 +2845,7 @@ int b_ppv2p(beatmap_t* map, pp_calc_t* pp, pp_params_t* p) {
     return ppv2p(pp, p);
 }
 
-OPPAIAPI void ezpp_init(ezpp_t* ez) {
+OPPAIAPI void ezpp_init(ezpp_t *ez) {
     memset(ez, 0, sizeof(ezpp_t));
     ez->mode = MODE_STD;
     ez->mods = MODS_NOMOD;
@@ -2883,7 +2858,7 @@ OPPAIAPI void ezpp_init(ezpp_t* ez) {
 /* simple interface ---------------------------------------------------- */
 
 OPPAIAPI
-int ezpp(ezpp_t* ez, char* mapfile) {
+int ezpp(ezpp_t *ez, char *mapfile) {
     int res, r1, r2;
     parser_t parser;
     beatmap_t map;
@@ -2908,7 +2883,7 @@ int ezpp(ezpp_t* ez, char* mapfile) {
     } else if (!strcmp(mapfile, "-")) {
         res = p_map(&parser, &map, stdin);
     } else {
-        FILE* f = fopen(mapfile, "rb");
+        FILE *f = fopen(mapfile, "rb");
         if (!f) {
             perror("fopen");
             res = ERR_IO;
@@ -2989,8 +2964,8 @@ int ezpp(ezpp_t* ez, char* mapfile) {
     return res;
 }
 
-#endif /* OPPAI_IMPLEMENTATION */
+};
 
-}
+#endif /* OPPAI_IMPLEMENTATION */
 
 #endif //SHIRO_OPPAI_HH
