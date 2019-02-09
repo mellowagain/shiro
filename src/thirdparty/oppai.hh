@@ -42,8 +42,6 @@
  * ...
  */
 
-extern "C" {
-
 #include <stdio.h>
 
 #if defined(_WIN32) && !defined(OPPAI_IMPLEMENTATION)
@@ -2963,8 +2961,6 @@ int ezpp(ezpp_t *ez, char *mapfile) {
     d_free(&stars);
     return res;
 }
-
-};
 
 #endif /* OPPAI_IMPLEMENTATION */
 
