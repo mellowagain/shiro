@@ -95,6 +95,14 @@ namespace shiro::utils {
             (uint32_t) mods::flashlight |
             (uint32_t) mods::fade_in;
 
+    constexpr uint32_t speed_changing_mods = (uint32_t) mods::double_time |
+            (uint32_t) mods::half_time |
+            (uint32_t) mods::nightcore;
+
+    constexpr uint32_t map_changing_mods = (uint32_t) mods::hard_rock |
+            (uint32_t) mods::easy |
+            speed_changing_mods;
+
 }
 
 #endif  // SHIRO_MODS_HH
