@@ -16,31 +16,40 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef SHIRO_PP_SCORE_METRIC_HH
-#define SHIRO_PP_SCORE_METRIC_HH
+#ifndef SHIRO_STD_PP_CALCULATOR_HH
+#define SHIRO_STD_PP_CALCULATOR_HH
 
-#include "../beatmaps/beatmap.hh"
-#include "../scores/score.hh"
+#include "../../beatmaps/beatmap.hh"
+#include "../../scores/score.hh"
 
 namespace shiro::pp {
 
-    float calculate(beatmaps::beatmap beatmap, scores::score score);
+    class std_score {
+    public:
+        std_score(const beatmaps::beatmap &beatmap, const scores::score &score);
 
-    float calculate_std(beatmaps::beatmap beatmap, scores::score score);
+        float get_total_value();
+        float get_accuracy();
+        int32_t get_total_hits();
+        int32_t get_total_successful_hits();
 
-    float calculate_taiko(beatmaps::beatmap beatmap, scores::score score);
+    private:
+        beatmaps::beatmap beatmap;
+        scores::score score;
 
-    float calculate_mania(beatmaps::beatmap beatmap, scores::score score);
+        float aim_value = 0.0f;
+        float speed_value = 0.0f;
+        float acc_value = 0.0f;
+        float total_value = 0.0f;
 
-    float calculate_ctb(beatmaps::beatmap beatmap, scores::score score);
+        void compute_total_value();
 
-    // We aren't trusting the new experimental calculators just yet, keep fallback w/ old calculators
-    namespace fallback {
+        void compute_aim_value();
+        void compute_speed_value();
+        void compute_acc_value();
 
-        float calculate_std(beatmaps::beatmap beatmap, scores::score score);
-
-    }
+    };
 
 }
 
-#endif //SHIRO_PP_SCORE_METRIC_HH
+#endif //SHIRO_STD_PP_CALCULATOR_HH

@@ -16,13 +16,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#define OPPAI_IMPLEMENTATION
+#define OPPAI_IMPLEMENTATION // Needs to be always defined before including oppai.hh
 
 #include <utility>
 
 #include "../beatmaps/beatmap_helper.hh"
+#include "../thirdparty/loguru.hh"
 #include "../thirdparty/oppai.hh"
+#include "../utils/math_utils.hh"
 #include "../utils/mods.hh"
+#include "std/std_pp_calculator.hh"
 #include "pp_score_metric.hh"
 
 float shiro::pp::calculate(shiro::beatmaps::beatmap beatmap, shiro::scores::score score) {
@@ -41,6 +44,36 @@ float shiro::pp::calculate(shiro::beatmaps::beatmap beatmap, shiro::scores::scor
 }
 
 float shiro::pp::calculate_std(shiro::beatmaps::beatmap beatmap, shiro::scores::score score) {
+    std_score score_calculator(beatmap, score);
+    float pp = score_calculator.get_total_value();
+    float fallback = fallback::calculate_std(beatmap, score);
+
+    // Warn for now because the new calculator is experimental
+    if (!utils::math::identical(pp, fallback))
+        LOG_F(WARNING, "Mismatch between shiro-performance and oppai-ng: %f != %f", pp, fallback);
+
+    // Return always fallback. If the two values are not identical, we want the value that is most likely
+    // correct (which would be oppai-ng), and if they were the same it wouldn't matter which one we returned
+    return fallback;
+}
+
+// For now this just uses oppai-ng and thus does not award correct pp for converted maps
+float shiro::pp::calculate_taiko(shiro::beatmaps::beatmap beatmap, shiro::scores::score score) {
+    return fallback::calculate_std(std::move(beatmap), std::move(score));
+}
+
+// TODO: Implement pp calculation for osu!mania
+float shiro::pp::calculate_mania(shiro::beatmaps::beatmap beatmap, shiro::scores::score score) {
+    return 0.0f;
+}
+
+// TODO: Implement pp calculation for osu!catch
+float shiro::pp::calculate_ctb(shiro::beatmaps::beatmap beatmap, shiro::scores::score score) {
+    return 0.0f;
+}
+
+[[deprecated("This method will be removed once shiro-performance is no longer experimental")]]
+float shiro::pp::fallback::calculate_std(shiro::beatmaps::beatmap beatmap, shiro::scores::score score) {
     struct parser parser_state;
     struct beatmap map;
 
@@ -83,19 +116,4 @@ float shiro::pp::calculate_std(shiro::beatmaps::beatmap beatmap, shiro::scores::
     std::fclose(file);
 
     return calculated_pp;
-}
-
-// For now this just uses oppai-ng and thus does not award correct pp for converted maps
-float shiro::pp::calculate_taiko(shiro::beatmaps::beatmap beatmap, shiro::scores::score score) {
-    return calculate_std(std::move(beatmap), std::move(score));
-}
-
-// TODO: Implement pp calculation for osu!mania
-float shiro::pp::calculate_mania(shiro::beatmaps::beatmap beatmap, shiro::scores::score score) {
-    return 0.0f;
-}
-
-// TODO: Implement pp calculation for osu!catch
-float shiro::pp::calculate_ctb(shiro::beatmaps::beatmap beatmap, shiro::scores::score score) {
-    return 0.0f;
 }
