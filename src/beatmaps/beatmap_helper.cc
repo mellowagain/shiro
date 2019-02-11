@@ -51,7 +51,29 @@ bool shiro::beatmaps::helper::awards_pp(int32_t status_code) {
     return status_code == (int32_t) status::ranked;
 }
 
-FILE *shiro::beatmaps::helper::download(int32_t beatmap_id) {
+std::shared_ptr<std::ifstream> shiro::beatmaps::helper::download(int32_t beatmap_id) {
+    std::string beatmap_id_str = std::to_string(beatmap_id);
+    std::string filename = dir + utils::filesystem::preferred_separator + beatmap_id_str + ".osu";
+
+    if (fs::exists(filename))
+        return std::make_shared<std::ifstream>(filename);
+
+    auto [success, output] = utils::curl::get("https://old.ppy.sh/osu/" + beatmap_id_str);
+
+    if (!success) {
+        LOG_F(ERROR, "Unable to connect to osu! api: %s.", output.c_str());
+        return nullptr;
+    }
+
+    std::ofstream stream(filename);
+    stream << output;
+    stream.close();
+
+    return std::make_shared<std::ifstream>(filename);
+}
+
+[[deprecated("This method is unsafe and returns C code, instead of preferred C++")]]
+FILE *shiro::beatmaps::helper::download_(int32_t beatmap_id) {
     std::string beatmap_id_str = std::to_string(beatmap_id);
     std::string filename = dir + utils::filesystem::preferred_separator + beatmap_id_str + ".osu";
 

@@ -32,22 +32,17 @@ shiro::beatmaps::parser::parser(int32_t beatmap_id) : beatmap_id(beatmap_id) {
 }
 
 bool shiro::beatmaps::parser::parse() {
-    FILE *file = helper::download(this->beatmap_id);
+    std::shared_ptr<std::ifstream> file = helper::download(this->beatmap_id);
 
     if (file == nullptr) {
         LOG_F(ERROR, "Unable to parse beatmap %i because it failed to download.", this->beatmap_id);
         return false;
     }
 
+    std::string line;
     std::string current_section;
 
-    char *line_ptr = nullptr;
-    size_t length = 0;
-
-    while ((getline(&line_ptr, &length, file)) != -1) {
-        std::string line(line_ptr);
-        std::free(line_ptr); // The call above copies the string so we can free it
-
+    while (std::getline(*file, line)) {
         // Skip empty lines
         if (line.empty())
             continue;
@@ -104,10 +99,6 @@ bool shiro::beatmaps::parser::parse() {
     if (this->tick_rate == -1.0f)
         this->tick_rate = this->od;
 
-    if (line_ptr != nullptr)
-        std::free(line_ptr);
-
-    std::fclose(file);
     return true;
 }
 

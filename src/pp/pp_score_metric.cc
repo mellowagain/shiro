@@ -82,7 +82,7 @@ float shiro::pp::fallback::calculate_std(shiro::beatmaps::beatmap beatmap, shiro
 
     struct pp_params params;
 
-    FILE *file = beatmaps::helper::download(beatmap.beatmap_id);
+    FILE *file = beatmaps::helper::download_(beatmap.beatmap_id);
 
     p_init(&parser_state);
     p_map(&parser_state, &map, file);
