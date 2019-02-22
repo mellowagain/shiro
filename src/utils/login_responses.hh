@@ -30,7 +30,7 @@ namespace shiro::utils {
         multiaccount_detected = -4,
         server_error = -5,
         cutting_edge_multiplayer = -6,
-        account_password_rest = -7,
+        account_password_reset = -7,
         verification_required = -8
     };
 

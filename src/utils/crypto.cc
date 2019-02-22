@@ -149,41 +149,41 @@ uint32_t shiro::utils::crypto::make_seed() {
     int32_t b = (int32_t) std::time(nullptr);
     int32_t c = native::process_info::get_pid();
 
-    a = a - b;
-    a = a - c;
-    a = a ^ (c >> 13);
+    a -= b;
+    a -= c;
+    a ^= c >> 13;
 
-    b = b - c;
-    b = b - a;
-    b = b ^ (a << 8);
+    b -= c;
+    b -= a;
+    b ^= a << 8;
 
-    c = c - a;
-    c = c - b;
-    c = c ^ (b >> 13);
+    c -= a;
+    c -= b;
+    c ^= b >> 13;
 
-    a = a - b;
-    a = a - c;
-    a = a ^ (c >> 12);
+    a -= b;
+    a -= c;
+    a ^= c >> 12;
 
-    b = b - c;
-    b = b - a;
-    b = b ^ (a << 16);
+    b -= c;
+    b -= a;
+    b ^= a << 16;
 
-    c = c - a;
-    c = c - b;
-    c = c ^ (b >> 5);
+    c -= a;
+    c -= b;
+    c ^= b >> 5;
 
-    a = a - b;
-    a = a - c;
-    a = a ^ (c >> 3);
+    a -= b;
+    a -= c;
+    a ^= c >> 3;
 
-    b = b - c;
-    b = b - a;
-    b = b ^ (a << 10);
+    b -= c;
+    b -= a;
+    b -= a << 10;
 
-    c = c - a;
-    c = c - b;
-    c = c ^ (b >> 15);
+    c -= a;
+    c -= b;
+    c ^= b >> 15;
 
     return (uint32_t) c;
 }

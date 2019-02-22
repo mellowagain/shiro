@@ -68,7 +68,7 @@ void shiro::users::punishments::init() {
                             io::osu_writer writer;
 
                             writer.announce("Your restriction has ended. Please login again.");
-                            writer.login_reply((int32_t) utils::login_responses::account_password_rest);
+                            writer.login_reply((int32_t) utils::login_responses::account_password_reset);
 
                             user->queue.enqueue(writer);
                         }
