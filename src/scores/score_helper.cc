@@ -661,6 +661,52 @@ std::vector<shiro::scores::score> shiro::scores::helper::fetch_top100_user(shiro
     return scores;
 }
 
+std::optional<shiro::scores::score> shiro::scores::helper::get_latest_score(int32_t user_id, const utils::play_mode &mode) {
+    sqlpp::mysql::connection db(db_connection->get_config());
+    const tables::scores score_table {};
+
+    auto result = db(select(all_of(score_table)).from(score_table).where(
+            score_table.user_id == user_id and
+            score_table.play_mode == (uint8_t) mode
+    ).order_by(score_table.time.desc()).limit(1u));
+
+    if (result.empty())
+        return std::nullopt;
+
+    // We are ordering by time (descending) so the front value will have the highest timestamp which is the latest in unix time
+    const auto &row = result.front();
+
+    score s(-1);
+
+    s.id = row.id;
+    s.user_id = row.user_id;
+    s.hash = row.hash;
+    s.beatmap_md5 = row.beatmap_md5;
+
+    s.rank = row.ranking;
+    s.total_score = row.score;
+    s.max_combo = row.max_combo;
+    s.pp = row.pp;
+
+    s.accuracy = row.accuracy;
+    s.mods = row.mods;
+
+    s.fc = row.fc;
+    s.passed = row.passed;
+
+    s._300_count = row._300_count;
+    s._100_count = row._100_count;
+    s._50_count = row._50_count;
+    s.katus_count = row.katus_count;
+    s.gekis_count = row.gekis_count;
+    s.miss_count = row.miss_count;
+
+    s.play_mode = row.play_mode;
+    s.time = row.time;
+
+    return s;
+}
+
 shiro::scores::score shiro::scores::helper::get_score(int32_t id) {
     sqlpp::mysql::connection db(db_connection->get_config());
     const tables::scores score_table {};

@@ -17,6 +17,7 @@
  */
 
 #include "../database/tables/user_table.hh"
+#include "../users/user_activity.hh"
 #include "../users/user_manager.hh"
 #include "../users/user_punishments.hh"
 #include "../utils/play_mode.hh"
@@ -164,7 +165,11 @@ void shiro::ranking::helper::recalculate_ranks(const shiro::utils::play_mode &mo
         if ((int32_t) row.id == 1)
             continue;
 
-        // TODO: Put a bunch of checks here checking whenever the user is active and deserves a rank
+        // This needs to be configurable for future updates
+        // Users should be purged once there is a update to the performance calculator
+        // They shouldn't be purged *every* time a new score is submitted
+        //if (users::activity::is_inactive(row.id, mode))
+        //    continue;
 
         switch (mode) {
             case utils::play_mode::standard:
