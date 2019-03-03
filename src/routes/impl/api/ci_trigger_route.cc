@@ -16,11 +16,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <bitset>
 #include <cerrno>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <bitset>
 
 #include "../../../config/api_file.hh"
 #include "../../../thirdparty/loguru.hh"
