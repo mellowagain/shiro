@@ -149,7 +149,7 @@ int16_t shiro::ranking::helper::get_pp_for_user(uint8_t mode, std::string userna
     return 0;
 }
 
-void shiro::ranking::helper::recalculate_ranks(uint8_t mode) {
+void shiro::ranking::helper::recalculate_ranks(const shiro::utils::play_mode &mode) {
     sqlpp::mysql::connection db(db_connection->get_config());
     const tables::users user_table {};
 
@@ -158,81 +158,114 @@ void shiro::ranking::helper::recalculate_ranks(uint8_t mode) {
     if (result.empty())
         return;
 
+    std::vector<std::pair<int32_t, float>> users;
+
     for (const auto &row : result) {
         if ((int32_t) row.id == 1)
             continue;
 
-        int32_t play_count = 0;
-        int32_t old_rank = 0;
+        // TODO: Put a bunch of checks here checking whenever the user is active and deserves a rank
 
-        switch ((utils::play_mode) mode) {
+        switch (mode) {
             case utils::play_mode::standard:
-                play_count = row.play_count_std;
-                old_rank = row.rank_std;
+                if ((int32_t) row.play_count_std <= 0)
+                    continue;
+
+                users.emplace_back(std::make_pair<int32_t, float>(row.id, row.pp_std));
                 break;
             case utils::play_mode::taiko:
-                play_count = row.play_count_taiko;
-                old_rank = row.rank_taiko;
+                if ((int32_t) row.play_count_taiko <= 0)
+                    continue;
+
+                users.emplace_back(std::make_pair<int32_t, float>(row.id, row.pp_taiko));
                 break;
             case utils::play_mode::fruits:
-                play_count = row.play_count_ctb;
-                old_rank = row.rank_ctb;
+                if ((int32_t) row.play_count_ctb <= 0)
+                    continue;
+
+                users.emplace_back(std::make_pair<int32_t, float>(row.id, row.pp_ctb));
                 break;
             case utils::play_mode::mania:
-                play_count = row.play_count_mania;
-                old_rank = row.rank_mania;
+                if ((int32_t) row.play_count_mania <= 0)
+                    continue;
+
+                users.emplace_back(std::make_pair<int32_t, float>(row.id, row.pp_mania));
                 break;
         }
+    }
 
-        if (play_count == 0)
-            continue;
+    std::sort(users.begin(), users.end(), [](const std::pair<int32_t, float> &s_left, const std::pair<int32_t, float> &s_right) {
+        return s_left.second > s_right.second;
+    });
 
-        int32_t rank = get_leaderboard_position(mode, row.username);
+    // At this point, the users array is sorted by rank, this means the 0th element is rank #1
 
-        if (rank == old_rank)
-            return;
+    for (size_t i = 0; i < users.size(); i++) {
+        auto [user_id, pp] = users.at(i);
+        int32_t rank = (int32_t) i + 1;
 
-        switch ((utils::play_mode) mode) {
+        std::shared_ptr<users::user> user = users::manager::get_user_by_id(user_id);
+
+        switch (mode) {
             case utils::play_mode::standard:
                 db(update(user_table).set(
                         user_table.rank_std = rank
-                ).where(user_table.id == row.id));
+                ).where(user_table.id == user_id));
+
+                if (user != nullptr && user->stats.play_mode == (uint8_t) utils::play_mode::standard) {
+                    user->stats.rank = rank;
+                    user->presence.rank = rank;
+                }
                 break;
             case utils::play_mode::taiko:
                 db(update(user_table).set(
                         user_table.rank_taiko = rank
-                ).where(user_table.id == row.id));
+                ).where(user_table.id == user_id));
+
+                if (user != nullptr && user->stats.play_mode == (uint8_t) utils::play_mode::taiko) {
+                    user->stats.rank = rank;
+                    user->presence.rank = rank;
+                }
                 break;
             case utils::play_mode::fruits:
                 db(update(user_table).set(
                         user_table.rank_ctb = rank
-                ).where(user_table.id == row.id));
+                ).where(user_table.id == user_id));
+
+                if (user != nullptr && user->stats.play_mode == (uint8_t) utils::play_mode::fruits) {
+                    user->stats.rank = rank;
+                    user->presence.rank = rank;
+                }
                 break;
             case utils::play_mode::mania:
                 db(update(user_table).set(
                         user_table.rank_mania = rank
-                ).where(user_table.id == row.id));
+                ).where(user_table.id == user_id));
+
+                if (user != nullptr && user->stats.play_mode == (uint8_t) utils::play_mode::mania) {
+                    user->stats.rank = rank;
+                    user->presence.rank = rank;
+                }
                 break;
         }
+    }
 
-        std::shared_ptr<users::user> user = users::manager::get_user_by_id(row.id);
+    io::osu_writer writer;
 
-        if (user == nullptr)
+    // First we add all user stats/presence updates to the global writer
+    for (const std::shared_ptr<users::user> &online_user : users::manager::online_users) {
+        if (online_user->user_id == 1 || online_user->hidden)
             continue;
 
-        io::osu_writer writer;
+        writer.user_stats(online_user->stats);
+        writer.user_presence(online_user->presence);
+    }
 
-        user->stats.rank = rank;
-        user->presence.rank = rank;
+    // After we have all user updates in the writer, we can send them out globally
+    for (const std::shared_ptr<users::user> &online_user : users::manager::online_users) {
+        if (online_user->user_id == 1)
+            continue;
 
-        writer.user_stats(user->stats);
-        writer.user_presence(user->presence);
-
-        for (const std::shared_ptr<users::user> &online_user : users::manager::online_users) {
-            if (online_user->user_id == 1 || online_user->hidden)
-                continue;
-
-            online_user->queue.enqueue(writer);
-        }
+        online_user->queue.enqueue(writer);
     }
 }

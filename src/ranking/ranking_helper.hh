@@ -24,6 +24,7 @@
 #include <string>
 
 #include "../users/user.hh"
+#include "../utils/play_mode.hh"
 
 namespace shiro::ranking::helper {
 
@@ -33,7 +34,7 @@ namespace shiro::ranking::helper {
 
     int16_t get_pp_for_user(uint8_t mode, std::string username);
 
-    void recalculate_ranks(uint8_t mode);
+    void recalculate_ranks(const utils::play_mode &mode);
 
 }
 
