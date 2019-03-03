@@ -20,11 +20,13 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <bitset>
 
 #include "../../../config/api_file.hh"
 #include "../../../thirdparty/loguru.hh"
 #include "../../../users/user.hh"
 #include "../../../users/user_manager.hh"
+#include "../../../utils/filesystem.hh"
 #include "../../../utils/multipart_parser.hh"
 #include "ci_trigger_route.hh"
 
@@ -102,21 +104,26 @@ void shiro::routes::api::ci_trigger::handle(const crow::request &request, crow::
     response.code = 200;
     response.end();
 
-    int32_t code = std::remove("shiro");
+    // TODO: Replace hardcoded name with argv[0]
+    fs::path shiro_executable = fs::current_path() / "shiro";
 
-    if (code != 0 && errno != ENOENT) {
-        LOG_F(ERROR, "Shiro was unable to delete old version: %s (%i)", std::strerror(errno), errno);
-        return;
+    if (fs::exists(shiro_executable)) {
+        // Remove file only if it exists
+        if (fs::remove(shiro_executable)) {
+            LOG_F(ERROR, "Shiro was unable to delete old version: %s (%i)", std::strerror(errno), errno);
+            return;
+        }
     }
 
     std::ofstream stream("shiro", std::ios::binary | std::ios::trunc);
     stream << fields.at("shiro").body;
     stream.close();
 
-    #if defined(__unix__)
-        // Fix file permissions on unix
-        chmod("shiro", S_IRWXO | (S_IRGRP | S_IXGRP) | (S_IRGRP | S_IXGRP));
-    #endif
+    fs::permissions(
+            shiro_executable,
+            fs::perms::owner_all | fs::perms::group_exec | fs::perms::others_exec,
+            fs::perm_options::add
+    );
 
     std::string short_hash = fields.at("commit").body.substr(0, 7);
 
