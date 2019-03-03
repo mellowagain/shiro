@@ -61,14 +61,16 @@ std::string shiro::scores::table_display::build_present() {
     push("chartId", "beatmap");
     push("chartUrl", "https://osu.ppy.sh/b/" + std::to_string(this->beatmap.beatmap_id));
     push("chartName", "Beatmap Ranking");
-    push("rankBefore", this->old_top_score.id != -1 ? this->old_top_score.rank : "");
-    push("rankAfter", this->score.rank);
+    push("rankBefore", this->old_scoreboard_pos);
+    push("rankAfter", this->scoreboard_position);
     push("maxComboBefore", this->old_top_score.max_combo);
     push("maxComboAfter", this->score.max_combo);
     push("accuracyBefore", this->old_top_score.accuracy);
     push("accuracyAfter", this->score.accuracy);
-    push("rankedScoreBefore", this->old_top_score.total_score);
-    push("rankedScoreAfter", this->score.total_score);
+    push("rankedScoreBefore", this->old_top_score.total_score); // Gets only sent if the map is ranked
+    push("rankedScoreAfter", this->score.total_score); // Gets only sent if the map is ranked
+    push("totalScoreBefore", this->old_top_score.total_score);
+    push("totalScoreAfter", this->score.total_score);
     push("ppBefore", this->old_top_score.pp);
     push("ppAfter", this->score.pp);
     push("onlineScoreId", this->score.id, true);
@@ -83,9 +85,9 @@ std::string shiro::scores::table_display::build_present() {
     push("totalScoreBefore", this->user->stats.total_score - this->score.total_score);
     push("totalScoreAfter", this->score.total_score);
     push("maxComboBefore", 0); // TODO: Implement saving of highest achieved combo per user
-    push("maxComboAfter", 0);
-    push("accuracyBefore", this->old_acc / 100);
-    push("accuracyAfter", this->user->stats.accuracy / 100);
+    push("maxComboAfter", this->score.max_combo);
+    push("accuracyBefore", this->old_acc);
+    push("accuracyAfter", this->user->stats.accuracy);
     push("ppBefore", this->user->stats.pp - this->score.pp);
     push("ppAfter", this->user->stats.pp);
     push("achievements-new", "");

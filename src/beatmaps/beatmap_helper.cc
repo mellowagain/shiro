@@ -23,7 +23,7 @@
 #include "../utils/filesystem.hh"
 #include "beatmap_helper.hh"
 
-static std::string dir = fs::current_path().u8string() + shiro::utils::filesystem::preferred_separator + "maps";
+static fs::path dir = fs::current_path() / "maps";
 
 void shiro::beatmaps::helper::init() {
     if (!fs::exists(dir))
@@ -53,7 +53,7 @@ bool shiro::beatmaps::helper::awards_pp(int32_t status_code) {
 
 FILE *shiro::beatmaps::helper::download(int32_t beatmap_id) {
     std::string beatmap_id_str = std::to_string(beatmap_id);
-    std::string filename = dir + utils::filesystem::preferred_separator + beatmap_id_str + ".osu";
+    fs::path filename = dir / std::string(beatmap_id_str + ".osu");
 
     if (fs::exists(filename))
         return std::fopen(filename.c_str(), "rb");

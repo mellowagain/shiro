@@ -47,6 +47,10 @@ namespace shiro::utils::filesystem {
     // Fix for MSVC's stl prefering wchar_t over char
     inline constexpr char preferred_separator = (char) fs::path::preferred_separator;
 
+    inline std::string combine(const std::string &a, const std::string &b) {
+        return a + preferred_separator + b;
+    }
+
 }
 
-#endif
+#endif //SHIRO_FILESYSTEM_UTILS
