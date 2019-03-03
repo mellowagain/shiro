@@ -20,10 +20,20 @@
 #define SHIRO_TIME_UTILS_HH
 
 #include <cstdint>
+#include <optional>
+#include <string>
+#include <unordered_map>
 
 namespace shiro::utils::time {
 
+    extern int64_t unix_epoch_ticks;
+
+    extern std::unordered_map<std::string, uint32_t> duration_mapping;
+
     int64_t get_current_time_ticks();
+
+    // Returns seconds of the parsed time string, e.g input: "15min" returns 900 (seconds)
+    std::optional<uint32_t> parse_time_string(const std::string &input);
 
 }
 

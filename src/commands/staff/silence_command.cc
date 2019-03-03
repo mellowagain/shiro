@@ -22,9 +22,9 @@
 #include "../../users/user_manager.hh"
 #include "../../users/user_punishments.hh"
 #include "../../utils/bot_utils.hh"
+#include "../../utils/time_utils.hh"
 #include "silence_command.hh"
 
-#include "../../thirdparty/loguru.hh"
 bool shiro::commands::silence(std::deque<std::string> &args, std::shared_ptr<shiro::users::user> user, std::string channel) {
     if (args.size() < 3) {
         utils::bot::respond("Usage: !silence <user> <duration>[s,min,h,d,w,m] <reason>", user, channel, true);
@@ -50,37 +50,14 @@ bool shiro::commands::silence(std::deque<std::string> &args, std::shared_ptr<shi
         return false;
     }
 
-    std::string raw_time = args.at(1);
-    std::string time_modifier = "s";
-    uint32_t time = 0;
+    std::optional<uint32_t> parsed_time = utils::time::parse_time_string(args.at(1));
 
-    if (raw_time.find("min") != std::string::npos) {
-        time_modifier = raw_time.substr(raw_time.length() - 3);
-        raw_time = raw_time.substr(0, raw_time.length() - 3);
-    } else {
-        time_modifier = raw_time.back();
-        raw_time = raw_time.substr(0, raw_time.length() - 1);
-    }
-
-    try {
-        LOG_F(INFO, "Converting %s to uint.", raw_time.c_str());
-        time = boost::lexical_cast<uint32_t>(raw_time);
-    } catch (const boost::bad_lexical_cast &ex) {
+    if (!parsed_time.has_value()) {
         utils::bot::respond("Unable to convert duration into valid unsigned integer.", user, channel, true);
         return false;
     }
 
-    if (time_modifier == "min") {
-        time *= 60;
-    } else if (time_modifier == "h") {
-        time *= 60 * 60;
-    } else if (time_modifier == "d") {
-        time *= 60 * 60 * 24;
-    } else if (time_modifier == "w") {
-        time *= 60 * 60 * 24 * 7;
-    } else if (time_modifier == "m") {
-        time *= 60 * 60 * 24 * 7 * 30;
-    }
+    uint32_t time = parsed_time.value();
 
     // Remove username and duration
     args.pop_front();
