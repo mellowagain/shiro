@@ -46,7 +46,8 @@ void shiro::routes::root::handle(const crow::request &request, crow::response &r
     }
 
     // Generic response metadata
-    response.set_header("Keep-Alive", "timeout=5, max=100");
+    response.set_header("Connection", "Keep-Alive");
+    response.set_header("Keep-Alive", "timeout=5, max=1000");
     response.set_header("Content-Type", "application/octet-stream; charset=UTF-8");
 
     const std::string &user_agent = request.get_header_value("user-agent");
