@@ -109,7 +109,7 @@ void shiro::routes::api::ci_trigger::handle(const crow::request &request, crow::
 
     if (fs::exists(shiro_executable)) {
         // Remove file only if it exists
-        if (fs::remove(shiro_executable)) {
+        if (!fs::remove(shiro_executable)) {
             LOG_F(ERROR, "Shiro was unable to delete old version: %s (%i)", std::strerror(errno), errno);
             return;
         }
