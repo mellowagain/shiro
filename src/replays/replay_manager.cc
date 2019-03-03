@@ -38,7 +38,7 @@
 #include "replay.hh"
 #include "replay_manager.hh"
 
-static std::string dir = fs::current_path().u8string() + shiro::utils::filesystem::preferred_separator + "replays";
+static fs::path dir = fs::current_path() / "replays";
 
 void shiro::replays::init() {
     if (!fs::exists(dir))
@@ -52,7 +52,7 @@ void shiro::replays::save_replay(const shiro::scores::score &s, const beatmaps::
     if (!scores::helper::is_ranked(s, beatmap) && !config::score_submission::save_unranked_scores)
         return;
 
-    std::string filename = dir + utils::filesystem::preferred_separator + std::to_string(s.id) + ".osr";
+    fs::path filename = dir / std::string(std::to_string(s.id) + ".osr");
     std::shared_ptr<users::user> user = users::manager::get_user_by_id(s.user_id);
 
     if (user == nullptr)
@@ -115,7 +115,7 @@ void shiro::replays::save_replay(const shiro::scores::score &s, const beatmaps::
     if (fs::file_size(filename) >= 1048576) {
         fs::remove(filename);
 
-        filename = dir + utils::filesystem::preferred_separator + std::to_string(s.id) + ".osr.zz";
+        filename = dir / std::string(std::to_string(s.id) + ".osr.zz");
 
         std::stringstream original;
         std::stringstream compressed;
@@ -167,7 +167,7 @@ std::string shiro::replays::get_replay(const shiro::scores::score &s) {
     if (!has_replay(s))
         return "";
 
-    std::string filename = dir + utils::filesystem::preferred_separator + std::to_string(s.id) + ".osr.zz";
+    fs::path filename = dir / std::string(std::to_string(s.id) + ".osr.zz");
     std::stringstream result;
 
     if (fs::exists(filename)) {
@@ -187,7 +187,7 @@ std::string shiro::replays::get_replay(const shiro::scores::score &s) {
         boost::iostreams::copy(output, result);
 
     } else {
-        filename = dir + utils::filesystem::preferred_separator + std::to_string(s.id) + ".osr";
+        filename = dir / std::string(std::to_string(s.id) + ".osr");
         std::ifstream stream = std::ifstream(filename);
 
         result << stream.rdbuf();
@@ -199,8 +199,8 @@ std::string shiro::replays::get_replay(const shiro::scores::score &s) {
 }
 
 bool shiro::replays::has_replay(const shiro::scores::score &s) {
-    if (fs::exists(dir + utils::filesystem::preferred_separator + std::to_string(s.id) + ".osr"))
+    if (fs::exists(dir / std::string(std::to_string(s.id) + ".osr")))
         return true;
 
-    return fs::exists(dir + utils::filesystem::preferred_separator + std::to_string(s.id) + ".osr.zz");
+    return fs::exists(dir / std::string(std::to_string(s.id) + ".osr.zz"));
 }
