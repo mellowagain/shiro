@@ -1,6 +1,8 @@
 #ifndef SHIRO_CROW_HH
 #define SHIRO_CROW_HH
 
+#include <boost/algorithm/string/classification.hpp>
+#include <boost/algorithm/string/split.hpp>
 #include <stdio.h>
 #include <string.h>
 #include <string>
@@ -397,6 +399,29 @@ namespace crow
                 else
                     break;
             }
+            return ret;
+        }
+
+        std::unordered_map<std::string, std::string> get_all() const
+        {
+            std::unordered_map<std::string, std::string> ret;
+
+            for (char *c : key_value_pairs_)
+            {
+                std::string converted = c;
+
+                std::vector<std::string> parts;
+                boost::split(parts, converted, boost::is_any_of("="));
+
+                if (parts.empty())
+                    continue;
+
+                if (parts.size() == 1)
+                    parts.emplace_back("");
+
+                ret.insert(std::make_pair(parts.at(0), parts.at(1)));
+            }
+
             return ret;
         }
 
