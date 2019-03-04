@@ -160,9 +160,9 @@ void shiro::handler::login::handle(const crow::request &request, crow::response 
     int8_t time_zone = 9;
 
     try {
-        time_zone = boost::lexical_cast<int8_t>(utc_offset);
+        time_zone = (int8_t) boost::lexical_cast<int32_t>(utc_offset);
     } catch (const boost::bad_lexical_cast &ex) {
-        LOG_S(WARNING) << "Unable to cast " << utc_offset << " to int8_t: " << ex.what() << ".";
+        LOG_S(WARNING) << "Unable to cast " << utc_offset << " to int32_t (int8_t): " << ex.what() << ".";
         logging::sentry::exception(ex);
     }
 
