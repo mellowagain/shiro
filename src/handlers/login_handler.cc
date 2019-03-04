@@ -157,12 +157,12 @@ void shiro::handler::login::handle(const crow::request &request, crow::response 
     user->hwid = digestpp::sha256().absorb(hwid).hexdigest();
     user->last_ping = seconds;
 
-    uint8_t time_zone = 9;
+    int8_t time_zone = 9;
 
     try {
-        time_zone = boost::lexical_cast<uint8_t>(utc_offset);
+        time_zone = boost::lexical_cast<int8_t>(utc_offset);
     } catch (const boost::bad_lexical_cast &ex) {
-        LOG_S(WARNING) << "Unable to cast " << utc_offset << " to uint8_t: " << ex.what() << ".";
+        LOG_S(WARNING) << "Unable to cast " << utc_offset << " to int8_t: " << ex.what() << ".";
         logging::sentry::exception(ex);
     }
 
