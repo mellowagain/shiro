@@ -58,6 +58,9 @@ void shiro::routes::direct::search_set::handle(const crow::request &request, cro
         response.set_header("Pragma", "no-cache");
         response.code = 302;
         response.end();
+
+        LOG_F(WARNING, "Unable to contact beatmap mirror, asking client to contact it.");
+        return;
     }
 
     response.code = 200;
