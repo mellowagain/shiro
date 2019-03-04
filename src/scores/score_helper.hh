@@ -20,6 +20,7 @@
 #define SHIRO_SCORE_HELPER_HH
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -47,6 +48,8 @@ namespace shiro::scores::helper {
 
     // This method sorts using the pp value instead of score (like all other methods above)
     std::vector<score> fetch_top100_user(utils::play_mode mode, int32_t user_id);
+
+    std::optional<score> get_latest_score(int32_t user_id, const utils::play_mode &mode);
 
     score get_score(int32_t id);
 

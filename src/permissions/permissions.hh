@@ -37,7 +37,8 @@ namespace shiro::permissions {
         cmd_ban = 1LL << 36,
         cmd_kick = 1LL << 37,
         cmd_restrict = 1LL << 38,
-        cmd_silence = 1LL << 39
+        cmd_silence = 1LL << 39,
+        cmd_recalculate = 1LL << 40,
     };
 
 }

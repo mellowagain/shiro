@@ -19,6 +19,9 @@
 #include <chrono>
 
 #include "../database/tables/user_table.hh"
+#include "../scores/score.hh"
+#include "../scores/score_helper.hh"
+#include "../thirdparty/loguru.hh"
 #include "../shiro.hh"
 #include "user.hh"
 #include "user_activity.hh"
@@ -40,4 +43,27 @@ void shiro::users::activity::init() {
 
         ctx.Repeat();
     });
+}
+
+bool shiro::users::activity::is_inactive(int32_t id, const utils::play_mode &mode) {
+    using days = std::chrono::duration<int32_t, std::ratio<86400>>;
+
+    std::optional<scores::score> score = scores::helper::get_latest_score(id, mode);
+
+    if (!score.has_value())
+        return false;
+
+    scores::score latest_score = score.value();
+
+    std::chrono::duration epoch_time = std::chrono::system_clock::now().time_since_epoch();
+    std::chrono::duration score_time = std::chrono::seconds(latest_score.time);
+    std::chrono::duration difference_time = epoch_time - score_time;
+
+    int32_t difference = std::chrono::duration_cast<days>(difference_time).count();
+    bool inactive = difference > 90; // Users which haven't submitted a score in 90 days are considered inactive
+
+    if (inactive)
+        LOG_F(MAX, "User %i is inactive (%i days since last score submission)", id, difference);
+
+    return inactive;
 }

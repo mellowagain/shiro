@@ -19,9 +19,14 @@
 #ifndef SHIRO_USER_ACTIVITY_HH
 #define SHIRO_USER_ACTIVITY_HH
 
+#include "../utils/play_mode.hh"
+
 namespace shiro::users::activity {
 
     void init();
+
+    // A user is inactive if they haven't submitted a score in over 90 days
+    bool is_inactive(int32_t id, const utils::play_mode &mode);
 
 }
 
