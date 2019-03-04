@@ -22,7 +22,9 @@
 #include "../handlers/chat/public_chat_handler.hh"
 #include "../handlers/friends/friend_add_handler.hh"
 #include "../handlers/friends/friend_remove_handler.hh"
+#include "../handlers/presence/user_presence_request_all_handler.hh"
 #include "../handlers/presence/user_presence_request_handler.hh"
+#include "../handlers/presence/user_stats_request_handler.hh"
 #include "../handlers/spectating/start_spectating_handler.hh"
 #include "../handlers/spectating/stop_spectating_handler.hh"
 #include "../handlers/spectating/spectator_frames_handler.hh"
@@ -104,13 +106,17 @@ void shiro::routes::route(shiro::io::packet_id packet_id, shiro::io::osu_packet 
         case io::packet_id::in_receive_updates:break;
         case io::packet_id::in_set_irc_away_message:break;
         case io::packet_id::in_user_stats_request:
-            handler::presence::request_all::handle(in, out, user);
+            handler::stats::request_all::handle(in, out, user);
             break;
         case io::packet_id::in_invite:break;
         case io::packet_id::in_match_change_password:break;
         case io::packet_id::in_special_match_info_request:break;
-        case io::packet_id::in_user_presence_request:break;
-        case io::packet_id::in_user_presence_request_all:break;
+        case io::packet_id::in_user_presence_request:
+            handler::presence::request::handle(in, out, user);
+            break;
+        case io::packet_id::in_user_presence_request_all:
+            handler::presence::request_all::handle(in, out, user);
+            break;
         case io::packet_id::in_user_toggle_block_non_friend_pm:break;
         case io::packet_id::in_match_abort:break;
         case io::packet_id::in_special_join_match_channel:break;

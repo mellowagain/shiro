@@ -16,17 +16,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef SHIRO_USER_PRESENCE_REQUEST_HANDLER_HH
-#define SHIRO_USER_PRESENCE_REQUEST_HANDLER_HH
+#include "../../users/user_manager.hh"
+#include "user_presence_request_all_handler.hh"
 
-#include "../../io/osu_packet.hh"
-#include "../../io/osu_writer.hh"
-#include "../../users/user.hh"
+void shiro::handler::presence::request_all::handle(shiro::io::osu_packet &in, shiro::io::osu_writer &out, std::shared_ptr<shiro::users::user> user) {
+    for (const std::shared_ptr<users::user> &online_users : users::manager::online_users) {
+        if (online_users->hidden)
+            continue;
 
-namespace shiro::handler::presence::request {
+        if (online_users->user_id != -1)
+            out.user_stats(online_users->stats);
 
-    void handle(io::osu_packet &in, io::osu_writer &out, std::shared_ptr<users::user> user);
-
+        out.user_presence(online_users->presence);
+    }
 }
-
-#endif //SHIRO_USER_PRESENCE_REQUEST_HANDLER_HH
