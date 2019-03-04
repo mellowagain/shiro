@@ -17,6 +17,7 @@
  */
 
 #include "../../../config/bancho_file.hh"
+#include "../../../thirdparty/loguru.hh"
 #include "search_route.hh"
 
 void shiro::routes::direct::search::handle(const crow::request &request, crow::response &response) {
@@ -48,6 +49,8 @@ void shiro::routes::direct::search::handle(const crow::request &request, crow::r
     response.set_header("Location", url);
     response.set_header("Cache-Control", "no-cache");
     response.set_header("Pragma", "no-cache");
+
+    LOG_F(INFO, "Reverse Proxy | Forwarding request from osu!direct search to: %s", url.c_str());
 
     response.code = 302;
     response.end();
