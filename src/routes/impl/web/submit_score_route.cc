@@ -399,7 +399,7 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
     user->save_stats();
 
     if (overwrite && !user->hidden)
-        ranking::helper::recalculate_ranks((utils::play_mode) user->stats.play_mode);
+        ranking::helper::recalculate_ranks((utils::play_mode) score.play_mode);
 
     response.end(display->build());
 }
