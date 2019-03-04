@@ -18,6 +18,7 @@
 
 #include "../../../config/bancho_file.hh"
 #include "../../../thirdparty/loguru.hh"
+#include "../../../utils/curler.hh"
 #include "download_route.hh"
 
 void shiro::routes::direct::download::handle(const crow::request &request, crow::response &response, std::string args) {
@@ -48,12 +49,22 @@ void shiro::routes::direct::download::handle(const crow::request &request, crow:
     // Send the origin server so our partner server can identify us
     url += "cho-server=shiro";
 
-    response.set_header("Location", url);
-    response.set_header("Cache-Control", "no-cache");
-    response.set_header("Pragma", "no-cache");
+    LOG_F(INFO, "Reverse Proxy | Streaming request from osu!direct download from response: %s", url.c_str());
 
-    LOG_F(INFO, "Reverse Proxy | Forwarding request from osu!direct download to: %s", url.c_str());
+    auto [success, output] = utils::curl::get(url);
 
-    response.code = 302;
-    response.end();
+    // If we didn't succeed, let the osu! client do all the work
+    if (!success) {
+        response.set_header("Location", url);
+        response.set_header("Cache-Control", "no-cache");
+        response.set_header("Pragma", "no-cache");
+        response.code = 302;
+        response.end();
+
+        LOG_F(WARNING, "Unable to contact beatmap mirror, asking client to contact it.");
+        return;
+    }
+
+    response.code = 200;
+    response.end(output);
 }

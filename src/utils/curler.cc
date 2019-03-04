@@ -18,6 +18,7 @@
 
 #include <curl/curl.h>
 
+#include "../config/bancho_file.hh"
 #include "../logger/sentry_logger.hh"
 #include "../thirdparty/loguru.hh"
 #include "curler.hh"
@@ -30,11 +31,24 @@ std::tuple<bool, std::string> shiro::utils::curl::get(const std::string &url) {
         return { false, "Unable to acquire curl handle." };
 
     std::string output;
+    bool is_direct_proxy_pass = url.find(config::bancho::direct_base_url) != std::string::npos ||
+                                url.find(config::bancho::direct_mirror_url) != std::string::npos;
 
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, internal_callback);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &output);
     curl_easy_setopt(curl, CURLOPT_USERAGENT, "shiro (https://github.com/Marc3842h/shiro)");
     curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+
+    // osu! mirrors use self signed certificates that don't pass SSL peer certificate check
+    // Disable the peer and verification checks for this one request
+    if (is_direct_proxy_pass) {
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0);
+
+        struct curl_slist *chunk = nullptr;
+        chunk = curl_slist_append(chunk, "cho-server: shiro (https://github.com/Marc3842h/shiro)");
+        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
+    }
 
     status_code = curl_easy_perform(curl);
     curl_easy_cleanup(curl);
