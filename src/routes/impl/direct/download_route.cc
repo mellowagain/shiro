@@ -49,8 +49,6 @@ void shiro::routes::direct::download::handle(const crow::request &request, crow:
     // Send the origin server so our partner server can identify us
     url += "cho-server=shiro";
 
-    LOG_F(INFO, "Reverse Proxy | Streaming request from osu!direct download from response: %s", url.c_str());
-
     auto [success, output] = utils::curl::get(url);
 
     // If we didn't succeed, let the osu! client do all the work

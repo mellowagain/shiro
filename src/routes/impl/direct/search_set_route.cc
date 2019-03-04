@@ -47,8 +47,6 @@ void shiro::routes::direct::search_set::handle(const crow::request &request, cro
     // Remove the last char (which will be a &)
     url = url.substr(0, url.length() - 1);
 
-    LOG_F(INFO, "Reverse Proxy | Streaming request from osu!direct set search from response: %s", url.c_str());
-
     auto [success, output] = utils::curl::get(url);
 
     // If we didn't succeed, let the osu! client do all the work
