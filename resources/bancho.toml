@@ -14,5 +14,15 @@ default_supporter = true
 [api]
 key = "osu!Bancho token"
 
+[direct]
+# Shiro is a reverse proxy for using other beatmap mirrors. It does not provide it's own interface.
+# mode 0 = Compatibility mode with Shirogane made by Shiro
+# mode 1 = Compatibility mode with Cheesegull made by Ripple
+# Shiro will always send your unique server id with each direct proxy pass. It will also additionally
+# omit all user credentials in the url parameters (username and md5sum of password) to prevent data leaks.
+mode = 1
+base_url = "https://yozora.pw"
+mirror_url = "https://storage.yozora.pw"
+
 [integrations]
 sentry = true
