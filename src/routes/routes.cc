@@ -22,6 +22,9 @@
 #include "../logger/route_logger.hh"
 #include "../thirdparty/loguru.hh"
 #include "impl/api/ci_trigger_route.hh"
+#include "impl/direct/download_route.hh"
+#include "impl/direct/search_route.hh"
+#include "impl/direct/search_set_route.hh"
 #include "impl/web/bancho_connect_route.hh"
 #include "impl/web/get_replay_route.hh"
 #include "impl/web/get_scores_route.hh"
@@ -52,17 +55,27 @@ void shiro::routes::init() {
 }
 
 void shiro::routes::init_routes() {
+    // Main osu! route
     CROW_ROUTE(server, "/").methods("GET"_method, "POST"_method)(shiro_route(root::handle));
 
-    CROW_ROUTE(server, "/web/bancho_connect.php").methods("GET"_method)(shiro_route(web::bancho_connect::handle));
+    // Scores and replays routes
     CROW_ROUTE(server, "/web/osu-osz2-getscores.php").methods("GET"_method)(shiro_route(web::get_scores::handle));
     CROW_ROUTE(server, "/web/osu-getreplay.php").methods("GET"_method)(shiro_route(web::get_replay::handle));
+
+    // osu!direct routes
+    CROW_ROUTE(server, "/web/osu-search.php").methods("GET"_method)(shiro_route(direct::search::handle));
+    CROW_ROUTE(server, "/web/osu-search-set.php").methods("GET"_method)(shiro_route(direct::search_set::handle));
+    CROW_ROUTE(server, "/d/<string>").methods("GET"_method)(shiro_route_parameterized(direct::download::handle, std::string, args));
+    CROW_ROUTE(server, "/s/<string>").methods("GET"_method)(shiro_route_parameterized(direct::download::handle, std::string, args));
 
     // Score submission routes
     // submit-modular.php: Legacy route with old table display, prior to b20181221.4
     // submit-modular-selector.php: Up-to-date route with new table display, after b20181221.4
     CROW_ROUTE(server, "/web/osu-submit-modular.php").methods("POST"_method)(shiro_route(web::submit_score::handle));
     CROW_ROUTE(server, "/web/osu-submit-modular-selector.php").methods("POST"_method)(shiro_route(web::submit_score::handle));
+
+    // Miscellaneous osu! routes
+    CROW_ROUTE(server, "/web/bancho_connect.php").methods("GET"_method)(shiro_route(web::bancho_connect::handle));
 
     // Non osu! routes
     CROW_ROUTE(server, "/api/ci_trigger").methods("POST"_method)(shiro_route(api::ci_trigger::handle));

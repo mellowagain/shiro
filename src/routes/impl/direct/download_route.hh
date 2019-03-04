@@ -16,29 +16,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef SHIRO_BANCHO_FILE_HH
-#define SHIRO_BANCHO_FILE_HH
+#ifndef SHIRO_DOWNLOAD_ROUTE_HH
+#define SHIRO_DOWNLOAD_ROUTE_HH
 
-#include <string>
+#include <cstdint>
 
-namespace shiro::config::bancho {
+#include "../../../thirdparty/crow.hh"
 
-    extern std::string host;
-    extern uint16_t port;
-    extern uint16_t concurrency;
+namespace shiro::routes::direct::download {
 
-    extern bool default_supporter;
-
-    extern std::string api_key;
-
-    extern uint8_t direct_mode;
-    extern std::string direct_base_url;
-    extern std::string direct_mirror_url;
-
-    extern bool sentry_integration;
-
-    void parse();
+    void handle(const crow::request &request, crow::response &response, std::string args);
 
 }
 
-#endif //SHIRO_BANCHO_FILE_HH
+#endif //SHIRO_DOWNLOAD_ROUTE_HH

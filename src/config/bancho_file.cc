@@ -32,6 +32,10 @@ bool shiro::config::bancho::default_supporter = false;
 
 std::string shiro::config::bancho::api_key = "osu! API key";
 
+uint8_t shiro::config::bancho::direct_mode = 0;
+std::string shiro::config::bancho::direct_base_url = "https://shiro.host";
+std::string shiro::config::bancho::direct_mirror_url = "https://mirror.shiro.host";
+
 bool shiro::config::bancho::sentry_integration = true;
 
 void shiro::config::bancho::parse() {
@@ -53,6 +57,10 @@ void shiro::config::bancho::parse() {
 
     api_key = config_file->get_qualified_as<std::string>("api.key").value_or("osu! API key");
 
+    direct_mode = config_file->get_qualified_as<uint8_t>("direct.mode").value_or(0);
+    direct_base_url = config_file->get_qualified_as<std::string>("direct.base_url").value_or("https://shiro.host");
+    direct_mirror_url = config_file->get_qualified_as<std::string>("direct.mirror_url").value_or("https://mirror.shiro.host");
+
     sentry_integration = config_file->get_qualified_as<bool>("integrations.sentry").value_or(true);
 
     LOG_S(INFO) << "Successfully parsed bancho.toml.";
@@ -65,6 +73,10 @@ void shiro::config::bancho::parse() {
     //cli::cli_app.add_option("--bancho-default-supporter", default_Supporter, "Allow users with no roles / permissions to have supporer in-game?");
 
     cli::cli_app.add_option("--bancho-api-key", api_key, "API key for accessing official osu!Bancho API");
+
+    cli::cli_app.add_option("--direct-mode", direct_mode, "Compatibility mode for osu!direct reverse proxy");
+    cli::cli_app.add_option("--direct-base-url", direct_base_url, "Base url for osu!direct proxy pass target");
+    cli::cli_app.add_option("--direct-mirror-url", direct_mirror_url, "Mirror url for osu!direct proxy pass target");
 
     // Boolean flags are not yet supported fully in cli, see above
     //cli::cli_app.add_option("--bancho-sentry-integration", sentry_integration, "Integrate Shiro with Sentry.io error reporting?");

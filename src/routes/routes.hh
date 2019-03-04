@@ -48,4 +48,20 @@ namespace shiro::routes {
         }                                                                                                                   \
     }                                                                                                                       \
 
+// Currently only allows for one parameter but we can expand upon this when needed
+#define shiro_route_parameterized(handler, type, param)                                                                     \
+    [](const crow::request &request, crow::response &response, type param) {                                                \
+        logging::sentry::http_request_in(request);                                                                          \
+                                                                                                                            \
+        try {                                                                                                               \
+            handler(request, response, param);                                                                              \
+        } catch (...) {                                                                                                     \
+            logging::sentry::exception(std::current_exception());                                                           \
+            LOG_S(ERROR) << "A exception occurred in " #handler ": " << boost::current_exception_diagnostic_information();  \
+                                                                                                                            \
+            response.code = 500;                                                                                            \
+            response.end();                                                                                                 \
+        }                                                                                                                   \
+    }                                                                                                                       \
+
 #endif //SHIRO_ROUTES_HH
