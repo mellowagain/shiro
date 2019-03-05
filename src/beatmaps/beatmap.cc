@@ -170,7 +170,16 @@ bool shiro::beatmaps::beatmap::fetch_api() {
             switch ((utils::play_mode) this->play_mode) {
                 case utils::play_mode::standard:
                     this->diff_std = boost::lexical_cast<float>(std::string(part["difficultyrating"]));
-                    this->max_combo = boost::lexical_cast<int32_t>(std::string(part["max_combo"]));
+
+                    // Only osu!std maps have max_combo visible using the osu!api, see ppy/osu-api#105
+                    // Despite this, some maps are broken on osu!Bancho and will return "null", see ppy/osu-api#130
+                    if (!part["max_combo"].is_null())
+                        // In some cases, the beatmap max_combo returned by osu!api may be off by one, see ppy/osu-api#146
+                        // We just add +1 to be safe, this value is unused except for display on the beatmap page
+                        // where it doesn't really matter *too* much if it's over by one. The performance calculator
+                        // calculates this value itself, and that even correct. See Marc3842h/shiro#104 for more info.
+                        this->max_combo = boost::lexical_cast<int32_t>(std::string(part["max_combo"]));
+
                     break;
                 case utils::play_mode::taiko:
                     this->diff_taiko = boost::lexical_cast<float>(std::string(part["difficultyrating"]));
