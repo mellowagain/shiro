@@ -88,13 +88,13 @@ bool shiro::config::score_submission::key_coop_ranked = false;
 
 void shiro::config::score_submission::parse() {
     if (config_file != nullptr)
-        LOG_S(INFO) << "Re-parsing score_submission.toml file...";
+        LOG_F(INFO, "Re-parsing score_submission.toml file...");
 
     try {
         config_file = cpptoml::parse_file("score_submission.toml");
     } catch (const cpptoml::parse_exception &ex) {
         logging::sentry::exception(ex);
-        LOG_S(FATAL) << "Failed to parse score_submission.toml file: " << ex.what() << ".";
+        ABORT_F("Failed to parse score_submission.toml file: %s.", ex.what());
     }
 
     save_failed_scores = config_file->get_qualified_as<bool>("save_failed_scores").value_or(true);
@@ -156,7 +156,7 @@ void shiro::config::score_submission::parse() {
     key_9_ranked = config_file->get_qualified_as<bool>("ranked_keys.key_9").value_or(false);
     key_coop_ranked = config_file->get_qualified_as<bool>("ranked_keys.key_coop").value_or(false);
 
-    LOG_S(INFO) << "Successfully parsed score_submission.toml.";
+    LOG_F(INFO, "Successfully parsed score_submission.toml.");
 
     // Most of these values here are boolean
     // Passing booleans as CLI arguments is a limitation of the CLI library

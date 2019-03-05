@@ -187,7 +187,7 @@ bool shiro::beatmaps::beatmap::fetch_api() {
             if (part["approved_date"].is_null())
                 this->ranked_status = (int32_t) status::latest_pending;
         } catch (const boost::bad_lexical_cast &ex) {
-            LOG_S(ERROR) << "Unable to cast response of Bancho API to valid data types: " << ex.what() << ".";
+            LOG_F(ERROR, "Unable to cast response of Bancho API to valid data types: %s.", ex.what());
             logging::sentry::exception(ex);
 
             this->ranked_status = (int32_t) status::unknown;

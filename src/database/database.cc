@@ -49,7 +49,7 @@ void shiro::database::connect() {
         this->config->debug = true;
     #endif
 
-    LOG_S(INFO) << "Successfully connected to MySQL database.";
+    LOG_F(INFO, "Successfully connected to MySQL database.");
 }
 
 void shiro::database::setup() {
@@ -128,7 +128,7 @@ void shiro::database::setup() {
             "permissions BIGINT UNSIGNED NOT NULL, color TINYINT UNSIGNED NOT NULL);"
     );
 
-    LOG_S(INFO) << "Successfully created and structured tables in database.";
+    LOG_F(INFO, "Successfully created and structured tables in database.");
 }
 
 bool shiro::database::is_connected(bool abort) {
@@ -143,7 +143,7 @@ bool shiro::database::is_connected(bool abort) {
         logging::sentry::exception(ex);
 
         if (abort)
-            LOG_S(FATAL) << "Unable to connect to database: " << ex.what();
+            ABORT_F("Unable to connect to database: %s.", ex.what());
 
         return false;
     }

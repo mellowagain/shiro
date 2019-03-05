@@ -91,7 +91,7 @@ void shiro::bot::init() {
     std::shared_ptr<users::user> bot_user = std::make_shared<users::user>(1);
 
     if (!bot_user->init()) {
-        LOG_S(FATAL) << "Unable to initialize chat bot.";
+        ABORT_F("Unable to initialize chat bot.");
         return;
     }
 
@@ -120,7 +120,7 @@ void shiro::bot::init() {
         ctx.Repeat(30s);
     });
 
-    LOG_S(INFO) << "Bot has been successfully registered as " << config::bot::name << " and is now online.";
+    LOG_F(INFO, "Bot has been successfully registered as %s and is now online.", config::bot::name.c_str());
 }
 
 void shiro::bot::init_commands() {
@@ -136,7 +136,7 @@ void shiro::bot::init_commands() {
     commands_map.insert(std::make_pair("rtx", commands::rtx));
     commands_map.insert(std::make_pair("silence", commands::silence));
 
-    LOG_S(INFO) << "Bot commands have been successfully loaded. " << commands_map.size() << " commands available.";
+    LOG_F(INFO, "Bot commands have been successfully loaded. %lu commands available.", commands_map.size());
 }
 
 bool shiro::bot::handle(const std::string &command, std::deque<std::string> &args, std::shared_ptr<shiro::users::user> user, std::string channel) {

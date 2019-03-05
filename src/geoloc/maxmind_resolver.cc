@@ -31,7 +31,7 @@ void shiro::geoloc::maxmind::init() {
     if (code == MMDB_SUCCESS)
         return;
 
-    LOG_F(FATAL, "Unable to open maxmind db database: %s", MMDB_strerror(code));
+    ABORT_F("Unable to open maxmind db database: %s", MMDB_strerror(code));
 }
 
 void shiro::geoloc::maxmind::destroy() {

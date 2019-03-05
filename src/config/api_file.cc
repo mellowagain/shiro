@@ -29,13 +29,13 @@ std::string shiro::config::api::deploy_command = "";
 
 void shiro::config::api::parse() {
     if (config_file != nullptr)
-        LOG_S(INFO) << "Re-parsing api.toml file...";
+        LOG_F(INFO, "Re-parsing api.toml file...");
 
     try {
         config_file = cpptoml::parse_file("api.toml");
     } catch (const cpptoml::parse_exception &ex) {
         logging::sentry::exception(ex);
-        LOG_S(FATAL) << "Failed to parse api.toml file: " << ex.what() << ".";
+        ABORT_F("Failed to parse api.toml file: %s.", ex.what());
     }
 
     deploy_enabled = config_file->get_qualified_as<bool>("deploy.enabled").value_or(false);

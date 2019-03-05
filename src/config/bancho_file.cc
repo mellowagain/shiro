@@ -40,13 +40,13 @@ bool shiro::config::bancho::sentry_integration = true;
 
 void shiro::config::bancho::parse() {
     if (config_file != nullptr)
-        LOG_S(INFO) << "Re-parsing bancho.toml file...";
+        LOG_F(INFO, "Re-parsing bancho.toml file...");
 
     try {
         config_file = cpptoml::parse_file("bancho.toml");
     } catch (const cpptoml::parse_exception &ex) {
         logging::sentry::exception(ex);
-        LOG_S(FATAL) << "Failed to parse bancho.toml file: " << ex.what() << ".";
+        ABORT_F("Failed to parse bancho.toml file: %s.", ex.what());
     }
 
     host = config_file->get_qualified_as<std::string>("server.host").value_or("127.0.0.1");
@@ -63,7 +63,7 @@ void shiro::config::bancho::parse() {
 
     sentry_integration = config_file->get_qualified_as<bool>("integrations.sentry").value_or(true);
 
-    LOG_S(INFO) << "Successfully parsed bancho.toml.";
+    LOG_F(INFO, "Successfully parsed bancho.toml.");
 
     cli::cli_app.add_option("--bancho-host", host, "Host that Bancho should bind to");
     cli::cli_app.add_option("--bancho-port", port, "Port that Bancho should bind to");

@@ -132,7 +132,7 @@ void shiro::replays::save_replay(const shiro::scores::score &s, const beatmaps::
         stream << compressed.str();
         stream.close();
 
-        LOG_S(WARNING) << "Uncompressed replay was >1mb, saved replay with zlib compression.";
+        LOG_F(WARNING, "Uncompressed replay was >1mb, saved replay with zlib compression.");
     }
 }
 
