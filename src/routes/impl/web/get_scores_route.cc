@@ -69,7 +69,7 @@ void shiro::routes::web::get_scores::handle(const crow::request &request, crow::
         beatmap.beatmap_md5 = md5sum;
         scoreboard_type = boost::lexical_cast<int32_t>(type);
     } catch (const boost::bad_lexical_cast &ex) {
-        LOG_S(ERROR) << "Unable to convert sent values to beatmap metadata: " << ex.what() << ".";
+        LOG_F(ERROR, "Unable to convert sent values to beatmap metadata: %s.", ex.what());
         logging::sentry::exception(ex);
 
         response.code = 500;
@@ -99,7 +99,7 @@ void shiro::routes::web::get_scores::handle(const crow::request &request, crow::
             try {
                 mods_list = boost::lexical_cast<int32_t>(mods);
             } catch (const boost::bad_lexical_cast &ex) {
-                LOG_S(ERROR) << "Unable to convert sent values to mods: " << ex.what() << ".";
+                LOG_F(ERROR, "Unable to convert sent values to mods: %s.", ex.what());
                 logging::sentry::exception(ex);
 
                 response.code = 500;

@@ -32,13 +32,13 @@ std::string shiro::config::database::password = "hunter2";
 
 void shiro::config::database::parse() {
     if (config_file != nullptr)
-        LOG_S(INFO) << "Re-parsing database.toml file...";
+        LOG_F(INFO, "Re-parsing database.toml file...");
 
     try {
         config_file = cpptoml::parse_file("database.toml");
     } catch (const cpptoml::parse_exception &ex) {
         logging::sentry::exception(ex);
-        LOG_S(FATAL) << "Failed to parse database.toml file: " << ex.what() << ".";
+        ABORT_F("Failed to parse database.toml file: %s.", ex.what());
     }
 
     address = config_file->get_qualified_as<std::string>("database.address").value_or("127.0.0.1");
@@ -47,7 +47,7 @@ void shiro::config::database::parse() {
     username = config_file->get_qualified_as<std::string>("database.username").value_or("root");
     password = config_file->get_qualified_as<std::string>("database.password").value_or("hunter2");
 
-    LOG_S(INFO) << "Successfully parsed database.toml.";
+    LOG_F(INFO, "Successfully parsed database.toml.");
 
     cli::cli_app.add_option("--db-address", address, "Address of MySQL server to connect to");
     cli::cli_app.add_option("--db-port", port, "Port of MySQL server to connect to");

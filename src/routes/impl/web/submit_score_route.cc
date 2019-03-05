@@ -61,7 +61,7 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
         response.code = 400;
         response.end("error: invalid");
 
-        LOG_S(ERROR) << "Received score submission without content type.";
+        LOG_F(ERROR, "Received score submission without content type.");
         return;
     }
 
@@ -77,7 +77,7 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
         response.code = 403;
         response.end("error: pass");
 
-        LOG_S(WARNING) << "Received score submission without password.";
+        LOG_F(WARNING, "Received score submission without password.");
         return;
     }
 
@@ -85,7 +85,7 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
         response.code = 400;
         response.end("error: invalid");
 
-        LOG_S(WARNING) << "Received score without initialization vector.";
+        LOG_F(WARNING, "Received score without initialization vector.");
         return;
     }
 
@@ -93,7 +93,7 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
         response.code = 400;
         response.end("error: invalid");
 
-        LOG_S(WARNING) << "Received score without score data.";
+        LOG_F(WARNING, "Received score without score data.");
         return;
     }
 
@@ -110,7 +110,7 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
         response.code = 400;
         response.end("error: invalid");
 
-        LOG_S(WARNING) << "Received score without score metadata.";
+        LOG_F(WARNING, "Received score without score metadata.");
         return;
     }
 
@@ -123,7 +123,7 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
         response.code = 400;
         response.end("error: invalid");
 
-        LOG_S(WARNING) << "Received invalid score submission, score metadata doesn't have 16 or more parts.";
+        LOG_F(WARNING, "Received invalid score submission, score metadata doesn't have 16 or more parts.");
         return;
     }
 
@@ -135,7 +135,7 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
     if (user == nullptr) {
         response.code = 403;
 
-        LOG_S(WARNING) << "Received score submission from offline user.";
+        LOG_F(WARNING, "Received score submission from offline user.");
         return;
     }
 
@@ -194,7 +194,7 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
     try {
         game_version = boost::lexical_cast<int32_t>(score_metadata.at(17));
     } catch (const boost::bad_lexical_cast &ex) {
-        LOG_S(WARNING) << "Unable to convert " << score_metadata.at(17) << " to game version: " << ex.what();
+        LOG_F(WARNING, "Unable to convert %s to game version: %s.", score_metadata.at(17).c_str(), ex.what());
         logging::sentry::exception(ex);
 
         // Give the client a chance to resubmit so the player doesn't get restricted for a fail on our side.
@@ -257,7 +257,7 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
         if (config::score_submission::restrict_no_replay)
             users::punishments::restrict(user->user_id, 1, "No replay sent on score submission");
 
-        LOG_S(WARNING) << "Received score without replay data.";
+        LOG_F(WARNING, "Received score without replay data.");
         return;
     }
 

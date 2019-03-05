@@ -99,7 +99,7 @@ if (Tcmalloc_FOUND)
 endif()
 
 # Enable logging with streams in Loguru
-add_definitions(-DLOGURU_WITH_STREAMS=1 -DLOGURU_REDEFINE_ASSERT=1)
+add_definitions(-DLOGURU_REDEFINE_ASSERT=1)
 
 # Resources
 file(GLOB_RECURSE RESOURCES ${CMAKE_CURRENT_SOURCE_DIR}/resources/*)

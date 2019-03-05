@@ -65,7 +65,7 @@ void shiro::replays::replay::parse() {
             a.y = boost::lexical_cast<float>(pieces.at(2));
             a.z = boost::lexical_cast<int32_t>(pieces.at(3));
         } catch (const boost::bad_lexical_cast &ex) {
-            LOG_S(ERROR) << "Unable to cast action values into correct data types:" << ex.what();
+            LOG_F(ERROR, "Unable to cast action values into correct data types: %s", ex.what());
             logging::sentry::exception(ex);
             continue;
         }

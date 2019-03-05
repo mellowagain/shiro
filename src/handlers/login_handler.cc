@@ -124,7 +124,7 @@ void shiro::handler::login::handle(const crow::request &request, crow::response 
     try {
         build = boost::lexical_cast<int32_t>(parseable_version);
     } catch (const boost::bad_lexical_cast &ex) {
-        LOG_S(WARNING) << "Unable to cast " << version << " to int32_t: " << ex.what();
+        LOG_F(WARNING, "Unable to cast %s to int32_t: %s", version.c_str(), ex.what());
         logging::sentry::exception(ex);
 
         if (config::score_submission::restrict_mismatching_client_version) {
@@ -134,7 +134,7 @@ void shiro::handler::login::handle(const crow::request &request, crow::response 
             return;
         }
     } catch (const std::out_of_range &ex) {
-        LOG_S(WARNING) << "Unable to convert client version " << version << " to valid build: " << ex.what();
+        LOG_F(WARNING, "Unable to convert client version %s to valid build: %s.", version.c_str(), ex.what());
         logging::sentry::exception(ex);
 
         if (config::score_submission::restrict_mismatching_client_version) {
@@ -162,7 +162,7 @@ void shiro::handler::login::handle(const crow::request &request, crow::response 
     try {
         time_zone = (int8_t) boost::lexical_cast<int32_t>(utc_offset);
     } catch (const boost::bad_lexical_cast &ex) {
-        LOG_S(WARNING) << "Unable to cast " << utc_offset << " to int32_t (int8_t): " << ex.what() << ".";
+        LOG_F(WARNING, "Unable to cast %s to int32_t (int8_t): %s.", utc_offset.c_str(), ex.what());
         logging::sentry::exception(ex);
     }
 

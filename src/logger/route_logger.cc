@@ -22,16 +22,16 @@
 void shiro::logging::route_logger::log(std::string message, crow::LogLevel level) {
     switch (level) {
         case crow::LogLevel::Info:
-            LOG_S(INFO) << message;
+            LOG_F(INFO, "%s", message.c_str());
             break;
         case crow::LogLevel::Warning:
-            LOG_S(WARNING) << message;
+            LOG_F(WARNING, "%s", message.c_str());
             break;
         case crow::LogLevel::Error:
-            LOG_S(ERROR) << message;
+            LOG_F(ERROR, "%s", message.c_str());
             break;
         case crow::LogLevel::Critical:
-            LOG_S(FATAL) << message;
+            ABORT_F("%s", message.c_str());
             break;
         default:
             // Do nothing

@@ -51,5 +51,5 @@ void shiro::logging::init(int argc, char **argv) {
 
     loguru::init(argc, argv);
 
-    LOG_S(INFO) << "Logging was successfully initialized.";
+    LOG_F(INFO, "Logging was successfully initialized.");
 }

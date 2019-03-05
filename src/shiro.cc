@@ -123,5 +123,5 @@ void shiro::destroy() {
 
     scheduler.CancelAll();
 
-    LOG_S(INFO) << "Thank you and goodbye.";
+    LOG_F(INFO, "Thank you and goodbye.");
 }

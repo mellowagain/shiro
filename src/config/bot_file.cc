@@ -28,18 +28,18 @@ std::string shiro::config::bot::name = "Shiro";
 
 void shiro::config::bot::parse() {
     if (config_file != nullptr)
-        LOG_S(INFO) << "Re-parsing bot.toml file...";
+        LOG_F(INFO, "Re-parsing bot.toml file...");
 
     try {
         config_file = cpptoml::parse_file("bot.toml");
     } catch (const cpptoml::parse_exception &ex) {
         logging::sentry::exception(ex);
-        LOG_S(FATAL) << "Failed to parse bot.toml file: " << ex.what() << ".";
+        ABORT_F("Failed to parse bot.toml file: %s.", ex.what());
     }
 
     name = config_file->get_qualified_as<std::string>("bot.name").value_or("Shiro");
 
-    LOG_S(INFO) << "Successfully parsed bot.toml.";
+    LOG_F(INFO, "Successfully parsed bot.toml.");
 
     cli::cli_app.add_option("--bot-name", name, "Name of the chat bot");
 }
