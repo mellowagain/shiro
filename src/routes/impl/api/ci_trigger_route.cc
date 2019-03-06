@@ -142,13 +142,10 @@ void shiro::routes::api::ci_trigger::handle(const crow::request &request, crow::
     io::osu_writer restart_writer;
     restart_writer.bancho_restart(10000);
 
-    for (const std::shared_ptr<users::user> &user : users::manager::online_users) {
-        if (user == nullptr || user->user_id == 1)
-            continue;
-
+    users::manager::iterate([&announce_writer, &restart_writer](std::shared_ptr<users::user> user) {
         user->queue.enqueue(announce_writer);
         user->queue.enqueue_next(restart_writer);
-    }
+    }, true);
 
     std::thread deploy_thread([]() {
         std::this_thread::sleep_for(5s);

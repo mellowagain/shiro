@@ -16,6 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "../bot/bot.hh"
 #include "../users/user_manager.hh"
 #include "../utils/bot_utils.hh"
 #include "../utils/osu_permissions.hh"
@@ -27,7 +28,11 @@ void shiro::channels::bridge::install() {
 }
 
 void shiro::channels::bridge::callback(void *user_data, const loguru::Message &log_message) {
-    std::shared_ptr<users::user> bot_user = users::manager::get_user_by_id(1);
+    std::shared_ptr<users::user> bot_user = bot::bot_user;
+
+    if (bot_user == nullptr)
+        return;
+
     io::osu_writer writer;
     io::osu_writer future_writer;
 
