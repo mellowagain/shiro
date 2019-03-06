@@ -27,7 +27,7 @@ shiro::io::buffer shiro::io::layouts::user_presence::marshal() {
     buf.write<int32_t>(this->user_id);
     buf.write_string(username);
 
-    buf.write<int8_t>(this->time_zone);
+    buf.write<uint8_t>(this->time_zone);
     buf.write<uint8_t>(this->country_id);
 
     buf.write<uint8_t>(this->permissions);
@@ -44,7 +44,7 @@ void shiro::io::layouts::user_presence::unmarshal(shiro::io::buffer &buffer) {
     this->user_id = buffer.read<int32_t>();
     this->username = buffer.read_string();
 
-    this->time_zone = buffer.read<int8_t>();
+    this->time_zone = buffer.read<uint8_t>();
     this->country_id = buffer.read<uint8_t>();
 
     this->permissions = buffer.read<uint8_t>();
