@@ -24,10 +24,39 @@
 #include "user_manager.hh"
 
 void shiro::users::timeout::init() {
-    scheduler.Schedule(30s, [](tsc::TaskContext ctx) {
-        std::vector<io::osu_writer> logout_queue;
+    scheduler.Schedule(60s, [](tsc::TaskContext ctx) {
+        std::vector<std::shared_ptr<users::user>> dead;
+        std::chrono::seconds now = std::chrono::duration_cast<std::chrono::seconds>(
+                std::chrono::system_clock::now().time_since_epoch()
+        );
 
-        // Needs rework
+        // Iterate over all users to find out which ones are dead
+        users::manager::iterate([now, &dead](std::shared_ptr<users::user> user) {
+            int64_t difference = std::chrono::duration_cast<std::chrono::seconds>(now - user->last_ping).count();
+
+            if (difference < 60)
+                return;
+
+            dead.push_back(user);
+        }, true);
+
+        io::osu_writer writer;
+        io::layouts::user_quit quit;
+
+        quit.state = 0;
+
+        for (const std::shared_ptr<users::user> &user : dead) {
+            LOG_F(WARNING, "User %s didn't send a ping in 30 seconds, timing out.", user->presence.username.c_str());
+            users::manager::logout_user(user);
+
+            quit.user_id = user->user_id;
+
+            writer.user_quit(quit);
+        }
+
+        users::manager::iterate([&writer](std::shared_ptr<users::user> user) {
+            user->queue.enqueue(writer);
+        }, true);
 
         ctx.Repeat();
     });
