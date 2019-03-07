@@ -190,6 +190,7 @@ void shiro::handler::login::handle(const crow::request &request, crow::response 
 
     writer.channel_listing_complete();
     channels::manager::write_channels(writer, user);
+    channels::manager::auto_join(writer, user);
 
     io::osu_writer global_writer;
     global_writer.user_presence(user->presence);

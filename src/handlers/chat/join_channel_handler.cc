@@ -34,7 +34,7 @@ void shiro::handler::chat::join::handle(shiro::io::osu_packet &in, shiro::io::os
         return;
     }
 
-    channels::manager::write_channels(writer, user, false);
+    channels::manager::write_channels(writer, user);
 
     users::manager::iterate([&writer](std::shared_ptr<users::user> online_user) {
         online_user->queue.enqueue(writer);
