@@ -20,12 +20,14 @@
 #define SHIRO_SPECTATOR_MANAGER_HH
 
 #include <memory>
+#include <shared_mutex>
 
 #include "../users/user.hh"
 
 namespace shiro::spectating::manager {
 
     extern std::vector<std::pair<std::shared_ptr<users::user>, std::shared_ptr<users::user>>> currently_spectating;
+    extern std::shared_timed_mutex mutex;
 
     void start_spectating(std::shared_ptr<users::user> user, std::shared_ptr<users::user> target);
 
