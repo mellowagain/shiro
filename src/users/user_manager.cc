@@ -52,8 +52,7 @@ void shiro::users::manager::logout_user(std::shared_ptr<shiro::users::user> user
     if (iterator == online_users.end())
         return;
 
-    ptrdiff_t index = std::distance(online_users.begin(), iterator);
-    online_users.erase(online_users.begin() + index);
+    online_users.erase(iterator);
 
     LOG_F(INFO, "User %s logged out successfully.", user->presence.username.c_str());
 }

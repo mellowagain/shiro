@@ -35,8 +35,7 @@ void shiro::handler::friends::remove::handle(shiro::io::osu_packet &in, shiro::i
     if (iterator == user->friends.end())
         return;
 
-    ptrdiff_t index = std::distance(user->friends.begin(), iterator);
-    user->friends.erase(user->friends.begin() + index);
+    user->friends.erase(iterator);
 
     out.friend_list(user->friends);
 }

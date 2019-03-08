@@ -136,8 +136,7 @@ bool shiro::channels::manager::leave_channel(uint32_t channel_id, std::shared_pt
         if (iterator == users.end())
             return false;
 
-        ptrdiff_t index = std::distance(users.begin(), iterator);
-        users.erase(users.begin() + index);
+        users.erase(iterator);
         return true;
     }
 
