@@ -28,7 +28,7 @@ namespace shiro::io::layouts {
         int32_t user_id = 0;
         std::string username = "";
 
-        int8_t time_zone = 0;
+        uint8_t time_zone = 0;
         uint8_t country_id = 0;
 
         uint8_t permissions = 0;
