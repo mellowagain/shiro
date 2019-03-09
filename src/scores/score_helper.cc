@@ -964,7 +964,11 @@ std::tuple<bool, std::string> shiro::scores::helper::is_flagged(const shiro::sco
             return { true, "Impossible mod combination (SO + AUTO)" };
     }
 
-    if (config::score_submission::restrict_impossible_combo && score.max_combo > beatmap.max_combo) {
+    bool impossible_combo = score.play_mode == (uint8_t) utils::play_mode::standard &&
+            beatmap.max_combo > 0 &&
+            score.max_combo > beatmap.max_combo;
+
+    if (config::score_submission::restrict_impossible_combo && impossible_combo) {
         std::string reason = "Impossible combo (" + std::to_string(score.max_combo) + " > " + std::to_string(beatmap.max_combo) + ")";
         return { true, reason };
     }
