@@ -110,7 +110,7 @@ bool shiro::channels::manager::join_channel(uint32_t channel_id, std::shared_ptr
     std::unique_lock<std::shared_timed_mutex> lock(mutex);
 
     for (auto &[channel, users] : channels) {
-        if (channel.id == channel_id || !has_permissions(user, channel.permission))
+        if (channel.id != channel_id || !has_permissions(user, channel.permission))
             continue;
 
         users.emplace_back(user);
@@ -128,7 +128,7 @@ bool shiro::channels::manager::leave_channel(uint32_t channel_id, std::shared_pt
     std::unique_lock<std::shared_timed_mutex> lock(mutex);
 
     for (auto &[channel, users] : channels) {
-        if (channel.id == channel_id || !has_permissions(user, channel.permission))
+        if (channel.id != channel_id || !has_permissions(user, channel.permission))
             continue;
 
         auto iterator = std::find(users.begin(), users.end(), user);
