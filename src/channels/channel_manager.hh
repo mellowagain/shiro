@@ -42,7 +42,7 @@ namespace shiro::channels::manager {
 
     bool leave_channel(uint32_t channel_id, std::shared_ptr<users::user> user);
 
-    bool in_channel(uint32_t channel_id, const std::shared_ptr<users::user> &user);
+    bool in_channel(uint32_t channel_id, std::shared_ptr<users::user> user);
 
     std::vector<std::shared_ptr<users::user>> get_users_in_channel(const std::string &channel_name);
 

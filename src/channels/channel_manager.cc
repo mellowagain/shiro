@@ -143,7 +143,7 @@ bool shiro::channels::manager::leave_channel(uint32_t channel_id, std::shared_pt
     return false;
 }
 
-bool shiro::channels::manager::in_channel(uint32_t channel_id, const std::shared_ptr<shiro::users::user> &user) {
+bool shiro::channels::manager::in_channel(uint32_t channel_id, std::shared_ptr<shiro::users::user> user) {
     // Disallow other threads from writing (but not from reading)
     std::shared_lock<std::shared_timed_mutex> lock(mutex);
 
