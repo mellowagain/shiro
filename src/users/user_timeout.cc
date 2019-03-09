@@ -46,7 +46,7 @@ void shiro::users::timeout::init() {
         quit.state = 0;
 
         for (const std::shared_ptr<users::user> &user : dead) {
-            LOG_F(WARNING, "User %s didn't send a ping in 30 seconds, timing out.", user->presence.username.c_str());
+            LOG_F(WARNING, "User %s didn't send a ping in 60 seconds, timing out.", user->presence.username.c_str());
             users::manager::logout_user(user);
 
             quit.user_id = user->user_id;
