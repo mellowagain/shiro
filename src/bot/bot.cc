@@ -45,6 +45,7 @@
 #include "../utils/osu_client.hh"
 #include "bot.hh"
 
+std::shared_ptr<shiro::users::user> shiro::bot::bot_user = nullptr;
 static std::unordered_map<std::string, std::function<bool(std::deque<std::string>&, std::shared_ptr<shiro::users::user>, std::string)>> commands_map;
 
 void shiro::bot::init() {
@@ -113,6 +114,8 @@ void shiro::bot::init() {
     bot_user->presence.longitude = 139.6917f;
 
     users::manager::login_user(bot_user);
+
+    bot::bot_user = bot_user;
 
     scheduler.Schedule(30s, [bot_user](tsc::TaskContext ctx) {
         bot_user->queue.clear();

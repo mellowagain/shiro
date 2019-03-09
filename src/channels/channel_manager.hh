@@ -19,6 +19,7 @@
 #ifndef SHIRO_CHANNEL_MANAGER_HH
 #define SHIRO_CHANNEL_MANAGER_HH
 
+#include <shared_mutex>
 #include <unordered_map>
 
 #include "../io/layouts/channel/channel.hh"
@@ -28,16 +29,20 @@
 namespace shiro::channels::manager {
 
     extern std::unordered_map<io::layouts::channel, std::vector<std::shared_ptr<users::user>>> channels;
+    extern std::shared_timed_mutex mutex;
+    extern std::vector<std::pair<uint32_t, io::layouts::channel>> auto_join_channels;
 
     void init();
 
-    void write_channels(io::osu_writer &buf, std::shared_ptr<shiro::users::user> user, bool first = true);
+    void write_channels(io::osu_writer &buffer, std::shared_ptr<shiro::users::user> user);
+
+    void auto_join(io::osu_writer &buffer, std::shared_ptr<shiro::users::user> user);
 
     bool join_channel(uint32_t channel_id, std::shared_ptr<users::user> user);
 
     bool leave_channel(uint32_t channel_id, std::shared_ptr<users::user> user);
 
-    bool in_channel(uint32_t channel_id, const std::shared_ptr<users::user> &user);
+    bool in_channel(uint32_t channel_id, std::shared_ptr<users::user> user);
 
     std::vector<std::shared_ptr<users::user>> get_users_in_channel(const std::string &channel_name);
 
@@ -45,7 +50,7 @@ namespace shiro::channels::manager {
 
     void insert_if_not_exists(std::string name, std::string description, bool auto_join, bool hidden, bool read_only, uint64_t permission);
 
-    bool has_permissions(std::shared_ptr<users::user> user, uint32_t channel_id);
+    bool has_permissions(std::shared_ptr<users::user> user, uint64_t perms);
 
     bool is_read_only(uint32_t channel_id);
 

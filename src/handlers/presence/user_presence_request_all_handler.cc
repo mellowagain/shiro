@@ -20,13 +20,13 @@
 #include "user_presence_request_all_handler.hh"
 
 void shiro::handler::presence::request_all::handle(shiro::io::osu_packet &in, shiro::io::osu_writer &out, std::shared_ptr<shiro::users::user> user) {
-    for (const std::shared_ptr<users::user> &online_users : users::manager::online_users) {
-        if (online_users->hidden)
-            continue;
+    users::manager::iterate([&out](std::shared_ptr<users::user> online_user) {
+        if (online_user->hidden)
+            return;
 
-        if (online_users->user_id != -1)
-            out.user_stats(online_users->stats);
+        if (online_user->user_id != -1)
+            out.user_stats(online_user->stats);
 
-        out.user_presence(online_users->presence);
-    }
+        out.user_presence(online_user->presence);
+    });
 }

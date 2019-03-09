@@ -23,6 +23,7 @@
 #include "user_manager.hh"
 
 std::vector<std::shared_ptr<shiro::users::user>> shiro::users::manager::online_users;
+std::shared_timed_mutex shiro::users::manager::mutex;
 
 void shiro::users::manager::login_user(std::shared_ptr<shiro::users::user> user) {
     if (user == nullptr || user->token.empty())
@@ -30,6 +31,9 @@ void shiro::users::manager::login_user(std::shared_ptr<shiro::users::user> user)
 
     if (is_online(user))
         logout_user(user);
+
+    // Disallow other threads from both writing and reading
+    std::unique_lock<std::shared_timed_mutex> lock(mutex);
 
     online_users.emplace_back(user);
 
@@ -40,13 +44,15 @@ void shiro::users::manager::logout_user(std::shared_ptr<shiro::users::user> user
     if (user == nullptr || !is_online(user))
         return;
 
+    // Disallow other threads from both writing and reading
+    std::unique_lock<std::shared_timed_mutex> lock(mutex);
+
     auto iterator = std::find(online_users.begin(), online_users.end(), user);
 
     if (iterator == online_users.end())
         return;
 
-    ptrdiff_t index = std::distance(online_users.begin(), iterator);
-    online_users.erase(online_users.begin() + index);
+    online_users.erase(iterator);
 
     LOG_F(INFO, "User %s logged out successfully.", user->presence.username.c_str());
 }
@@ -56,6 +62,7 @@ void shiro::users::manager::logout_user(int32_t user_id) {
         return;
 
     std::shared_ptr<user> target_user = nullptr;
+    std::shared_lock<std::shared_timed_mutex> lock(mutex);
 
     for (const std::shared_ptr<user> &user : online_users) {
         if (user->user_id == user_id) {
@@ -67,6 +74,9 @@ void shiro::users::manager::logout_user(int32_t user_id) {
     if (target_user == nullptr)
         return;
 
+    // Release the lock so we can logout without dead-locking
+    lock.release();
+
     logout_user(target_user);
 }
 
@@ -74,13 +84,21 @@ bool shiro::users::manager::is_online(std::shared_ptr<shiro::users::user> user) 
     if (user == nullptr)
         return false;
 
+    // Disallow other threads from writing (but not from reading)
+    std::shared_lock<std::shared_timed_mutex> lock(mutex);
+
     return std::find(online_users.begin(), online_users.end(), user) != online_users.end();
 }
 
 bool shiro::users::manager::is_online(int32_t user_id) {
+    // Disallow other threads from writing (but not from reading)
+    std::shared_lock<std::shared_timed_mutex> lock(mutex);
+
     for (const std::shared_ptr<user> &user : online_users) {
-        if (user->user_id == user_id)
-            return true;
+        if (user->user_id != user_id)
+            continue;
+
+        return true;
     }
 
     return false;
@@ -90,9 +108,14 @@ bool shiro::users::manager::is_online(const std::string &token) {
     if (token.empty())
         return false;
 
+    // Disallow other threads from writing (but not from reading)
+    std::shared_lock<std::shared_timed_mutex> lock(mutex);
+
     for (const std::shared_ptr<user> &user : online_users) {
-        if (user->token == token)
-            return true;
+        if (user->token != token)
+            continue;
+
+        return true;
     }
 
     return false;
@@ -102,9 +125,14 @@ std::shared_ptr<shiro::users::user> shiro::users::manager::get_user_by_username(
     if (username.empty())
         return nullptr;
 
+    // Disallow other threads from writing (but not from reading)
+    std::shared_lock<std::shared_timed_mutex> lock(mutex);
+
     for (const std::shared_ptr<user> &user : online_users) {
-        if (user->presence.username == username)
-            return user;
+        if (user->presence.username != username)
+            continue;
+
+        return user;
     }
 
     return nullptr;
@@ -114,9 +142,14 @@ std::shared_ptr<shiro::users::user> shiro::users::manager::get_user_by_id(int32_
     if (!is_online(id))
         return nullptr;
 
+    // Disallow other threads from writing (but not from reading)
+    std::shared_lock<std::shared_timed_mutex> lock(mutex);
+
     for (const std::shared_ptr<user> &user : online_users) {
-        if (user->user_id == id)
-            return user;
+        if (user->user_id != id)
+            continue;
+
+        return user;
     }
 
     return nullptr;
@@ -129,9 +162,14 @@ std::shared_ptr<shiro::users::user> shiro::users::manager::get_user_by_token(con
     if (!is_online(token))
         return nullptr;
 
+    // Disallow other threads from writing (but not from reading)
+    std::shared_lock<std::shared_timed_mutex> lock(mutex);
+
     for (const std::shared_ptr<user> &user : online_users) {
-        if (user->token == token)
-            return user;
+        if (user->token != token)
+            continue;
+
+        return user;
     }
 
     return nullptr;
@@ -171,6 +209,35 @@ int32_t shiro::users::manager::get_id_by_username(const std::string &username) {
     return result.front().id;
 }
 
+void shiro::users::manager::iterate(const std::function<void(std::shared_ptr<shiro::users::user>)> &callback, bool skip_bot) {
+    // Disallow other threads from writing (but not from reading)
+    std::shared_lock<std::shared_timed_mutex> lock(mutex);
+
+    for (const std::shared_ptr<user> &user : online_users) {
+        if (skip_bot && user->user_id == 1)
+            continue;
+
+        callback(user);
+    }
+}
+
+void shiro::users::manager::iterate(const std::function<void(size_t, std::shared_ptr<shiro::users::user>)> &callback, bool skip_bot) {
+    // Disallow other threads from writing (but not from reading)
+    std::shared_lock<std::shared_timed_mutex> lock(mutex);
+
+    for (size_t i = 0; i < online_users.size(); i++) {
+        std::shared_ptr<user> user = online_users.at(i);
+
+        if (skip_bot && user->user_id == 1)
+            continue;
+
+        callback(i, user);
+    }
+}
+
 size_t shiro::users::manager::get_online_users() {
+    // Disallow other threads from writing (but not from reading)
+    std::shared_lock<std::shared_timed_mutex> lock(mutex);
+
     return online_users.size();
 }

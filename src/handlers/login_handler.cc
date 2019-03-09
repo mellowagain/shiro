@@ -191,6 +191,7 @@ void shiro::handler::login::handle(const crow::request &request, crow::response 
 
     writer.channel_listing_complete();
     channels::manager::write_channels(writer, user);
+    channels::manager::auto_join(writer, user);
 
     io::osu_writer global_writer;
     global_writer.user_presence(user->presence);
@@ -212,15 +213,15 @@ void shiro::handler::login::handle(const crow::request &request, crow::response 
         );
     }
 
-    for (const std::shared_ptr<users::user> &online_user : users::manager::online_users) {
+    users::manager::iterate([user, &writer, &global_writer](std::shared_ptr<users::user> online_user) {
         if (online_user == user)
-            continue;
+            return;
 
         writer.user_presence(online_user->presence);
 
         if (!user->hidden)
             online_user->queue.enqueue(global_writer);
-    }
+    }, true);
 
     std::string result = writer.serialize();
 

@@ -26,6 +26,8 @@
 
 namespace shiro::bot {
 
+    extern std::shared_ptr<users::user> bot_user;
+
     void init();
 
     void init_commands();

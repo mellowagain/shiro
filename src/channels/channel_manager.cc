@@ -27,6 +27,8 @@
 #include "channel_manager.hh"
 
 std::unordered_map<shiro::io::layouts::channel, std::vector<std::shared_ptr<shiro::users::user>>> shiro::channels::manager::channels;
+std::shared_timed_mutex shiro::channels::manager::mutex;
+std::vector<std::pair<uint32_t, shiro::io::layouts::channel>> shiro::channels::manager::auto_join_channels;
 
 void shiro::channels::manager::init() {
     if (!channels.empty())
@@ -44,11 +46,14 @@ void shiro::channels::manager::init() {
     if (result.empty())
         return;
 
+    // Disallow other threads from both writing and reading
+    std::unique_lock<std::shared_timed_mutex> lock(mutex);
+
     for (const auto &row : result) {
         std::string name = row.name;
 
         if (name.at(0) != '#') {
-            LOG_F(WARNING, "Channel name of channel id %i doesn't start with #, fixing (%s -> %s).", (int) row.id, name.c_str(), ("#" + name).c_str());
+            LOG_F(WARNING, "Channel name of channel id %i doesn't start with #, fixing (%s -> %s).", (int32_t) row.id, name.c_str(), ("#" + name).c_str());
             name.insert(0, "#");
 
             db(update(channel_table).set(
@@ -56,16 +61,22 @@ void shiro::channels::manager::init() {
             ).where(channel_table.id == row.id));
         }
 
-        channels.insert(std::make_pair<io::layouts::channel, std::vector<std::shared_ptr<users::user>>>(
-                io::layouts::channel(row.id, row.auto_join, row.hidden, name, row.description, 0, row.read_only, row.permission),
-                std::vector<std::shared_ptr<users::user>>()
-        ));
+        io::layouts::channel channel(row.id, row.auto_join, row.hidden, name, row.description, 0, row.read_only, row.permission);
+        channels.insert({ channel, { } });
+
+        if (!channel.auto_join)
+            continue;
+
+        auto_join_channels.emplace_back(channel.id, channel);
     }
 }
 
-void shiro::channels::manager::write_channels(shiro::io::osu_writer &buf, std::shared_ptr<shiro::users::user> user, bool first) {
-    for (auto &[channel, users] : channels) {
-        if (channel.hidden || !has_permissions(user, channel.id))
+void shiro::channels::manager::write_channels(shiro::io::osu_writer &buffer, std::shared_ptr<shiro::users::user> user) {
+    // Disallow other threads from writing (but not from reading)
+    std::shared_lock<std::shared_timed_mutex> shared_lock(mutex);
+
+    for (const auto &[channel, users] : channels) {
+        if (channel.hidden || !has_permissions(user, channel.permission))
             continue;
 
         shiro::io::layouts::channel channel_layout;
@@ -75,21 +86,31 @@ void shiro::channels::manager::write_channels(shiro::io::osu_writer &buf, std::s
         channel_layout.description = channel.description;
         channel_layout.user_count = users.size();
 
-        buf.channel_available(channel_layout);
+        buffer.channel_available(channel_layout);
+    }
+}
 
-        if (channel.auto_join && first) {
-            buf.channel_join(channel.name);
-            users.emplace_back(user);
-        }
+void shiro::channels::manager::auto_join(shiro::io::osu_writer &buffer, std::shared_ptr<shiro::users::user> user) {
+    for (const auto &[channel_id, channel] : auto_join_channels) {
+        if (!has_permissions(user, channel.permission))
+            continue;
+
+        if (!join_channel(channel_id, user))
+            continue;
+
+        buffer.channel_join(channel.name);
     }
 }
 
 bool shiro::channels::manager::join_channel(uint32_t channel_id, std::shared_ptr<shiro::users::user> user) {
     if (in_channel(channel_id, user))
-        leave_channel(channel_id, std::move(user));
+        leave_channel(channel_id, user);
+
+    // Disallow other threads from both writing and reading
+    std::unique_lock<std::shared_timed_mutex> lock(mutex);
 
     for (auto &[channel, users] : channels) {
-        if (channel.id == channel_id || !has_permissions(user, channel.id))
+        if (channel.id != channel_id || !has_permissions(user, channel.permission))
             continue;
 
         users.emplace_back(user);
@@ -103,8 +124,11 @@ bool shiro::channels::manager::leave_channel(uint32_t channel_id, std::shared_pt
     if (!in_channel(channel_id, user))
         return true;
 
+    // Disallow other threads from both writing and reading
+    std::unique_lock<std::shared_timed_mutex> lock(mutex);
+
     for (auto &[channel, users] : channels) {
-        if (channel.id == channel_id || !has_permissions(user, channel.id))
+        if (channel.id != channel_id || !has_permissions(user, channel.permission))
             continue;
 
         auto iterator = std::find(users.begin(), users.end(), user);
@@ -112,36 +136,50 @@ bool shiro::channels::manager::leave_channel(uint32_t channel_id, std::shared_pt
         if (iterator == users.end())
             return false;
 
-        ptrdiff_t index = std::distance(users.begin(), iterator);
-        users.erase(users.begin() + index);
+        users.erase(iterator);
         return true;
     }
 
     return false;
 }
 
-bool shiro::channels::manager::in_channel(uint32_t channel_id, const std::shared_ptr<shiro::users::user> &user) {
+bool shiro::channels::manager::in_channel(uint32_t channel_id, std::shared_ptr<shiro::users::user> user) {
+    // Disallow other threads from writing (but not from reading)
+    std::shared_lock<std::shared_timed_mutex> lock(mutex);
+
     for (const auto &[channel, users] : channels) {
-        if (channel.id == channel_id)
-            return std::find(users.begin(), users.end(), user) != users.end();
+        if (channel.id != channel_id)
+            continue;
+
+        return std::find(users.begin(), users.end(), user) != users.end();
     }
 
     return false;
 }
 
 std::vector<std::shared_ptr<shiro::users::user>> shiro::channels::manager::get_users_in_channel(const std::string &channel_name) {
+    // Disallow other threads from writing (but not from reading)
+    std::shared_lock<std::shared_timed_mutex> lock(mutex);
+
     for (const auto &[channel, users] : channels) {
-        if (channel.name == channel_name)
-            return users;
+        if (channel.name != channel_name)
+            continue;
+
+        return users;
     }
 
     return {};
 }
 
 uint32_t shiro::channels::manager::get_channel_id(const std::string &channel_name) {
+    // Disallow other threads from writing (but not from reading)
+    std::shared_lock<std::shared_timed_mutex> lock(mutex);
+
     for (const auto &[channel, _] : channels) {
-        if (channel.name == channel_name)
-            return channel.id;
+        if (channel.name != channel_name)
+            continue;
+
+        return channel.id;
     }
 
     return 0;
@@ -166,33 +204,39 @@ void shiro::channels::manager::insert_if_not_exists(std::string name, std::strin
     ));
 }
 
-bool shiro::channels::manager::has_permissions(std::shared_ptr<shiro::users::user> user, uint32_t channel_id) {
-    for (auto &[channel, users] : channels) {
-        if (channel.id != channel_id)
-            continue;
+bool shiro::channels::manager::has_permissions(std::shared_ptr<shiro::users::user> user, uint64_t perms) {
+    if (user == nullptr)
+        return false;
 
-        if (channel.permission == 0)
-            return true;
+    if (perms <= 0)
+        return true;
 
-        return roles::manager::has_permission(user, (permissions::perms) channel.permission);
-    }
-
-    return false;
+    return roles::manager::has_permission(user, (permissions::perms) perms);
 }
 
 bool shiro::channels::manager::is_read_only(uint32_t channel_id) {
+    // Disallow other threads from writing (but not from reading)
+    std::shared_lock<std::shared_timed_mutex> lock(mutex);
+
     for (const auto &[channel, users] : channels) {
-        if (channel.id == channel_id)
-            return channel.read_only;
+        if (channel.id != channel_id)
+            continue;
+
+        return channel.read_only;
     }
 
     return true;
 }
 
 bool shiro::channels::manager::is_read_only(std::string channel_name) {
+    // Disallow other threads from writing (but not from reading)
+    std::shared_lock<std::shared_timed_mutex> lock(mutex);
+
     for (const auto &[channel, users] : channels) {
-        if (channel.name == channel_name)
-            return channel.read_only;
+        if (channel.name != channel_name)
+            continue;
+
+        return channel.read_only;
     }
 
     return true;

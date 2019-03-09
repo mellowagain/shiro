@@ -42,12 +42,12 @@ void shiro::handler::stats::request_all::handle(shiro::io::osu_packet &in, shiro
     std::vector<int32_t> online_users;
     online_users.reserve(users::manager::online_users.size());
 
-    for (const std::shared_ptr<users::user> &online_user : users::manager::online_users) {
+    users::manager::iterate([&online_users](std::shared_ptr<users::user> online_user) {
         if (online_user->hidden)
-            continue;
+            return;
 
         online_users.emplace_back(online_user->user_id);
-    }
+    });
 
     out.users_list(online_users);
 }

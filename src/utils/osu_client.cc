@@ -104,12 +104,12 @@ bool shiro::utils::clients::is_suspicious(const shiro::utils::clients::osu_clien
 std::vector<std::shared_ptr<shiro::users::user>> shiro::utils::clients::get_users(const shiro::utils::clients::osu_client &client) {
     std::vector<std::shared_ptr<users::user>> result;
 
-    for (std::shared_ptr<users::user> user : users::manager::online_users) {
+    users::manager::iterate([client, &result](std::shared_ptr<users::user> user) {
         if (user->client_type != client)
-            continue;
+            return;
 
         result.emplace_back(user);
-    }
+    });
 
     return result;
 }

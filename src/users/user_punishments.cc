@@ -158,12 +158,9 @@ void shiro::users::punishments::silence(int32_t user_id, int32_t origin, uint32_
     io::osu_writer global_writer;
     global_writer.user_silenced(user_id);
 
-    for (const std::shared_ptr<users::user> &online_user : users::manager::online_users) {
-        if (online_user->user_id == user_id)
-            continue;
-
+    users::manager::iterate([user, &global_writer](std::shared_ptr<users::user> online_user) {
         online_user->queue.enqueue(global_writer);
-    }
+    }, true);
 
     utils::bot::respond(
             "You have been silenced for " + std::to_string(duration) + " seconds for " + reason + ".",
@@ -223,12 +220,12 @@ void shiro::users::punishments::restrict(int32_t user_id, int32_t origin, const 
 
     writer.user_quit(quit);
 
-    for (const std::shared_ptr<users::user> &online_user : users::manager::online_users) {
-        if (online_user->user_id == user_id || online_user->user_id == 1)
-            continue;
+    users::manager::iterate([user_id, &writer](std::shared_ptr<users::user> online_user) {
+        if (online_user->user_id == user_id)
+            return;
 
         online_user->queue.enqueue(writer);
-    }
+    });
 }
 
 void shiro::users::punishments::ban(int32_t user_id, int32_t origin, const std::string &reason) {

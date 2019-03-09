@@ -27,21 +27,17 @@ void shiro::handler::chat::leave::handle(shiro::io::osu_packet &in, shiro::io::o
     if (target_channel == 0)
         return;
 
-    io::osu_writer writer;
-
-    if (!channels::manager::leave_channel(target_channel, user)) {
-        writer.channel_join(channel);
+    if (!channels::manager::leave_channel(target_channel, std::move(user))) {
+        out.channel_join(channel);
         return;
     }
 
-    channels::manager::write_channels(writer, user, false);
-
-    for (const std::shared_ptr<users::user> &online_user : users::manager::online_users) {
-        if (online_user->user_id == 1)
-            continue;
+    users::manager::iterate([](std::shared_ptr<users::user> online_user) {
+        io::osu_writer writer;
+        channels::manager::write_channels(writer, online_user);
 
         online_user->queue.enqueue(writer);
-    }
+    }, true);
 
     out.channel_revoked(channel);
 }

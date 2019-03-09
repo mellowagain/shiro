@@ -46,9 +46,9 @@ bool shiro::commands::clear(std::deque<std::string> &args, std::shared_ptr<shiro
 
     io::osu_writer writer;
 
-    for (const std::shared_ptr<users::user> &online_user : users::manager::online_users) {
+    users::manager::iterate([&writer](std::shared_ptr<users::user> online_user) {
         writer.user_silenced(online_user->user_id);
-    }
+    });
 
     if (target != nullptr) {
         target->queue.enqueue(writer);
@@ -56,13 +56,10 @@ bool shiro::commands::clear(std::deque<std::string> &args, std::shared_ptr<shiro
         return true;
     }
 
-    for (const std::shared_ptr<users::user> &online_user : users::manager::online_users) {
-        if (online_user->user_id == 1)
-            continue;
-
+    users::manager::iterate([user, &writer](std::shared_ptr<users::user> online_user) {
         online_user->queue.enqueue(writer);
         utils::bot::respond("Your chat was cleared by " + user->presence.username + ".", online_user, config::bot::name, true);
-    }
+    }, true);
 
     utils::bot::respond("Successfully cleared chat for all online users.", user, channel, true);
     return true;

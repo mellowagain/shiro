@@ -36,10 +36,10 @@ void shiro::handler::logout::handle(shiro::io::osu_packet &in, shiro::io::osu_wr
 
     writer.user_quit(quit);
 
-    for (const std::shared_ptr<users::user> &online_user : users::manager::online_users) {
-        if (online_user->user_id == user->user_id || online_user->user_id == 1)
-            continue;
+    users::manager::iterate([user, &writer](std::shared_ptr<users::user> online_user) {
+        if (online_user->user_id == user->user_id)
+            return;
 
         online_user->queue.enqueue(writer);
-    }
+    }, true);
 }

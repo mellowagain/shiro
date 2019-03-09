@@ -258,19 +258,16 @@ void shiro::ranking::helper::recalculate_ranks(const shiro::utils::play_mode &mo
     io::osu_writer writer;
 
     // First we add all user stats/presence updates to the global writer
-    for (const std::shared_ptr<users::user> &online_user : users::manager::online_users) {
-        if (online_user->user_id == 1 || online_user->hidden)
-            continue;
+    users::manager::iterate([&writer](std::shared_ptr<users::user> online_user) {
+        if (online_user->hidden)
+            return;
 
         writer.user_stats(online_user->stats);
         writer.user_presence(online_user->presence);
-    }
+    }, true);
 
     // After we have all user updates in the writer, we can send them out globally
-    for (const std::shared_ptr<users::user> &online_user : users::manager::online_users) {
-        if (online_user->user_id == 1)
-            continue;
-
+    users::manager::iterate([&writer](std::shared_ptr<users::user> online_user) {
         online_user->queue.enqueue(writer);
-    }
+    }, true);
 }
