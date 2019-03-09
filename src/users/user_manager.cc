@@ -95,8 +95,10 @@ bool shiro::users::manager::is_online(int32_t user_id) {
     std::shared_lock<std::shared_timed_mutex> lock(mutex);
 
     for (const std::shared_ptr<user> &user : online_users) {
-        if (user->user_id == user_id)
-            return true;
+        if (user->user_id != user_id)
+            continue;
+
+        return true;
     }
 
     return false;
@@ -110,8 +112,10 @@ bool shiro::users::manager::is_online(const std::string &token) {
     std::shared_lock<std::shared_timed_mutex> lock(mutex);
 
     for (const std::shared_ptr<user> &user : online_users) {
-        if (user->token == token)
-            return true;
+        if (user->token != token)
+            continue;
+
+        return true;
     }
 
     return false;
@@ -125,8 +129,10 @@ std::shared_ptr<shiro::users::user> shiro::users::manager::get_user_by_username(
     std::shared_lock<std::shared_timed_mutex> lock(mutex);
 
     for (const std::shared_ptr<user> &user : online_users) {
-        if (user->presence.username == username)
-            return user;
+        if (user->presence.username != username)
+            continue;
+
+        return user;
     }
 
     return nullptr;
@@ -140,8 +146,10 @@ std::shared_ptr<shiro::users::user> shiro::users::manager::get_user_by_id(int32_
     std::shared_lock<std::shared_timed_mutex> lock(mutex);
 
     for (const std::shared_ptr<user> &user : online_users) {
-        if (user->user_id == id)
-            return user;
+        if (user->user_id != id)
+            continue;
+
+        return user;
     }
 
     return nullptr;
@@ -158,8 +166,10 @@ std::shared_ptr<shiro::users::user> shiro::users::manager::get_user_by_token(con
     std::shared_lock<std::shared_timed_mutex> lock(mutex);
 
     for (const std::shared_ptr<user> &user : online_users) {
-        if (user->token == token)
-            return user;
+        if (user->token != token)
+            continue;
+
+        return user;
     }
 
     return nullptr;
