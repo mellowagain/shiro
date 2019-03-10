@@ -16,6 +16,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "../handlers/multiplayer/lobby/lobby_leave_handler.hh"
+#include "../handlers/multiplayer/lobby/lobby_join_handler.hh"
 #include "../handlers/chat/leave_channel_handler.hh"
 #include "../handlers/chat/join_channel_handler.hh"
 #include "../handlers/chat/private_chat_handler.hh"
@@ -69,8 +71,12 @@ void shiro::routes::route(shiro::io::packet_id packet_id, shiro::io::osu_packet 
         case io::packet_id::in_send_irc_message_private:
             handler::chat::handle_private(in, out, user);
             break;
-        case io::packet_id::in_lobby_part:break;
-        case io::packet_id::in_lobby_join:break;
+        case io::packet_id::in_lobby_part:
+            handler::multiplayer::lobby::leave::handle(in, out, user);
+            break;
+        case io::packet_id::in_lobby_join:
+            handler::multiplayer::lobby::join::handle(in, out, user);
+            break;
         case io::packet_id::in_match_create:break;
         case io::packet_id::in_match_join:break;
         case io::packet_id::in_match_part:break;
