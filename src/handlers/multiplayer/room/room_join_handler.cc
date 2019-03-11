@@ -16,20 +16,23 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "../../../multiplayer/lobby_manager.hh"
 #include "../../../multiplayer/match_manager.hh"
-#include "lobby_join_handler.hh"
+#include "room_join_handler.hh"
 
-void shiro::handler::multiplayer::lobby::join::handle(shiro::io::osu_packet &in, shiro::io::osu_writer &out, std::shared_ptr<shiro::users::user> user) {
-    if (shiro::multiplayer::lobby_manager::in_lobby(user))
+void shiro::handler::multiplayer::room::join::handle(shiro::io::osu_packet &in, shiro::io::osu_writer &out, std::shared_ptr<shiro::users::user> user) {
+    io::layouts::multiplayer_join payload = in.unmarshal<io::layouts::multiplayer_join>();
+
+    if (!shiro::multiplayer::match_manager::join_match(payload, std::move(user))) {
+        out.match_join_fail();
         return;
+    }
 
-    shiro::multiplayer::lobby_manager::add_user(user);
+    std::optional<io::layouts::multiplayer_match> match = shiro::multiplayer::match_manager::get_match(payload.match_id);
 
-    shiro::multiplayer::match_manager::iterate([&out, user](io::layouts::multiplayer_match match) {
-        if (match.host_id != user->user_id)
-            match.game_password = "turn my swag on"; // Set the password to non-sense to prevent eavesdropping
+    if (!match.has_value()) {
+        out.match_join_fail();
+        return;
+    }
 
-        out.match_new(match);
-    });
+    out.match_join_success(match.value());
 }

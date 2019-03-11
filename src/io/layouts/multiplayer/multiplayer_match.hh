@@ -31,13 +31,13 @@ namespace shiro::io::layouts {
         virtual ~multiplayer_match() = default;
 
         std::string game_name = "";
-        int16_t match_id = 0;
+        uint16_t match_id = 0;
         uint8_t multi_type = 0;
 
-        std::array<uint8_t, 16> multi_slot_status;
-        std::array<int32_t, 16> multi_slot_id;
-        std::array<uint8_t, 16> multi_slot_team;
-        std::array<int32_t, 16> multi_slot_mods;
+        std::array<uint8_t, 16> multi_slot_status {};
+        std::array<int32_t, 16> multi_slot_id {};
+        std::array<uint8_t, 16> multi_slot_team {};
+        std::array<int32_t, 16> multi_slot_mods {};
 
         std::string beatmap_name = "";
         std::string beatmap_checksum = "";
