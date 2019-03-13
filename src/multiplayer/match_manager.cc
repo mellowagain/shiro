@@ -16,11 +16,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "match_manager.hh"
-#include "../utils/slot_status.hh"
-#include "../utils/match_team_type.hh"
+#include "../thirdparty/loguru.hh"
 #include "../users/user_manager.hh"
+#include "../utils/match_team_type.hh"
+#include "../utils/slot_status.hh"
 #include "lobby_manager.hh"
+#include "match_manager.hh"
 
 std::vector<shiro::io::layouts::multiplayer_match> shiro::multiplayer::match_manager::matches;
 std::shared_timed_mutex shiro::multiplayer::match_manager::mutex;
@@ -35,6 +36,12 @@ void shiro::multiplayer::match_manager::create_match(shiro::io::layouts::multipl
     std::unique_lock<std::shared_timed_mutex> lock(mutex);
 
     match.match_id = highest_match_id;
+
+    // This does intentionally opt to not do any overflow checks.
+    // Unsigned integer overflows are well defined in C++ and thus even safe and useful.
+    // In this case, the highest_match_id variable is used to assign the match id for the next
+    // multiplayer lobby. If this value reaches 65535 and then overflows, lobby with match id 0
+    // will be long gone; this gives us the ability to have just a simple integer without any checks.
     highest_match_id++;
 
     matches.emplace_back(match);
@@ -42,34 +49,29 @@ void shiro::multiplayer::match_manager::create_match(shiro::io::layouts::multipl
     // We're done with actions that can't be done in parallel, let's unlock
     lock.unlock();
 
-    io::osu_writer writer;
-    writer.match_new(match);
-
-    // Store the password in a temporary variable
-    std::string backup = match.game_password;
-
-    // Set the password to non-sense to prevent eavesdropping
-    match.game_password = "turn my swag on";
-
     io::osu_writer global_writer;
-    global_writer.match_new(match);
+    global_writer.match_new(match, true);
 
-    // Restore it as the match is a reference
-    match.game_password = backup;
-
-    lobby_manager::iterate([match, &writer, &global_writer](std::shared_ptr<users::user> user) {
-        if (user->user_id == match.host_id) {
-            user->queue.enqueue(writer);
+    lobby_manager::iterate([match, &global_writer](std::shared_ptr<users::user> user) {
+        // The host literally created this and does implicitly know about this match already
+        if (user->user_id == match.host_id)
             return;
-        }
 
         user->queue.enqueue(global_writer);
     });
+
+    std::shared_ptr<users::user> host = users::manager::get_user_by_id(match.host_id);
+
+    // How does the host make a room and then don't exist?
+    if (host == nullptr)
+        return;
+
+    LOG_F(INFO, "New multiplayer room (id %i) was initialized by %s.", match.match_id, host->presence.username.c_str());
 }
 
-bool shiro::multiplayer::match_manager::join_match(io::layouts::multiplayer_join request, std::shared_ptr<shiro::users::user> user) {
+std::optional<shiro::io::layouts::multiplayer_match> shiro::multiplayer::match_manager::join_match(io::layouts::multiplayer_join request, std::shared_ptr<shiro::users::user> user) {
     if (user == nullptr || user->hidden)
-        return false;
+        return std::nullopt;
 
     if (in_match(user))
         leave_match(user);
@@ -82,26 +84,57 @@ bool shiro::multiplayer::match_manager::join_match(io::layouts::multiplayer_join
             continue;
 
         if (!match.game_password.empty() && match.game_password != request.password)
-            return false;
+            return std::nullopt;
 
-        // Find the next open slot (if available)
-        auto iterator = std::find(match.multi_slot_id.begin(), match.multi_slot_id.end(), 0);
+        size_t index = 0xBADCAFE;
 
-        if (iterator == match.multi_slot_id.end())
-            return false;
+        for (int32_t i = match.multi_slot_id.size() - 1; i >= 0; i--) {
+            int32_t id = match.multi_slot_id.at(i);
+            uint8_t status = match.multi_slot_status.at(i);
 
-        uint64_t index = (uint64_t) std::distance(match.multi_slot_id.begin(), iterator);
+            if (id != -1 || status != (uint8_t) utils::slot_status::open)
+                continue;
+
+            index = i;
+        }
+
+        if (index == 0xBADCAFE)
+            return std::nullopt;
+
         uint8_t team = (uint8_t) (utils::is_team(match.multi_team_type) ? index % 2 + 1 : 0);
 
         match.multi_slot_id.at(index) = user->user_id;
         match.multi_slot_status.at(index) = (uint8_t) utils::slot_status::not_ready;
         match.multi_slot_team.at(index) = team;
+
+        // TODO: Check whenever free mod / host decides mods and apply corresponding mods then
         match.multi_slot_mods.at(index) = 0;
 
-        return true;
+        // Broadcast to the everyone that we now have a new player
+        io::osu_writer writer;
+        writer.match_update(match);
+
+        io::osu_writer global_writer;
+        global_writer.match_update(match, true);
+
+        lobby_manager::iterate([match, &writer, &global_writer](std::shared_ptr<users::user> user) {
+            auto iterator = std::find(match.multi_slot_id.begin(), match.multi_slot_id.end(), user->user_id);
+
+            if (iterator == match.multi_slot_id.end()) {
+                user->queue.enqueue(global_writer);
+                return;
+            }
+
+            user->queue.enqueue(writer);
+        });
     }
 
-    return false;
+    // Unlock now to prevent a deadlock which would occur if we're calling into the return method below
+    lock.unlock();
+
+    // Only way this could fail now is if a match with that match id doesn't exist.
+    // The returning method will return std::nullopt if that's the case, so we're out fine.
+    return get_match(request.match_id);
 }
 
 bool shiro::multiplayer::match_manager::leave_match(std::shared_ptr<shiro::users::user> user) {
@@ -118,11 +151,11 @@ bool shiro::multiplayer::match_manager::leave_match(std::shared_ptr<shiro::users
         if (iterator == match.multi_slot_id.end())
             continue;
 
-        uint64_t index = (uint64_t) std::distance(match.multi_slot_id.begin(), iterator);
+        ptrdiff_t index = std::distance(match.multi_slot_id.begin(), iterator);
 
         match_id = match.match_id;
 
-        match.multi_slot_id.at(index) = 0;
+        match.multi_slot_id.at(index) = -1;
         match.multi_slot_status.at(index) = (uint8_t) utils::slot_status::open;
         match.multi_slot_team.at(index) = 0;
         match.multi_slot_mods.at(index) = 0;
@@ -142,12 +175,40 @@ bool shiro::multiplayer::match_manager::leave_match(std::shared_ptr<shiro::users
     io::layouts::multiplayer_match match = *iterator;
 
     auto first_non_empty = std::find_if_not(match.multi_slot_id.begin(), match.multi_slot_id.end(), [](int32_t id) {
-        return id == 0;
+        return id == -1;
     });
 
     // The match is empty, destroy it
-    if (first_non_empty == match.multi_slot_id.end())
+    if (first_non_empty == match.multi_slot_id.end()) {
         matches.erase(iterator);
+
+        io::osu_writer writer;
+        writer.match_disband(match_id);
+
+        lobby_manager::iterate([match, &writer](std::shared_ptr<users::user> user) {
+            user->queue.enqueue(writer);
+        });
+
+        return true;
+    }
+
+    // Broadcast to everyone that we now have one less player
+    io::osu_writer writer;
+    writer.match_update(match);
+
+    io::osu_writer global_writer;
+    writer.match_update(match, true);
+
+    lobby_manager::iterate([match, &writer, &global_writer](std::shared_ptr<users::user> user) {
+        auto iterator = std::find(match.multi_slot_id.begin(), match.multi_slot_id.end(), user->user_id);
+
+        if (iterator == match.multi_slot_id.end()) {
+            user->queue.enqueue(global_writer);
+            return;
+        }
+
+        user->queue.enqueue(writer);
+    });
 
     return true;
 }

@@ -27,9 +27,6 @@ void shiro::handler::multiplayer::lobby::join::handle(shiro::io::osu_packet &in,
     shiro::multiplayer::lobby_manager::add_user(user);
 
     shiro::multiplayer::match_manager::iterate([&out, user](io::layouts::multiplayer_match match) {
-        if (match.host_id != user->user_id)
-            match.game_password = "turn my swag on"; // Set the password to non-sense to prevent eavesdropping
-
-        out.match_new(match);
+        out.match_new(match, match.host_id != user->user_id);
     });
 }

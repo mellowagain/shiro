@@ -29,10 +29,12 @@ void shiro::handler::multiplayer::room::create::handle(shiro::io::osu_packet &in
     join_request.match_id = match.match_id;
     join_request.password = !match.game_password.empty() ? match.game_password : "";
 
-    if (!shiro::multiplayer::match_manager::join_match(join_request, user)) {
+    std::optional<io::layouts::multiplayer_match> joined_match = shiro::multiplayer::match_manager::join_match(join_request, user);
+
+    if (!joined_match.has_value()) {
         out.match_join_fail();
         return;
     }
 
-    out.match_join_success(match);
+    out.match_join_success(joined_match.value());
 }

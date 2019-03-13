@@ -36,7 +36,7 @@ namespace shiro::multiplayer::match_manager {
 
     void create_match(io::layouts::multiplayer_match &match);
 
-    bool join_match(io::layouts::multiplayer_join request, std::shared_ptr<users::user> user);
+    std::optional<io::layouts::multiplayer_match> join_match(io::layouts::multiplayer_join request, std::shared_ptr<users::user> user);
 
     // This also additionally destroys the match if no users are remaining in the room
     bool leave_match(std::shared_ptr<users::user> user);
