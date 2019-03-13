@@ -22,17 +22,12 @@
 void shiro::handler::multiplayer::room::join::handle(shiro::io::osu_packet &in, shiro::io::osu_writer &out, std::shared_ptr<shiro::users::user> user) {
     io::layouts::multiplayer_join payload = in.unmarshal<io::layouts::multiplayer_join>();
 
-    if (!shiro::multiplayer::match_manager::join_match(payload, std::move(user))) {
+    std::optional<io::layouts::multiplayer_match> joined_match = shiro::multiplayer::match_manager::join_match(payload, std::move(user));
+
+    if (!joined_match.has_value()) {
         out.match_join_fail();
         return;
     }
 
-    std::optional<io::layouts::multiplayer_match> match = shiro::multiplayer::match_manager::get_match(payload.match_id);
-
-    if (!match.has_value()) {
-        out.match_join_fail();
-        return;
-    }
-
-    out.match_join_success(match.value());
+    out.match_join_success(joined_match.value());
 }
