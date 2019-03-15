@@ -106,9 +106,7 @@ std::optional<shiro::io::layouts::multiplayer_match> shiro::multiplayer::match_m
         match.multi_slot_id.at(index) = user->user_id;
         match.multi_slot_status.at(index) = (uint8_t) utils::slot_status::not_ready;
         match.multi_slot_team.at(index) = team;
-
-        // TODO: Check whenever free mod / host decides mods and apply corresponding mods then
-        match.multi_slot_mods.at(index) = 0;
+        match.multi_slot_mods.at(index) = match.active_mods;
 
         // Broadcast to the everyone that we now have a new player
         io::osu_writer writer;
