@@ -22,8 +22,10 @@
 
 #include "../../channels/channel_manager.hh"
 #include "../../io/layouts/message/message.hh"
+#include "../../multiplayer/match_manager.hh"
 #include "../../spectating/spectator_manager.hh"
 #include "../../thirdparty/loguru.hh"
+#include "../../users/user_manager.hh"
 #include "../../users/user_punishments.hh"
 #include "../../utils/bot_utils.hh"
 #include "../../utils/string_utils.hh"
@@ -59,6 +61,32 @@ void shiro::handler::chat::handle_public(shiro::io::osu_packet &in, shiro::io::o
 
         if (host != nullptr)
             host->queue.enqueue(message_buffer);
+
+        utils::bot::handle(message, user);
+        return;
+    }
+
+    if (message.channel == "#multiplayer") {
+        std::optional<io::layouts::multiplayer_match> multi_match = multiplayer::match_manager::get_match(user);
+
+        if (!multi_match.has_value()) {
+            out.channel_revoked("#multiplayer");
+            return;
+        }
+
+        io::layouts::multiplayer_match match = multi_match.value();
+
+        for (int32_t user_id : match.multi_slot_id) {
+            if (user_id == -1 || user_id == user->user_id)
+                continue;
+
+            std::shared_ptr<users::user> target_user = users::manager::get_user_by_id(user_id);
+
+            if (target_user == nullptr)
+                continue;
+
+            target_user->queue.enqueue(message_buffer);
+        }
 
         utils::bot::handle(message, user);
         return;
