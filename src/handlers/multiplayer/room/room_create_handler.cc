@@ -37,4 +37,5 @@ void shiro::handler::multiplayer::room::create::handle(shiro::io::osu_packet &in
     }
 
     out.match_join_success(joined_match.value());
+    out.channel_join("#multiplayer");
 }
