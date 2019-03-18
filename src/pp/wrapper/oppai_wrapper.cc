@@ -16,8 +16,6 @@ shiro::pp::oppai_wrapper::oppai_wrapper(shiro::beatmaps::beatmap beatmap, shiro:
     // Call ezpp_dup instead of ezpp so it strdup's the const char* into an char*
     ezpp_dup(this->ez, beatmap_file.value().c_str());
 
-    ezpp_set_autocalc(this->ez, true);
-
     ezpp_set_mode(this->ez, score.play_mode);
     ezpp_set_mods(this->ez, score.mods);
     ezpp_set_combo(this->ez, score.max_combo);
@@ -27,6 +25,8 @@ shiro::pp::oppai_wrapper::oppai_wrapper(shiro::beatmaps::beatmap beatmap, shiro:
     this->ez->n50 = score._50_count;
     ezpp_set_nmiss(this->ez, score.miss_count);
     ezpp_set_score_version(this->ez, (score.mods & (int32_t) utils::mods::score_v2) ? 2 : 1);
+
+    ezpp_set_autocalc(this->ez, true);
 }
 
 shiro::pp::oppai_wrapper::~oppai_wrapper() {
