@@ -147,6 +147,18 @@ void shiro::handler::login::handle(const crow::request &request, crow::response 
 
     user->client_type = utils::clients::parse_version(version, build);
 
+    // The osu!stable client disallows certain actions for some very low user id's. In order to circumstance
+    // this, disallow users with an user id of less than 10 (except if they're bots) to login.
+    if (user->user_id < 10 && user->client_type != (uint32_t) utils::clients::osu_client::aschente) {
+        writer.announce("Your account has an invalid user id assigned (" + std::to_string(user->user_id) + " < 10).");
+        writer.login_reply((int32_t) utils::login_responses::invalid_credentials);
+
+        response.end(writer.serialize());
+
+        LOG_F(ERROR, "%s (%s) tried to login as user with id less than 10.", username.c_str(), request.get_ip_address().c_str());
+        return;
+    }
+
     std::chrono::seconds seconds = std::chrono::duration_cast<std::chrono::seconds>(
             std::chrono::system_clock::now().time_since_epoch()
     );
