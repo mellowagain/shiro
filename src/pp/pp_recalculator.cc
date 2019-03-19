@@ -197,6 +197,11 @@ void shiro::pp::recalculator::end(shiro::utils::play_mode mode) {
     }, true);
 }
 
+bool shiro::pp::recalculator::in_progess() {
+    std::shared_lock<std::shared_timed_mutex> lock(mutex);
+    return running;
+}
+
 void shiro::pp::recalculator::recalculate(shiro::utils::play_mode mode, std::vector<int32_t> users) {
     sqlpp::mysql::connection db(db_connection->get_config());
     const tables::scores score_table {};

@@ -18,6 +18,8 @@ namespace shiro::pp::recalculator {
 
     void end(utils::play_mode mode);
 
+    bool in_progess();
+
     // Spawn workers
     void recalculate(utils::play_mode mode, std::vector<int32_t> users);
 
