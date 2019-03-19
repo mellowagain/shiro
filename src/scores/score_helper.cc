@@ -1006,20 +1006,39 @@ std::tuple<bool, std::string> shiro::scores::helper::is_flagged(const shiro::sco
 float shiro::scores::helper::calculate_accuracy(utils::play_mode mode, int32_t _300, int32_t _100, int32_t _50, int32_t geki, int32_t katu, int32_t miss) {
     switch (mode) {
         case utils::play_mode::standard: {
-            return acc_calc(_300, _100, _50, miss) * 100;
+            int32_t total_hits = _300 + _100 + _50 + miss;
+
+            if (total_hits <= 0)
+                return 0.0f;
+
+            float accuracy = (_300 * 300.0f + _100 * 100.0f + _50 * 50.0f) / (total_hits * 300.0f);
+            return accuracy * 100;
         }
         case utils::play_mode::taiko: {
-            return taiko_acc_calc(_300, _100 + _50, miss) * 100;
+            int32_t _150 = _100 + _50;
+            int32_t total_hits = _300 + _150 + miss;
+
+            if (total_hits <= 0)
+                return 0.0f;
+
+            float accuracy = (_300 * 300.0f + _150 * 150.0f) / (total_hits * 300.0f);
+            return accuracy * 100;
         }
         case utils::play_mode::fruits: {
             int32_t total_points = (_300 + _100 + _50);
             int32_t total_hits = total_points + miss + katu;
+
+            if (total_hits <= 0)
+                return 0.0f;
 
             return (total_points / total_hits) * 100;
         }
         case utils::play_mode::mania: {
             int32_t total_points = (_300 * 300) + (geki * 300) + (_100 * 100) + (katu * 200) + (_50 * 50);
             int32_t total_hits = _300 + geki + _100 + katu + _50 + miss;
+
+            if (total_hits <= 0)
+                return 0.0f;
 
             return (total_points / (total_hits * 300)) * 100;
         }
