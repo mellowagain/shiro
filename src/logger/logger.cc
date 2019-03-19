@@ -47,7 +47,7 @@ void shiro::logging::init(int argc, char **argv) {
     }();
     char buffer[128];
     std::snprintf(buffer, sizeof(buffer), "logs/shiro %s.log", current_time.c_str());
-    loguru::add_file(buffer, loguru::FileMode::Append, loguru::Verbosity_INFO);
+    loguru::add_file(buffer, loguru::FileMode::Append, loguru::Verbosity_MAX);
 
     loguru::init(argc, argv);
 

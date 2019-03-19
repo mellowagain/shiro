@@ -20,6 +20,7 @@
 #include <cmath>
 #include <limits>
 
+#include "../../../pp/pp_recalculator.hh"
 #include "../../../scores/score.hh"
 #include "../../../scores/score_helper.hh"
 #include "../../../utils/osu_string.hh"
@@ -38,6 +39,10 @@ void shiro::io::layouts::user_stats::recalculate_accuracy() {
 }
 
 void shiro::io::layouts::user_stats::recalculate_pp() {
+    // Global pp recalculation is currently in progress.
+    if (pp::recalculator::in_progess())
+        return;
+
     std::vector<scores::score> scores = scores::helper::fetch_top100_user((utils::play_mode) this->play_mode, this->user_id);
     float pp = 0; // Here it is a float to keep decimal points, round it when setting final pp value
 

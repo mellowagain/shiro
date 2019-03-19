@@ -17,6 +17,7 @@
  */
 
 #include "../database/tables/user_table.hh"
+#include "../pp/pp_recalculator.hh"
 #include "../users/user_activity.hh"
 #include "../users/user_manager.hh"
 #include "../users/user_punishments.hh"
@@ -151,6 +152,10 @@ int16_t shiro::ranking::helper::get_pp_for_user(uint8_t mode, std::string userna
 }
 
 void shiro::ranking::helper::recalculate_ranks(const shiro::utils::play_mode &mode) {
+    // Global pp recalculation is currently in progress.
+    if (pp::recalculator::in_progess())
+        return;
+
     sqlpp::mysql::connection db(db_connection->get_config());
     const tables::users user_table {};
 

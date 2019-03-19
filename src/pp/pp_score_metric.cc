@@ -16,13 +16,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#define OPPAI_IMPLEMENTATION
-
 #include <utility>
 
-#include "../beatmaps/beatmap_helper.hh"
-#include "../thirdparty/oppai.hh"
-#include "../utils/mods.hh"
+#include "wrapper/oppai_wrapper.hh"
 #include "pp_score_metric.hh"
 
 float shiro::pp::calculate(shiro::beatmaps::beatmap beatmap, shiro::scores::score score) {
@@ -41,48 +37,9 @@ float shiro::pp::calculate(shiro::beatmaps::beatmap beatmap, shiro::scores::scor
 }
 
 float shiro::pp::calculate_std(shiro::beatmaps::beatmap beatmap, shiro::scores::score score) {
-    struct parser parser_state;
-    struct beatmap map;
+    oppai_wrapper wrapper(std::move(beatmap), std::move(score));
 
-    struct diff_calc difficulty;
-    struct pp_calc pp;
-
-    struct pp_params params;
-
-    FILE *file = beatmaps::helper::download(beatmap.beatmap_id);
-
-    p_init(&parser_state);
-    p_map(&parser_state, &map, file);
-
-    d_init(&difficulty);
-    d_calc(&difficulty, &map, score.mods);
-
-    params.aim = difficulty.aim;
-    params.speed = difficulty.speed;
-    params.max_combo = beatmap.max_combo;
-    params.nsliders = map.nsliders;
-    params.ncircles = map.ncircles;
-    params.nobjects = map.nobjects;
-
-    params.mode = score.play_mode;
-    params.mods = score.mods;
-    params.combo = score.max_combo;
-    params.n300 = score._300_count;
-    params.n100 = score._100_count;
-    params.n50 = score._50_count;
-    params.nmiss = score.miss_count;
-    params.score_version = (score.mods & (int32_t) utils::mods::score_v2) ? 2 : 1;
-
-    ppv2p(&pp, &params);
-
-    float calculated_pp = pp.total;
-
-    d_free(&difficulty);
-    p_free(&parser_state);
-
-    std::fclose(file);
-
-    return calculated_pp;
+    return wrapper.calculate();
 }
 
 // For now this just uses oppai-ng and thus does not award correct pp for converted maps

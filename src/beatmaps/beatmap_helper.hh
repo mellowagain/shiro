@@ -20,6 +20,7 @@
 #define SHIRO_BEATMAP_HELPER_HH
 
 #include <cstdio>
+#include <optional>
 #include <string>
 
 #include "beatmap_ranked_status.hh"
@@ -34,8 +35,7 @@ namespace shiro::beatmaps::helper {
 
     bool awards_pp(int32_t status_code);
 
-    // The handle returned from this method needs to be closed with std::fclose to file descriptor leakage
-    FILE *download(int32_t beatmap_id);
+    std::optional<std::string> get_location(int32_t beatmap_id);
 
 }
 

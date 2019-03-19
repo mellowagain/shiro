@@ -20,7 +20,7 @@
 
 #include "../../permissions/permissions.hh"
 #include "../../permissions/role_manager.hh"
-#include "../../ranking/ranking_helper.hh"
+#include "../../pp/pp_recalculator.hh"
 #include "../../utils/bot_utils.hh"
 #include "recalculate_ranks.hh"
 
@@ -30,7 +30,7 @@ bool shiro::commands::recalculate(std::deque<std::string> &args, std::shared_ptr
         return false;
     }
 
-    utils::play_mode mode = utils::play_mode::standard;
+    utils::play_mode mode = (utils::play_mode) user->stats.play_mode;
 
     if (!args.empty()) {
         try {
@@ -41,8 +41,8 @@ bool shiro::commands::recalculate(std::deque<std::string> &args, std::shared_ptr
         }
     }
 
-    ranking::helper::recalculate_ranks(mode);
+    pp::recalculator::begin(mode);
 
-    utils::bot::respond("Success! Rank recalculating will begin now for all users.", std::move(user), std::move(channel));
+    utils::bot::respond("Success! PP recalculating will begin now for all users.", std::move(user), std::move(channel));
     return true;
 }
