@@ -226,7 +226,7 @@ void shiro::pp::recalculator::recalculate(shiro::utils::play_mode mode, std::vec
                 continue;
 
             float pp = pp::calculate(map, score);
-            float abs_difference = std::fabs(score.pp - pp);
+            float abs_difference = std::fabs(pp - score.pp);
 
             bool increase = pp > score.pp;
             const char *prefix = increase ? "+" : "-";
