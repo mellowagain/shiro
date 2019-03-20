@@ -152,8 +152,8 @@ bool shiro::beatmaps::beatmap::fetch_api() {
             std::string version = part["version"];
 
             char buffer[128];
-            std::snprintf(buffer, 128, "%s - %s [%s]", artist.c_str(), title.c_str(), version.c_str());
-            this->song_name = std::string(buffer);
+            std::snprintf(buffer, sizeof(buffer), "%s - %s [%s]", artist.c_str(), title.c_str(), version.c_str());
+            this->song_name = buffer;
 
             this->beatmap_md5 = part["file_md5"];
             this->beatmapset_id = boost::lexical_cast<int32_t>(std::string(part["beatmapset_id"]));
