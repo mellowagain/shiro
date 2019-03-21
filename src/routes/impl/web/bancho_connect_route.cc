@@ -32,7 +32,7 @@ void shiro::routes::web::bancho_connect::handle(const crow::request &request, cr
         return;
     }
 
-    std::shared_ptr user = std::make_shared<users::user>(username);
+    std::shared_ptr<users::user> user = std::make_shared<users::user>(username);
 
     if (!user->init()) {
         response.code = 400;
