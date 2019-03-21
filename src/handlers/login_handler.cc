@@ -21,6 +21,7 @@
 #include <cmath>
 
 #include "../channels/channel_manager.hh"
+#include "../config/bancho_file.hh"
 #include "../config/score_submission_file.hh"
 #include "../geoloc/geoloc.hh"
 #include "../geoloc/location_info.hh"
@@ -38,7 +39,6 @@
 #include "../utils/osu_client.hh"
 #include "../utils/string_utils.hh"
 #include "login_handler.hh"
-#include "../config/bancho_file.hh"
 
 void shiro::handler::login::handle(const crow::request &request, crow::response &response) {
     if (request.body.empty()) {
