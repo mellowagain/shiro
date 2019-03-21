@@ -38,6 +38,7 @@
 #include "../utils/osu_client.hh"
 #include "../utils/string_utils.hh"
 #include "login_handler.hh"
+#include "../config/bancho_file.hh"
 
 void shiro::handler::login::handle(const crow::request &request, crow::response &response) {
     if (request.body.empty()) {
@@ -197,7 +198,17 @@ void shiro::handler::login::handle(const crow::request &request, crow::response 
 
     writer.login_reply(user->user_id);
     writer.login_permissions(user->presence.permissions);
-    writer.announce("Welcome to shiro!");
+
+    // These are marked static as config reloading is not yet implemented
+    static std::string alert = config::bancho::alert;
+    static std::string title_image = config::bancho::title_image;
+    static std::string title_url = config::bancho::title_url;
+
+    if (!alert.empty())
+        writer.announce(alert);
+
+    if (!title_image.empty() || !title_url.empty())
+        writer.title_update(title_image + "|" + title_url);
 
     writer.friend_list(user->friends);
 
