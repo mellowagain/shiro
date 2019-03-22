@@ -63,6 +63,8 @@ namespace shiro::users {
         void update();
         void save_stats();
 
+        std::string get_url();
+
         // Re-sends presence and stats to the user to refresh on client-side
         void refresh_stats();
 

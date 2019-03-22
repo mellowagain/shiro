@@ -59,7 +59,7 @@ std::string shiro::scores::table_display::build_present() {
     push("approvedDate", std::put_time(tm, "%F %X"), true);
 
     push("chartId", "beatmap");
-    push("chartUrl", "https://osu.ppy.sh/b/" + std::to_string(this->beatmap.beatmap_id));
+    push("chartUrl", this->beatmap.get_url());
     push("chartName", "Beatmap Ranking");
     push("rankBefore", this->old_scoreboard_pos);
     push("rankAfter", this->scoreboard_position);
@@ -76,7 +76,7 @@ std::string shiro::scores::table_display::build_present() {
     push("onlineScoreId", this->score.id, true);
 
     push("chartId", "overall");
-    push("chartUrl", "https://shiro.host/u/" + std::to_string(this->user->user_id));
+    push("chartUrl", this->user->get_url());
     push("chartName", "Overall Ranking");
     push("rankBefore", this->old_rank);
     push("rankAfter", this->user->stats.rank);

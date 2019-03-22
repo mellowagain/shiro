@@ -16,6 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "../config/ipc_file.hh"
 #include "../database/tables/punishments_table.hh"
 #include "../thirdparty/loguru.hh"
 #include "../utils/bot_utils.hh"
@@ -205,9 +206,9 @@ void shiro::users::punishments::restrict(int32_t user_id, int32_t origin, const 
     user->hidden = true;
 
     utils::bot::respond(
-            "[https://shiro.host/u/me Your account has been restricted]. "
+            "[" + user->get_url() + " Your account has been restricted]. "
             "Because of that, your profile has been hidden from the public. "
-            "If you believe this is a mistake, [https://shiro.host/support contact support] "
+            "If you believe this is a mistake, [" + config::ipc::frontend_url + "support contact support] "
             "to have your account status reviewed.",
             user, config::bot::name, true
     );

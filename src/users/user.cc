@@ -18,6 +18,7 @@
 
 #include <cstring>
 
+#include "../config/ipc_file.hh"
 #include "../database/tables/relationship_table.hh"
 #include "../database/tables/user_table.hh"
 #include "../permissions/role_manager.hh"
@@ -165,6 +166,11 @@ void shiro::users::user::save_stats() {
             ).where(user_table.id == this->user_id));
             break;
     }
+}
+
+std::string shiro::users::user::get_url() {
+    static std::string url = config::ipc::frontend_url + "u/" + std::to_string(this->user_id);
+    return url;
 }
 
 void shiro::users::user::refresh_stats() {

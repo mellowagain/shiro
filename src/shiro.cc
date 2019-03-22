@@ -29,6 +29,7 @@
 #include "config/bot_file.hh"
 #include "config/cli_args.hh"
 #include "config/db_file.hh"
+#include "config/ipc_file.hh"
 #include "config/score_submission_file.hh"
 #include "geoloc/maxmind_resolver.hh"
 #include "logger/logger.hh"
@@ -70,6 +71,7 @@ int shiro::init(int argc, char **argv) {
     config::api::parse();
     config::bot::parse();
     config::database::parse();
+    config::ipc::parse();
     config::score_submission::parse();
 
     beatmaps::helper::init();

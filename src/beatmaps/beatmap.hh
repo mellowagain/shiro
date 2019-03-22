@@ -68,6 +68,8 @@ namespace shiro::beatmaps {
 
         void update_play_metadata();
 
+        std::string get_url();
+
         // Builds beatmap header with default pass count of beatmap
         std::string build_header();
 
