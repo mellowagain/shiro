@@ -22,6 +22,7 @@
 #include <iomanip>
 
 #include "../config/bancho_file.hh"
+#include "../config/ipc_file.hh"
 #include "../database/tables/beatmap_table.hh"
 #include "../logger/sentry_logger.hh"
 #include "../thirdparty/json.hh"
@@ -30,7 +31,6 @@
 #include "../shiro.hh"
 #include "beatmap.hh"
 #include "beatmap_helper.hh"
-#include "../config/ipc_file.hh"
 
 void shiro::beatmaps::beatmap::fetch(bool force_peppster) {
     if (this->beatmapset_id == -1) {
