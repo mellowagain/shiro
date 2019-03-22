@@ -22,6 +22,7 @@
 
 #include "../channels/channel_manager.hh"
 #include "../config/bancho_file.hh"
+#include "../config/ipc_file.hh"
 #include "../config/score_submission_file.hh"
 #include "../geoloc/geoloc.hh"
 #include "../geoloc/location_info.hh"
@@ -228,9 +229,9 @@ void shiro::handler::login::handle(const crow::request &request, crow::response 
 
     if (users::punishments::is_restricted(user->user_id)) {
         utils::bot::respond(
-                "[https://shiro.host/u/me Your account has been restricted]. "
+                "[" + user->get_url() + " Your account has been restricted]. "
                 "Because of that, your profile has been hidden from the public. "
-                "If you believe this is a mistake, [https://shiro.host/support contact support] "
+                "If you believe this is a mistake, [" + config::ipc::frontend_url + "support contact support] "
                 "to have your account status reviewed.",
                 user, config::bot::name, true
         );

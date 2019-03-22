@@ -378,9 +378,9 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
             char buffer[1024];
             std::snprintf(
                     buffer, sizeof(buffer),
-                    "[https://shiro.host/u/%i %s] achieved rank #1 on [https://osu.ppy.sh/b/%i %s] (%s)",
-                    user->user_id, user->presence.username.c_str(),
-                    beatmap.beatmap_id, beatmap.song_name.c_str(),
+                    "[%s %s] achieved rank #1 on [%s %s] (%s)",
+                    user->get_url().c_str(), user->presence.username.c_str(),
+                    beatmap.get_url().c_str(), beatmap.song_name.c_str(),
                     utils::play_mode_to_string((utils::play_mode) score.play_mode).c_str()
             );
 
