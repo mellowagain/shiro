@@ -65,6 +65,7 @@ namespace shiro::io {
         void user_quit(layouts::user_quit user_quit);
 
         void announce(std::string announcement);
+        void title_update(std::string title);
 
         void protocol_negotiation(int32_t protocol_version);
 
