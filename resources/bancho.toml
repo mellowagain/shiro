@@ -14,6 +14,11 @@ default_supporter = true
 [api]
 key = "osu!Bancho token"
 
+[motd]
+alert = "Welcome to Shiro"
+title_image = "https://i.ppy.sh/motd.png"
+title_url = "https://shiro.host"
+
 [direct]
 # Shiro is a reverse proxy for using other beatmap mirrors. It does not provide it's own interface.
 # mode 0 = Compatibility mode with Shirogane made by Shiro

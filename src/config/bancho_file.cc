@@ -32,6 +32,10 @@ bool shiro::config::bancho::default_supporter = false;
 
 std::string shiro::config::bancho::api_key = "osu! API key";
 
+std::string shiro::config::bancho::alert = "Welcome to Shiro";
+std::string shiro::config::bancho::title_image = "https://i.ppy.sh/motd.png";
+std::string shiro::config::bancho::title_url = "https://shiro.host";
+
 uint8_t shiro::config::bancho::direct_mode = 0;
 std::string shiro::config::bancho::direct_base_url = "https://shiro.host";
 std::string shiro::config::bancho::direct_mirror_url = "https://mirror.shiro.host";
@@ -57,6 +61,10 @@ void shiro::config::bancho::parse() {
 
     api_key = config_file->get_qualified_as<std::string>("api.key").value_or("osu! API key");
 
+    alert = config_file->get_qualified_as<std::string>("motd.alert").value_or("Welcome to Shiro");
+    title_image = config_file->get_qualified_as<std::string>("motd.title_image").value_or("https://i.ppy.sh/motd.png");
+    title_url = config_file->get_qualified_as<std::string>("motd.title_url").value_or("https://shiro.host");
+
     direct_mode = config_file->get_qualified_as<uint8_t>("direct.mode").value_or(0);
     direct_base_url = config_file->get_qualified_as<std::string>("direct.base_url").value_or("https://shiro.host");
     direct_mirror_url = config_file->get_qualified_as<std::string>("direct.mirror_url").value_or("https://mirror.shiro.host");
@@ -73,6 +81,10 @@ void shiro::config::bancho::parse() {
     //cli::cli_app.add_option("--bancho-default-supporter", default_Supporter, "Allow users with no roles / permissions to have supporer in-game?");
 
     cli::cli_app.add_option("--bancho-api-key", api_key, "API key for accessing official osu!Bancho API");
+
+    cli::cli_app.add_option("--bancho-motd-alert", alert, "Alert to be displayed on login");
+    cli::cli_app.add_option("--bancho-motd-title-image", title_image, "Title image to be displayed in osu! main menu");
+    cli::cli_app.add_option("--bancho-motd-title-url", title_url, "Title url which opens when clicking on title image");
 
     cli::cli_app.add_option("--direct-mode", direct_mode, "Compatibility mode for osu!direct reverse proxy");
     cli::cli_app.add_option("--direct-base-url", direct_base_url, "Base url for osu!direct proxy pass target");

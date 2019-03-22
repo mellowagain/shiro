@@ -34,6 +34,10 @@ void shiro::io::osu_writer::announce(std::string announcement) {
     this->write(packet_id::out_announce, serializable(std::move(announcement)));
 }
 
+void shiro::io::osu_writer::title_update(std::string title) {
+    this->write(packet_id::out_title_update, serializable(std::move(title)));
+}
+
 void shiro::io::osu_writer::protocol_negotiation(int32_t protocol_version) {
     this->write(packet_id::out_protocol_negotiation, serializable(protocol_version));
 }

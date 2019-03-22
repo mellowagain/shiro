@@ -31,6 +31,10 @@ namespace shiro::config::bancho {
 
     extern std::string api_key;
 
+    extern std::string alert;
+    extern std::string title_image;
+    extern std::string title_url;
+
     extern uint8_t direct_mode;
     extern std::string direct_base_url;
     extern std::string direct_mirror_url;
