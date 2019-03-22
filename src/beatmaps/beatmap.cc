@@ -30,6 +30,7 @@
 #include "../shiro.hh"
 #include "beatmap.hh"
 #include "beatmap_helper.hh"
+#include "../config/ipc_file.hh"
 
 void shiro::beatmaps::beatmap::fetch(bool force_peppster) {
     if (this->beatmapset_id == -1) {
@@ -263,6 +264,11 @@ void shiro::beatmaps::beatmap::update_play_metadata() {
             beatmaps_table.play_count = this->play_count,
             beatmaps_table.pass_count = this->pass_count
     ).where(beatmaps_table.beatmap_md5 == this->beatmap_md5));
+}
+
+std::string shiro::beatmaps::beatmap::get_url() {
+    static std::string url = config::ipc::beatmap_url + "/" + std::to_string(this->beatmap_id);
+    return url;
 }
 
 std::string shiro::beatmaps::beatmap::build_header() {
