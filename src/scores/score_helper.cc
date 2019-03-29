@@ -1004,6 +1004,10 @@ std::tuple<bool, std::string> shiro::scores::helper::is_flagged(const shiro::sco
 }
 
 float shiro::scores::helper::calculate_accuracy(utils::play_mode mode, int32_t _300, int32_t _100, int32_t _50, int32_t geki, int32_t katu, int32_t miss) {
+    // TODO: Use performance library for accuracy calculation
+    // https://github.com/Marc3842h/hikari/blob/master/src/accuracy.rs
+    // https://github.com/Marc3842h/hikari/blob/982260f83309499e2239148800561548f3fa39cf/include/hikari.h#L49
+
     switch (mode) {
         case utils::play_mode::standard: {
             int32_t total_hits = _300 + _100 + _50 + miss;
@@ -1025,22 +1029,26 @@ float shiro::scores::helper::calculate_accuracy(utils::play_mode mode, int32_t _
             return accuracy * 100;
         }
         case utils::play_mode::fruits: {
-            int32_t total_points = (_300 + _100 + _50);
-            int32_t total_hits = total_points + miss + katu;
+            int32_t total = _50 + _100 + _300 + katu + miss;
 
-            if (total_hits <= 0)
-                return 0.0f;
+            if (total <= 0)
+                return 0.0;
 
-            return (total_points / total_hits) * 100;
+            int32_t numerator = _50 + _100 + _300;
+            float denominator = total;
+
+            return (numerator / denominator) * 100;
         }
         case utils::play_mode::mania: {
-            int32_t total_points = (_300 * 300) + (geki * 300) + (_100 * 100) + (katu * 200) + (_50 * 50);
-            int32_t total_hits = _300 + geki + _100 + katu + _50 + miss;
+            int32_t total = _50 + _100 + katu + _300 + geki + miss;
 
-            if (total_hits <= 0)
-                return 0.0f;
+            if (total <= 0)
+                return 0.0;
 
-            return (total_points / (total_hits * 300)) * 100;
+            int32_t numerator = 50 * _50 + 100 * _100 + 200 * katu + 300 * (_300 + geki);
+            float denominator = 300 * total;
+
+            return (numerator / denominator) * 100;
         }
     }
 
