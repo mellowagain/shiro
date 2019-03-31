@@ -95,6 +95,7 @@ void shiro::users::user::update() {
         this->stats.ranked_score = row.ranked_score_std;
         this->stats.play_count = row.play_count_std;
         this->stats.rank = row.rank_std;
+        this->presence.rank = row.rank_std;
         this->stats.accuracy = row.accuracy_std;
     } else if (this->status.play_mode == (uint8_t) utils::play_mode::taiko) {
         this->stats.pp = row.pp_taiko;
@@ -102,6 +103,7 @@ void shiro::users::user::update() {
         this->stats.ranked_score = row.ranked_score_taiko;
         this->stats.play_count = row.play_count_taiko;
         this->stats.rank = row.rank_taiko;
+        this->presence.rank = row.rank_taiko;
         this->stats.accuracy = row.accuracy_taiko;
     } else if (this->status.play_mode == (uint8_t) utils::play_mode::fruits) {
         this->stats.pp = row.pp_ctb;
@@ -109,6 +111,7 @@ void shiro::users::user::update() {
         this->stats.ranked_score = row.ranked_score_ctb;
         this->stats.play_count = row.play_count_ctb;
         this->stats.rank = row.rank_ctb;
+        this->presence.rank = row.rank_ctb;
         this->stats.accuracy = row.accuracy_ctb;
     } else if (this->status.play_mode == (uint8_t) utils::play_mode::mania) {
         this->stats.pp = row.pp_mania;
@@ -116,6 +119,7 @@ void shiro::users::user::update() {
         this->stats.ranked_score = row.ranked_score_mania;
         this->stats.play_count = row.play_count_mania;
         this->stats.rank = row.rank_mania;
+        this->presence.rank = row.rank_mania;
         this->stats.accuracy = row.accuracy_mania;
     }
 }
