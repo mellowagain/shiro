@@ -21,6 +21,8 @@
 
 void shiro::handler::user_status::handle(shiro::io::osu_packet &in, shiro::io::osu_writer &out, std::shared_ptr<shiro::users::user> user) {
     io::layouts::user_status status = in.unmarshal<io::layouts::user_status>();
+    bool changed_mode = user->stats.play_mode != status.play_mode;
+
     user->status = status;
 
     user->stats.activity = status.activity;
@@ -29,4 +31,9 @@ void shiro::handler::user_status::handle(shiro::io::osu_packet &in, shiro::io::o
     user->stats.beatmap_checksum = status.beatmap_checksum;
     user->stats.play_mode = status.play_mode;
     user->stats.current_mods = status.current_mods;
+
+    if (!changed_mode)
+        return;
+
+    user->update();
 }
