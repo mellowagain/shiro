@@ -35,6 +35,7 @@ bool shiro::config::score_submission::save_failed_scores = true;
 bool shiro::config::score_submission::save_unranked_scores = false;
 std::string shiro::config::score_submission::overwrite_factor = "pp";
 
+bool shiro::config::score_submission::consider_client_side_flags = false;
 bool shiro::config::score_submission::restrict_notepad_hack = true;
 bool shiro::config::score_submission::restrict_impossible_mods = true;
 bool shiro::config::score_submission::restrict_no_replay = true;
@@ -102,6 +103,7 @@ void shiro::config::score_submission::parse() {
     overwrite_factor = config_file->get_qualified_as<std::string>("overwrite_factor").value_or("pp");
 
     // Anti-cheat
+    consider_client_side_flags =  config_file->get_qualified_as<bool>("anti_cheat.consider_client_site_flags").value_or(false);
     restrict_notepad_hack = config_file->get_qualified_as<bool>("anti_cheat.restrict_notepad_hack").value_or(true);
     restrict_impossible_mods = config_file->get_qualified_as<bool>("anti_cheat.restrict_impossible_mods").value_or(true);
     restrict_no_replay = config_file->get_qualified_as<bool>("anti_cheat.restrict_no_replay").value_or(true);

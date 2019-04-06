@@ -28,6 +28,7 @@ namespace shiro::config::score_submission {
     extern bool save_unranked_scores;
     extern std::string overwrite_factor;
 
+    extern bool consider_client_side_flags;
     extern bool restrict_notepad_hack;
     extern bool restrict_impossible_mods;
     extern bool restrict_no_replay;
