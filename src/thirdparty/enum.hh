@@ -87,7 +87,7 @@
 #endif
 
 // Allow bigger enums
-#define BETTER_ENUMS_MACRO_FILE "enum_macros.hh"
+//#define BETTER_ENUMS_MACRO_FILE "enum_macros.hh"
 
 // Higher-order preprocessor macros.
 
