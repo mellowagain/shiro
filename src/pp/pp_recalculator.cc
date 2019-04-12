@@ -79,7 +79,7 @@ void shiro::pp::recalculator::begin(shiro::utils::play_mode mode, uint32_t threa
 
     // If there are more (or equal the amount of) users than threads, every thread can calculate up to one user.
     if (threads >= users.size()) {
-        chunk_size = users.size();
+        chunk_size = 1;
         LOG_F(WARNING, "Thread amount is bigger or equal the amount of users.");
     }
 
