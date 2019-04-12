@@ -19,28 +19,14 @@
 #ifndef SHIRO_FILESYSTEM_UTILS
 #define SHIRO_FILESYSTEM_UTILS
 
-// clang-format off
-#if defined(__has_include)
-    #if __has_include(<filesystem>)
-        #include <filesystem>
+#include <filesystem>
 
-        #if defined(_WIN32)
-            // Workaround for Windows: https://docs.microsoft.com/en-us/cpp/standard-library/filesystem
-            namespace fs = std::experimental::filesystem::v1;
-        #else
-            namespace fs = std::filesystem;
-        #endif
-    #else
-        #include <experimental/filesystem>
-        namespace fs = std::experimental::filesystem;
-    #endif
+#if defined(_WIN32)
+    // Workaround for Windows: https://docs.microsoft.com/en-us/cpp/standard-library/filesystem
+    namespace fs = std::experimental::filesystem::v1;
 #else
-    // Compiler doesn't support C++17 __has_include so we can expect filesystem is in experimental state
-    #include <experimental/filesystem>
-
-    namespace fs = std::experimental::filesystem;
+    namespace fs = std::filesystem;
 #endif
-// clang-format on
 
 namespace shiro::utils::filesystem {
 
