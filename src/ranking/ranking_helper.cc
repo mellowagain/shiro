@@ -176,6 +176,9 @@ void shiro::ranking::helper::recalculate_ranks(const shiro::utils::play_mode &mo
         //if (users::activity::is_inactive(row.id, mode))
         //    continue;
 
+        if (!users::punishments::has_scores(row.id))
+            continue;
+
         switch (mode) {
             case utils::play_mode::standard:
                 if ((int32_t) row.play_count_std <= 0)
