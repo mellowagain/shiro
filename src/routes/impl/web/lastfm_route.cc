@@ -1,10 +1,10 @@
-#include "lastfm_route.hh"
-#include "../../../users/user.hh"
+#include "../../../config/score_submission_file.hh"
 #include "../../../logger/sentry_logger.hh"
 #include "../../../thirdparty/loguru.hh"
-#include "../../../utils/client_side_flags.hh"
-#include "../../../config/score_submission_file.hh"
+#include "../../../users/user.hh"
 #include "../../../users/user_punishments.hh"
+#include "../../../utils/client_side_flags.hh"
+#include "lastfm_route.hh"
 
 void shiro::routes::web::lastfm::handle(const crow::request &request, crow::response &response) {
     response.set_header("Content-Type", "text/plain; charset=UTF-8");
