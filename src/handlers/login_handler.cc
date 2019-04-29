@@ -105,6 +105,15 @@ void shiro::handler::login::handle(const crow::request &request, crow::response 
         return;
     }
 
+    if (user->roles == 0xF00DDEAD) {
+        writer.login_reply((int32_t) utils::login_responses::verification_required);
+
+        response.end(writer.serialize());
+
+        LOG_F(WARNING, "%s (%s) tried to login while awaiting email verification.", username.c_str(), request.get_ip_address().c_str());
+        return;
+    }
+
     std::string version = additional_info.at(0);
     std::string utc_offset = additional_info.at(1);
     std::string hwid = additional_info.at(3);

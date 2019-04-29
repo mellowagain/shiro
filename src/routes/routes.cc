@@ -28,6 +28,7 @@
 #include "impl/web/bancho_connect_route.hh"
 #include "impl/web/get_replay_route.hh"
 #include "impl/web/get_scores_route.hh"
+#include "impl/web/lastfm_route.hh"
 #include "impl/web/submit_score_route.hh"
 #include "impl/root_route.hh"
 #include "routes.hh"
@@ -76,6 +77,7 @@ void shiro::routes::init_routes() {
 
     // Miscellaneous osu! routes
     CROW_ROUTE(server, "/web/bancho_connect.php").methods("GET"_method)(shiro_route(web::bancho_connect::handle));
+    CROW_ROUTE(server, "/web/lastfm.php").methods("GET"_method)(shiro_route(web::lastfm::handle));
 
     // Non osu! routes
     CROW_ROUTE(server, "/api/ci_trigger").methods("POST"_method)(shiro_route(api::ci_trigger::handle));

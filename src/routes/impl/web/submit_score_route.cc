@@ -321,7 +321,7 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
     std::unique_ptr<scores::table_display> display = std::make_unique<scores::table_display>(user, beatmap, score, legacy);
     display->init();
 
-    db(insert_into(score_table).set(
+    score.id = db(insert_into(score_table).set(
             score_table.user_id = score.user_id,
             score_table.hash = score.hash,
             score_table.beatmap_md5 = score.beatmap_md5,
@@ -342,18 +342,6 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
             score_table.play_mode = score.play_mode,
             score_table.time = score.time
     ));
-
-    db_result = db(select(all_of(score_table)).from(score_table).where(score_table.hash == score.hash).limit(1u));
-
-    if (db_result.empty()) {
-        response.end("error: invalid");
-        return;
-    }
-
-    // Just to get the id
-    for (const auto &row : db_result) {
-        score.id = row.id;
-    }
 
     if (overwrite)
         user->stats.total_score += score.total_score;

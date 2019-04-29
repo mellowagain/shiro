@@ -28,6 +28,9 @@ shiro::io::layouts::message::message(std::string sender, int32_t sender_id, std:
 }
 
 shiro::io::buffer shiro::io::layouts::message::marshal() {
+    if (this->content.length() < 512)
+        this->content.resize(512);
+
     std::string sender = utils::osu_string(this->sender);
     std::string content = utils::osu_string(this->content);
     std::string channel = utils::osu_string(this->channel);
@@ -47,7 +50,12 @@ shiro::io::buffer shiro::io::layouts::message::marshal() {
 void shiro::io::layouts::message::unmarshal(shiro::io::buffer &buffer) {
     this->sender = buffer.read_string();
 
-    this->content = buffer.read_string();
+    std::string content = buffer.read_string();
+
+    if (content.length() < 512)
+        content.resize(512);
+
+    this->content = content;
     this->channel = buffer.read_string();
 
     this->sender_id = buffer.read<int32_t>();

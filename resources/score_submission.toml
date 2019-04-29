@@ -8,6 +8,8 @@ save_unranked_scores = false
 overwrite_factor = "pp"
 
 [anti_cheat]
+# Should osu! client side flags be considered for restrictions?
+consider_client_site_flags = false
 # Should mismatching bmk and bml auto restrict? (Notepad hack)
 restrict_notepad_hack = true
 # Should impossible mod combinations like +EZHR, +HTDT or +RXAP auto restrict?

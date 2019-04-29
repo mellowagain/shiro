@@ -239,5 +239,7 @@ size_t shiro::users::manager::get_online_users() {
     // Disallow other threads from writing (but not from reading)
     std::shared_lock<std::shared_timed_mutex> lock(mutex);
 
-    return online_users.size();
+    return std::count_if(online_users.begin(), online_users.end(), [](std::shared_ptr<users::user> user) {
+        return user->user_id != 1 && !user->hidden;
+    });
 }
