@@ -26,6 +26,8 @@ namespace shiro::utils::strings {
 
     bool to_bool(std::string src);
 
+    std::string to_string(bool src);
+
 }
 
 #endif //SHIRO_STRING_UTILS_HH

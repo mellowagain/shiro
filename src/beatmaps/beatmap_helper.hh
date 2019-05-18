@@ -35,7 +35,7 @@ namespace shiro::beatmaps::helper {
 
     bool awards_pp(int32_t status_code);
 
-    std::optional<std::string> get_location(int32_t beatmap_id);
+    std::optional<std::string> get_location(int32_t beatmap_id, bool download = true);
 
 }
 

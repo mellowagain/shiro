@@ -39,6 +39,10 @@ namespace shiro::beatmaps {
 
         float ar = 0.0f;
         float od = 0.0f;
+        float size = 0.0f;
+        float drain = 0.0f;
+        float aim = 0.0f;
+        float speed = 0.0f;
 
         float diff_std = 0.0f;
         float diff_taiko = 0.0f;
