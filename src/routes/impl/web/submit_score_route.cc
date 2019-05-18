@@ -346,9 +346,13 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
     if (overwrite)
         user->stats.total_score += score.total_score;
 
+    if (overwrite && score.max_combo > user->stats.max_combo)
+        user->stats.max_combo = score.max_combo;
+
     replays::save_replay(score, beatmap, game_version, fields.at("replay-bin").body);
 
     if (!scores::helper::is_ranked(score, beatmap)) {
+        user->save_stats();
         response.end("ok" /*"error: disabled"*/);
         return;
     }
