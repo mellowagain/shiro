@@ -21,6 +21,7 @@
 
 #include <sqlpp11/char_sequence.h>
 #include <sqlpp11/column_types.h>
+#include <sqlpp11/mysql/connection.h>
 #include <sqlpp11/table.h>
 
 #include "common_tables.hh"
@@ -51,28 +52,46 @@ namespace shiro::tables {
         object_struct(times_watched, sqlpp::integer);
     };
 
-    struct scores : sqlpp::table_t<scores, scores_objects::id, scores_objects::hash,
-            scores_objects::beatmap_md5, scores_objects::user_id, scores_objects::ranking, scores_objects::score, scores_objects::max_combo,
-            scores_objects::fc, scores_objects::mods, scores_objects::_300_count, scores_objects::_100_count,
-            scores_objects::_50_count, scores_objects::katus_count, scores_objects::gekis_count, scores_objects::miss_count,
-            scores_objects::time, scores_objects::play_mode, scores_objects::passed, scores_objects::accuracy,
-            scores_objects::pp, scores_objects::times_watched> {
-        using _value_type = sqlpp::no_value_t;
-        struct _alias_t {
-            static constexpr const char _literal[] = "scores";
-            using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
-            template <typename T>
-            struct _member_t {
-                T _scores;
-                T &operator()() {
-                    return _scores;
-                }
-                const T &operator()() const {
-                    return _scores;
-                }
-            };
-        };
-    };
+    database_table(scores,
+            scores_objects::id,
+            scores_objects::hash,
+            scores_objects::beatmap_md5,
+            scores_objects::user_id,
+            scores_objects::ranking,
+            scores_objects::score,
+            scores_objects::max_combo,
+            scores_objects::fc,
+            scores_objects::mods,
+            scores_objects::_300_count,
+            scores_objects::_100_count,
+            scores_objects::_50_count,
+            scores_objects::katus_count,
+            scores_objects::gekis_count,
+            scores_objects::miss_count,
+            scores_objects::time,
+            scores_objects::play_mode,
+            scores_objects::passed,
+            scores_objects::accuracy,
+            scores_objects::pp,
+            scores_objects::times_watched
+    );
+
+    namespace migrations::scores {
+
+        inline void create(sqlpp::mysql::connection &db) {
+            db.execute(
+                    "CREATE TABLE IF NOT EXISTS `scores` "
+                    "(id INT PRIMARY KEY NOT NULL AUTO_INCREMENT, "
+                    "beatmap_md5 VARCHAR(35) NOT NULL, hash VARCHAR(35) NOT NULL, user_id INT NOT NULL, ranking VARCHAR(2) NOT NULL, "
+                    "score BIGINT NOT NULL, max_combo INT NOT NULL, fc BOOLEAN NOT NULL, mods INT NOT NULL, "
+                    "300_count INT NOT NULL, 100_count INT NOT NULL, 50_count INT NOT NULL, "
+                    "katus_count INT NOT NULL, gekis_count INT NOT NULL, miss_count INT NOT NULL, "
+                    "time INT NOT NULL, play_mode TINYINT NOT NULL, passed BOOLEAN NOT NULL, "
+                    "accuracy FLOAT NOT NULL, pp FLOAT NOT NULL, times_watched INT NOT NULL DEFAULT 0);"
+            );
+        }
+
+    }
 
 }
 

@@ -21,6 +21,7 @@
 
 #include <sqlpp11/char_sequence.h>
 #include <sqlpp11/column_types.h>
+#include <sqlpp11/mysql/connection.h>
 #include <sqlpp11/table.h>
 
 #include "common_tables.hh"
@@ -36,6 +37,10 @@ namespace shiro::tables {
         object_struct(game_mode, sqlpp::smallint);
         object_struct(ar, sqlpp::floating_point);
         object_struct(od, sqlpp::floating_point);
+        object_struct(size, sqlpp::floating_point);
+        object_struct(drain, sqlpp::floating_point);
+        object_struct(aim, sqlpp::floating_point);
+        object_struct(speed, sqlpp::floating_point);
         object_struct(diff_std, sqlpp::floating_point);
         object_struct(diff_taiko, sqlpp::floating_point);
         object_struct(diff_ctb, sqlpp::floating_point);
@@ -50,28 +55,48 @@ namespace shiro::tables {
         object_struct(pass_count, sqlpp::integer);
     };
 
-    struct beatmaps : sqlpp::table_t<beatmaps, beatmaps_objects::id, beatmaps_objects::beatmap_id,
-            beatmaps_objects::beatmapset_id, beatmaps_objects::beatmap_md5, beatmaps_objects::song_name, beatmaps_objects::game_mode,
-            beatmaps_objects::ar, beatmaps_objects::od, beatmaps_objects::diff_std, beatmaps_objects::diff_taiko,
-            beatmaps_objects::diff_ctb, beatmaps_objects::diff_mania, beatmaps_objects::max_combo,
-            beatmaps_objects::hit_length, beatmaps_objects::bpm, beatmaps_objects::ranked_status, beatmaps_objects::last_update,
-            beatmaps_objects::ranked_status_freezed, beatmaps_objects::play_count, beatmaps_objects::pass_count> {
-        using _value_type = sqlpp::no_value_t;
-        struct _alias_t {
-            static constexpr const char _literal[] = "beatmaps";
-            using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
-            template <typename T>
-            struct _member_t {
-                T _beatmaps;
-                T &operator()() {
-                    return _beatmaps;
-                }
-                const T &operator()() const {
-                    return _beatmaps;
-                }
-            };
-        };
-    };
+    database_table(beatmaps,
+            beatmaps_objects::id,
+            beatmaps_objects::beatmap_id,
+            beatmaps_objects::beatmapset_id,
+            beatmaps_objects::beatmap_md5,
+            beatmaps_objects::song_name,
+            beatmaps_objects::game_mode,
+            beatmaps_objects::ar,
+            beatmaps_objects::od,
+            beatmaps_objects::size,
+            beatmaps_objects::drain,
+            beatmaps_objects::aim,
+            beatmaps_objects::speed,
+            beatmaps_objects::diff_std,
+            beatmaps_objects::diff_taiko,
+            beatmaps_objects::diff_ctb,
+            beatmaps_objects::diff_mania,
+            beatmaps_objects::max_combo,
+            beatmaps_objects::hit_length,
+            beatmaps_objects::bpm,
+            beatmaps_objects::ranked_status,
+            beatmaps_objects::last_update,
+            beatmaps_objects::ranked_status_freezed,
+            beatmaps_objects::play_count,
+            beatmaps_objects::pass_count
+    );
+
+    namespace migrations::beatmaps {
+
+        inline void create(sqlpp::mysql::connection &db) {
+            db.execute(
+                    "CREATE TABLE IF NOT EXISTS `beatmaps` "
+                    "(id INT PRIMARY KEY NOT NULL AUTO_INCREMENT, "
+                    "beatmap_id INT NOT NULL, beatmapset_id INT NOT NULL, beatmap_md5 VARCHAR(35) NOT NULL, song_name VARCHAR(128) NOT NULL, "
+                    "game_mode SMALLINT NOT NULL, ar FLOAT NOT NULL, od FLOAT NOT NULL, size FLOAT NOT NULL, drain FLOAT NOT NULL, "
+                    "aim FLOAT NOT NULL, speed FLOAT NOT NULL, diff_std FLOAT NOT NULL, diff_taiko FLOAT NOT NULL, diff_ctb FLOAT NOT NULL, "
+                    "diff_mania FLOAT NOT NULL, max_combo INT NOT NULL, hit_length INT NOT NULL, bpm INT NOT NULL, ranked_status INT NOT NULL, "
+                    "last_update INT NOT NULL, ranked_status_freezed BOOLEAN NOT NULL, play_count INT NOT NULL, pass_count INT NOT NULL);"
+            );
+        }
+
+    }
 
 }
 

@@ -21,6 +21,7 @@
 
 #include <sqlpp11/char_sequence.h>
 #include <sqlpp11/column_types.h>
+#include <sqlpp11/mysql/connection.h>
 #include <sqlpp11/table.h>
 
 #include "common_tables.hh"
@@ -33,25 +34,22 @@ namespace shiro::tables {
         object_struct(blocked, sqlpp::boolean);
     };
 
-    struct relationships : sqlpp::table_t<relationships,
-            relationships_objects::origin, relationships_objects::target,
-            relationships_objects::blocked> {
-        using _value_type = sqlpp::no_value_t;
-        struct _alias_t {
-            static constexpr const char _literal[] = "relationships";
-            using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
-            template <typename T>
-            struct _member_t {
-                T _relationships;
-                T &operator()() {
-                    return _relationships;
-                }
-                const T &operator()() const {
-                    return _relationships;
-                }
-            };
-        };
-    };
+    database_table(relationships,
+            relationships_objects::origin,
+            relationships_objects::target,
+            relationships_objects::blocked
+    );
+
+    namespace migrations::relationships {
+
+        inline void create(sqlpp::mysql::connection &db) {
+            db.execute(
+                    "CREATE TABLE IF NOT EXISTS `relationships` "
+                    "(origin INT NOT NULL, target INT NOT NULL, blocked BOOLEAN NOT NULL);"
+            );
+        }
+
+    }
 
 }
 
