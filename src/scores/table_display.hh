@@ -42,6 +42,7 @@ namespace shiro::scores {
         int32_t old_max_combo = 0;
         float old_acc = 0.0f;
         int32_t old_rank = 0;
+        int16_t old_pp = 0;
         scores::score old_top_score;
 
         int32_t scoreboard_position = 0;

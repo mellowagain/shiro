@@ -43,6 +43,7 @@ void shiro::scores::table_display::init() {
     this->old_max_combo = this->user->stats.max_combo;
     this->old_acc = this->user->stats.accuracy;
     this->old_rank = this->user->stats.rank;
+    this->old_pp = this->user->stats.pp;
 }
 
 void shiro::scores::table_display::set_scoreboard_position(int32_t position) {
@@ -85,11 +86,11 @@ std::string shiro::scores::table_display::build_present() {
     push("rankedScoreAfter", this->user->stats.ranked_score);
     push("totalScoreBefore", this->user->stats.total_score - this->score.total_score);
     push("totalScoreAfter", this->score.total_score);
-    push("maxComboBefore", this->user->stats.max_combo);
-    push("maxComboAfter", this->old_max_combo);
+    push("maxComboBefore", this->old_max_combo);
+    push("maxComboAfter", this->user->stats.max_combo);
     push("accuracyBefore", this->old_acc);
     push("accuracyAfter", this->user->stats.accuracy);
-    push("ppBefore", this->user->stats.pp - this->score.pp);
+    push("ppBefore", this->old_pp);
     push("ppAfter", this->user->stats.pp);
     push("achievements-new", "");
     push("onlineScoreId", this->score.id, true);
