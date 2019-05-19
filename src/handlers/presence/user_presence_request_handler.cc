@@ -23,6 +23,9 @@ void shiro::handler::presence::request::handle(shiro::io::osu_packet &in, shiro:
     std::vector<int32_t> requested_users = in.data.read_array();
 
     for (int32_t requested_user : requested_users) {
+        if (requested_user == user->user_id)
+            continue;
+
         if (!users::manager::is_online(requested_user))
             continue;
 
@@ -30,9 +33,6 @@ void shiro::handler::presence::request::handle(shiro::io::osu_packet &in, shiro:
 
         if (target_user == nullptr || target_user->hidden)
             continue;
-
-        if (target_user->user_id != 1)
-            out.user_stats(target_user->stats);
 
         out.user_presence(target_user->presence);
     }
