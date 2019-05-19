@@ -283,10 +283,9 @@ std::string shiro::beatmaps::beatmap::get_url() {
 }
 
 std::string shiro::beatmaps::beatmap::build_header() {
-    std::string saved = utils::strings::to_string(helper::get_location(this->beatmap_id, false).has_value());
     std::stringstream result;
 
-    result << helper::fix_beatmap_status(this->ranked_status) << "|" << saved << "|" << this->beatmap_id << "|" << this->beatmapset_id << "|" << this->pass_count << std::endl;
+    result << helper::fix_beatmap_status(this->ranked_status) << "|false|" << this->beatmap_id << "|" << this->beatmapset_id << "|" << this->pass_count << std::endl;
     result << "0" << std::endl;
     result << this->song_name << std::endl;
     result << "10.0" << std::endl;
@@ -295,10 +294,9 @@ std::string shiro::beatmaps::beatmap::build_header() {
 }
 
 std::string shiro::beatmaps::beatmap::build_header(const std::vector<scores::score> &scores) {
-    std::string saved = utils::strings::to_string(helper::get_location(this->beatmap_id, false).has_value());
     std::stringstream result;
 
-    result << helper::fix_beatmap_status(this->ranked_status) << "|" << saved << "|" << this->beatmap_id << "|" << this->beatmapset_id << "|" << scores.size() << std::endl;
+    result << helper::fix_beatmap_status(this->ranked_status) << "|false|" << this->beatmap_id << "|" << this->beatmapset_id << "|" << scores.size() << std::endl;
     result << "0" << std::endl;
     result << this->song_name << std::endl;
     result << "10.0" << std::endl;
