@@ -21,6 +21,7 @@
 
 #include <sqlpp11/char_sequence.h>
 #include <sqlpp11/column_types.h>
+#include <sqlpp11/mysql/connection.h>
 #include <sqlpp11/table.h>
 
 #include "common_tables.hh"
@@ -37,26 +38,29 @@ namespace shiro::tables {
         object_struct(permission, sqlpp::bigint_unsigned);
     };
 
-    struct channels : sqlpp::table_t<channels, channel_objects::id,
-            channel_objects::name, channel_objects::description,
-            channel_objects::auto_join, channel_objects::hidden,
-            channel_objects::read_only, channel_objects::permission> {
-        using _value_type = sqlpp::no_value_t;
-        struct _alias_t {
-            static constexpr const char _literal[] = "channels";
-            using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
-            template <typename T>
-            struct _member_t {
-                T _channels;
-                T &operator()() {
-                    return _channels;
-                }
-                const T &operator()() const {
-                    return _channels;
-                }
-            };
-        };
-    };
+    database_table(channels,
+            channel_objects::id,
+            channel_objects::name,
+            channel_objects::description,
+            channel_objects::auto_join,
+            channel_objects::hidden,
+            channel_objects::read_only,
+            channel_objects::permission
+    );
+
+    namespace migrations::channels {
+
+        inline void create(sqlpp::mysql::connection &db) {
+            db.execute(
+                    "CREATE TABLE IF NOT EXISTS `channels` "
+                    "(id INT PRIMARY KEY NOT NULL AUTO_INCREMENT, "
+                    "name VARCHAR(32) NOT NULL, description VARCHAR(64) NOT NULL, "
+                    "auto_join BOOLEAN NOT NULL, hidden BOOLEAN NOT NULL, "
+                    "read_only BOOLEAN NOT NULL, permission BIGINT UNSIGNED NOT NULL);"
+            );
+        }
+
+    }
 
 }
 

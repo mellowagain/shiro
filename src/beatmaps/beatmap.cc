@@ -28,6 +28,7 @@
 #include "../thirdparty/json.hh"
 #include "../thirdparty/loguru.hh"
 #include "../utils/curler.hh"
+#include "../utils/string_utils.hh"
 #include "../shiro.hh"
 #include "beatmap.hh"
 #include "beatmap_helper.hh"
@@ -66,6 +67,10 @@ bool shiro::beatmaps::beatmap::fetch_db() {
     this->song_name = row.song_name;
     this->ar = row.ar;
     this->od = row.od;
+    this->size = row.size;
+    this->drain = row.drain;
+    this->aim = row.aim;
+    this->speed = row.speed;
     this->diff_std = row.diff_std;
     this->diff_taiko = row.diff_taiko;
     this->diff_ctb = row.diff_ctb;
@@ -83,9 +88,6 @@ bool shiro::beatmaps::beatmap::fetch_db() {
 }
 
 bool shiro::beatmaps::beatmap::fetch_api() {
-    // For convenience
-    using json = nlohmann::json;
-
     if (this->beatmapset_id == 0) {
         std::string url = "https://old.ppy.sh/api/get_beatmaps?k=" + config::bancho::api_key + "&b=" + std::to_string(this->beatmap_id);
         auto [success, output] = utils::curl::get(url);
@@ -164,19 +166,18 @@ bool shiro::beatmaps::beatmap::fetch_api() {
             this->play_mode = (uint8_t) boost::lexical_cast<int32_t>(std::string(part["mode"]));
             this->ar = boost::lexical_cast<float>(std::string(part["diff_approach"]));
             this->od = boost::lexical_cast<float>(std::string(part["diff_overall"]));
+            this->size = boost::lexical_cast<float>(std::string(part["diff_size"]));
+            this->drain = boost::lexical_cast<float>(std::string(part["diff_drain"]));
             this->bpm = static_cast<int32_t>(boost::lexical_cast<float>(std::string(part["bpm"])));
 
             switch ((utils::play_mode) this->play_mode) {
                 case utils::play_mode::standard:
                     this->diff_std = boost::lexical_cast<float>(std::string(part["difficultyrating"]));
+                    this->aim = boost::lexical_cast<float>(std::string(part["diff_aim"]));
+                    this->speed = boost::lexical_cast<float>(std::string(part["diff_speed"]));
 
-                    // Only osu!std maps have max_combo visible using the osu!api, see ppy/osu-api#105
-                    // Despite this, some maps are broken on osu!Bancho and will return "null", see ppy/osu-api#130
+                    // For some older beatmaps the max_combo is null. See ppy/osu-api#130
                     if (!part["max_combo"].is_null())
-                        // In some cases, the beatmap max_combo returned by osu!api may be off by one, see ppy/osu-api#146
-                        // We just add +1 to be safe, this value is unused except for display on the beatmap page
-                        // where it doesn't really matter *too* much if it's over by one. The performance calculator
-                        // calculates this value itself, and that even correct. See Marc3842h/shiro#104 for more info.
                         this->max_combo = boost::lexical_cast<int32_t>(std::string(part["max_combo"]));
 
                     break;
@@ -184,7 +185,15 @@ bool shiro::beatmaps::beatmap::fetch_api() {
                     this->diff_taiko = boost::lexical_cast<float>(std::string(part["difficultyrating"]));
                     break;
                 case utils::play_mode::fruits:
-                    this->diff_ctb = boost::lexical_cast<float>(std::string(part["difficultyrating"]));
+                    if (!part["difficultyrating"].is_null())
+                        this->diff_ctb = boost::lexical_cast<float>(std::string(part["difficultyrating"]));
+
+                    this->aim = boost::lexical_cast<float>(std::string(part["diff_aim"]));
+
+                    // For some older beatmaps the max_combo is null. See ppy/osu-api#130
+                    if (!part["max_combo"].is_null())
+                        this->max_combo = boost::lexical_cast<int32_t>(std::string(part["max_combo"]));
+
                     break;
                 case utils::play_mode::mania:
                     this->diff_mania = boost::lexical_cast<float>(std::string(part["difficultyrating"]));
@@ -241,6 +250,10 @@ void shiro::beatmaps::beatmap::save() {
             beatmaps_table.song_name = this->song_name,
             beatmaps_table.ar = this->ar,
             beatmaps_table.od = this->od,
+            beatmaps_table.size = this->size,
+            beatmaps_table.drain = this->drain,
+            beatmaps_table.aim = this->aim,
+            beatmaps_table.speed = this->speed,
             beatmaps_table.diff_std = this->diff_std,
             beatmaps_table.diff_taiko = this->diff_taiko,
             beatmaps_table.diff_ctb = this->diff_ctb,

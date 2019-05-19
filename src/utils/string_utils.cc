@@ -28,3 +28,7 @@ bool shiro::utils::strings::to_bool(std::string src) {
         return src == "true";
     }
 }
+
+std::string shiro::utils::strings::to_string(bool src) {
+    return src ? "true" : "false";
+}

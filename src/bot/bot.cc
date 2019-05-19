@@ -54,8 +54,8 @@ void shiro::bot::init() {
 
     auto result = db(select(all_of(user_table)).from(user_table).where(user_table.id == 1).limit(1u));
 
-    if (result.empty()) {
-        // Bot user doesn't exist
+    // Check if the bot user exists, if not insert it into the db
+    if (result.empty())
         db(insert_into(user_table).set(
                 user_table.id = 1,
                 user_table.username = config::bot::name,
@@ -69,32 +69,13 @@ void shiro::bot::init() {
                 user_table.followers = 0,
                 user_table.roles = 0xDEADCAFE, // Special role for robots
                 user_table.user_page = "beep boop",
-                user_table.pp_std = 0,
-                user_table.pp_taiko = 0,
-                user_table.pp_ctb = 0,
-                user_table.pp_mania = 0,
-                user_table.score_std = 0,
-                user_table.score_taiko = 0,
-                user_table.score_ctb = 0,
-                user_table.score_mania = 0,
-                user_table.ranked_score_std = 0,
-                user_table.ranked_score_taiko = 0,
-                user_table.ranked_score_ctb = 0,
-                user_table.ranked_score_mania = 0,
-                user_table.play_count_std = 0,
-                user_table.play_count_taiko = 0,
-                user_table.play_count_ctb = 0,
-                user_table.play_count_mania = 0,
                 user_table.country = "JP"
         ));
-    }
 
     std::shared_ptr<users::user> bot_user = std::make_shared<users::user>(1);
 
-    if (!bot_user->init()) {
+    if (!bot_user->init())
         ABORT_F("Unable to initialize chat bot.");
-        return;
-    }
 
     std::chrono::seconds seconds = std::chrono::duration_cast<std::chrono::seconds>(
             std::chrono::system_clock::now().time_since_epoch()

@@ -43,7 +43,7 @@ namespace shiro::users {
         // Session info
         std::string token = ""; // UUID v4
         std::string hwid = ""; // SHA256
-        std::chrono::seconds last_ping;
+        std::chrono::seconds last_ping = 0s;
         bool hidden = false; // If the client is hidden, e.g. restricted
 
         std::string client_version = ""; // Full client version string sent on login (b20160403.6)

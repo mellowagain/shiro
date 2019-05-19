@@ -21,6 +21,7 @@
 
 #include <sqlpp11/char_sequence.h>
 #include <sqlpp11/column_types.h>
+#include <sqlpp11/mysql/connection.h>
 #include <sqlpp11/table.h>
 
 #include "common_tables.hh"
@@ -34,24 +35,24 @@ namespace shiro::tables {
         object_struct(color, sqlpp::tinyint_unsigned);
     };
 
-    struct roles : sqlpp::table_t<roles, roles_objects::id, roles_objects::name,
-            roles_objects::permissions, roles_objects::color> {
-        using _value_type = sqlpp::no_value_t;
-        struct _alias_t {
-            static constexpr const char _literal[] = "roles";
-            using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
-            template <typename T>
-            struct _member_t {
-                T _roles;
-                T &operator()() {
-                    return _roles;
-                }
-                const T &operator()() const {
-                    return _roles;
-                }
-            };
-        };
-    };
+    database_table(roles,
+            roles_objects::id,
+            roles_objects::name,
+            roles_objects::permissions,
+            roles_objects::color
+    );
+
+    namespace migrations::roles {
+
+        inline void create(sqlpp::mysql::connection &db) {
+            db.execute(
+                    "CREATE TABLE IF NOT EXISTS `roles` "
+                    "(id INT UNSIGNED PRIMARY KEY NOT NULL, name VARCHAR(32) NOT NULL, "
+                    "permissions BIGINT UNSIGNED NOT NULL, color TINYINT UNSIGNED NOT NULL);"
+            );
+        }
+
+    }
 
 }
 

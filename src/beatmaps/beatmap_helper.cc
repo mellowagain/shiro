@@ -51,12 +51,15 @@ bool shiro::beatmaps::helper::awards_pp(int32_t status_code) {
     return status_code == (int32_t) status::ranked;
 }
 
-std::optional<std::string> shiro::beatmaps::helper::get_location(int32_t beatmap_id) {
+std::optional<std::string> shiro::beatmaps::helper::get_location(int32_t beatmap_id, bool download) {
     std::string beatmap_id_str = std::to_string(beatmap_id);
     fs::path filename = dir / std::string(beatmap_id_str + ".osu");
 
     if (fs::exists(filename))
         return filename;
+
+    if (!download)
+        return std::nullopt;
 
     auto [success, output] = utils::curl::get("https://old.ppy.sh/osu/" + beatmap_id_str);
 
