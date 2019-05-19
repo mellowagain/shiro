@@ -22,15 +22,14 @@
 #include "ping_handler.hh"
 
 void shiro::handler::ping::handle(shiro::io::osu_packet &in, shiro::io::osu_writer &out, std::shared_ptr<users::user> user) {
-    user->refresh_stats();
+    if (!spectating::manager::is_spectating(user))
+        return;
 
-    if (spectating::manager::is_spectating(user)) {
-        std::shared_ptr<users::user> host = spectating::manager::get_host(user);
+    std::shared_ptr<users::user> host = spectating::manager::get_host(user);
 
-        if (host == nullptr)
-            return;
+    if (host == nullptr)
+        return;
 
-        out.user_presence(host->presence);
-        out.user_stats(host->stats);
-    }
+    out.user_presence(host->presence);
+    out.user_stats(host->stats);
 }

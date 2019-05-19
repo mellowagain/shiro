@@ -25,25 +25,31 @@ void shiro::handler::stats::request_all::handle(shiro::io::osu_packet &in, shiro
     std::vector<int32_t> requested_users = in.data.read_array();
 
     for (int32_t requested_user : requested_users) {
-        if (!users::manager::is_online(requested_user))
+        if (requested_user == user->user_id || requested_user == 1)
             continue;
+
+        if (!users::manager::is_online(requested_user)) {
+            io::layouts::user_quit quit;
+            quit.user_id = requested_user;
+            quit.state = 0;
+
+            out.user_quit(quit);
+            continue;
+        }
 
         std::shared_ptr<users::user> target_user = users::manager::get_user_by_id(requested_user);
 
         if (target_user == nullptr || target_user->hidden)
             continue;
 
-        if (target_user->user_id != 1)
-            out.user_stats(target_user->stats);
-
-        out.user_presence(target_user->presence);
+        out.user_stats(target_user->stats);
     }
 
     std::vector<int32_t> online_users;
     online_users.reserve(users::manager::online_users.size());
 
-    users::manager::iterate([&online_users](std::shared_ptr<users::user> online_user) {
-        if (online_user->hidden)
+    users::manager::iterate([&online_users, user](std::shared_ptr<users::user> online_user) {
+        if (online_user->hidden || online_user->user_id == user->user_id)
             return;
 
         online_users.emplace_back(online_user->user_id);
