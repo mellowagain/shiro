@@ -185,7 +185,9 @@ bool shiro::beatmaps::beatmap::fetch_api() {
                     this->diff_taiko = boost::lexical_cast<float>(std::string(part["difficultyrating"]));
                     break;
                 case utils::play_mode::fruits:
-                    this->diff_ctb = boost::lexical_cast<float>(std::string(part["difficultyrating"]));
+                    if (!part["difficultyrating"].is_null())
+                        this->diff_ctb = boost::lexical_cast<float>(std::string(part["difficultyrating"]));
+
                     this->aim = boost::lexical_cast<float>(std::string(part["diff_aim"]));
 
                     // For some older beatmaps the max_combo is null. See ppy/osu-api#130
