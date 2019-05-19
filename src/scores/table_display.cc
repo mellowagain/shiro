@@ -85,7 +85,7 @@ std::string shiro::scores::table_display::build_present() {
     push("rankedScoreBefore", this->user->stats.ranked_score - this->score.total_score);
     push("rankedScoreAfter", this->user->stats.ranked_score);
     push("totalScoreBefore", this->user->stats.total_score - this->score.total_score);
-    push("totalScoreAfter", this->score.total_score);
+    push("totalScoreAfter", this->user->stats.total_score);
     push("maxComboBefore", this->old_max_combo);
     push("maxComboAfter", this->user->stats.max_combo);
     push("accuracyBefore", this->old_acc);
