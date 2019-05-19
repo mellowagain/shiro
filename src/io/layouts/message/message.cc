@@ -52,7 +52,7 @@ void shiro::io::layouts::message::unmarshal(shiro::io::buffer &buffer) {
 
     std::string content = buffer.read_string();
 
-    if (content.length() < 512)
+    if (content.length() > 512)
         content.resize(512);
 
     this->content = content;
