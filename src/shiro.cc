@@ -84,7 +84,7 @@ int shiro::init(int argc, char **argv) {
     db_connection->connect();
     db_connection->setup();
 
-    std::thread scheduler_updater([&]() {
+    std::thread scheduler_updater([]() {
         while (true) {
             std::this_thread::sleep_for(1ms);
             scheduler.Update(1ms);
