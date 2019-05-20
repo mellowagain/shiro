@@ -227,7 +227,13 @@ void shiro::handler::login::handle(const crow::request &request, crow::response 
     channels::manager::auto_join(writer, user);
 
     io::osu_writer global_writer;
+    global_writer.user_stats(user->stats);
     global_writer.user_presence(user->presence);
+
+    // Give the user his own stats and presence as well as the bots' presence
+    writer.user_stats(user->stats);
+    writer.user_presence(user->presence);
+    writer.user_presence(users::manager::get_user_by_id(1)->presence);
 
     if (users::punishments::is_silenced(user->user_id)) {
         auto [timestamp, duration] = users::punishments::get_silence_time(user->user_id);
@@ -251,6 +257,7 @@ void shiro::handler::login::handle(const crow::request &request, crow::response 
             return;
 
         writer.user_presence(online_user->presence);
+        writer.user_stats(online_user->stats);
 
         if (!user->hidden)
             online_user->queue.enqueue(global_writer);
