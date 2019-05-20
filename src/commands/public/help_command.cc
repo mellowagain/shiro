@@ -22,6 +22,7 @@
 bool shiro::commands::help(std::deque<std::string> &args, std::shared_ptr<shiro::users::user> user, std::string channel) {
     utils::bot::respond("Commands:", user, channel, true);
     utils::bot::respond("!help - Shows list of commands", user, channel, true);
+    utils::bot::respond("!localclear - Clears your local chat", user, channel, true);
     utils::bot::respond("!roll - Rolls a random number", user, channel, true);
 
     // TODO: Check for permissions and then display admin commands
