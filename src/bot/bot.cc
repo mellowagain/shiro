@@ -22,6 +22,7 @@
 #include <memory>
 
 #include "../commands/public/help_command.hh"
+#include "../commands/public/localclear_command.hh"
 #include "../commands/public/roll_command.hh"
 #include "../commands/staff/announce_command.hh"
 #include "../commands/staff/ban_command.hh"
@@ -29,6 +30,7 @@
 #include "../commands/staff/clients_command.hh"
 #include "../commands/staff/kick_command.hh"
 #include "../commands/staff/recalculate_ranks.hh"
+#include "../commands/staff/restart_command.hh"
 #include "../commands/staff/restrict_command.hh"
 #include "../commands/staff/rtx_command.hh"
 #include "../commands/staff/silence_command.hh"
@@ -114,7 +116,9 @@ void shiro::bot::init_commands() {
     commands_map.insert(std::make_pair("clients", commands::clients));
     commands_map.insert(std::make_pair("help", commands::help));
     commands_map.insert(std::make_pair("kick", commands::kick));
+    commands_map.insert(std::make_pair("localclear", commands::localclear));
     commands_map.insert(std::make_pair("recalculate", commands::recalculate));
+    commands_map.insert(std::make_pair("restart", commands::restart));
     commands_map.insert(std::make_pair("restrict", commands::restrict));
     commands_map.insert(std::make_pair("roll", commands::roll));
     commands_map.insert(std::make_pair("rtx", commands::rtx));

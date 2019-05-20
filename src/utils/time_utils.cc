@@ -58,18 +58,21 @@ std::optional<uint32_t> shiro::utils::time::parse_time_string(const std::string 
 
     // Only parse the time suffix if we actually have one
     if (std::isalpha(last_char)) {
-        // If the input is longer than 3, the suffix can be "min"
+        bool found = false;
+
+        // If the input is bigger than 3 (?min = 4), the suffix can be "min"
         if (input.length() > 3) {
             const std::string &suffix = input.substr(input.length() - 3);
 
             if (suffix == "min") {
                 raw_unit = suffix;
                 raw_time = input.substr(0, input.length() - 3);
+                found = true;
             }
         }
 
         // If the above check didn't succeed, set the values now but with the last character
-        if (raw_time.empty() || raw_unit.empty()) {
+        if (!found) {
             raw_unit = last_char;
             raw_time = input.substr(0, input.length() - 1);
         }

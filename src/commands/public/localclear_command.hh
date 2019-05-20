@@ -16,27 +16,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#if defined(_WIN32)
+#ifndef SHIRO_LOCALCLEAR_COMMAND_HH
+#define SHIRO_LOCALCLEAR_COMMAND_HH
 
-#include <processthreadsapi.h>
-#include <windows.h>
+#include <deque>
+#include <string>
 
-#include "../process_info.hh"
+#include "../../users/user.hh"
 
-int32_t shiro::native::process_info::get_pid() {
-    return GetCurrentProcessId();
+namespace shiro::commands {
+
+    bool localclear(std::deque<std::string> &args, std::shared_ptr<users::user> user, std::string channel);
+
 }
 
-std::string shiro::native::process_info::get_executable_location() {
-    char buffer[MAX_PATH];
-    HMODULE handle = GetModuleHandle(nullptr);
-
-    if (handle == nullptr)
-        return "shiro"; // Fallback to our generic executable name
-
-    GetModuleFileName(handle, buffer, sizeof(buffer));
-
-    return buffer;
-}
-
-#endif
+#endif //SHIRO_LOCALCLEAR_COMMAND_HH

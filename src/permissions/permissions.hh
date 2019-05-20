@@ -39,6 +39,7 @@ namespace shiro::permissions {
         cmd_restrict = 1LL << 38,
         cmd_silence = 1LL << 39,
         cmd_recalculate = 1LL << 40,
+        cmd_restart = 1LL << 41
     };
 
 }

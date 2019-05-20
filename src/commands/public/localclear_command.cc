@@ -16,27 +16,19 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#if defined(_WIN32)
+#include "../../users/user_manager.hh"
+#include "../../utils/bot_utils.hh"
+#include "localclear_command.hh"
 
-#include <processthreadsapi.h>
-#include <windows.h>
+bool shiro::commands::localclear(std::deque<std::string> &args, std::shared_ptr<shiro::users::user> user, std::string channel) {
+    io::osu_writer writer;
 
-#include "../process_info.hh"
+    users::manager::iterate([&writer](std::shared_ptr<users::user> online_user) {
+        writer.user_silenced(online_user->user_id);
+    });
 
-int32_t shiro::native::process_info::get_pid() {
-    return GetCurrentProcessId();
+    user->queue.enqueue(writer);
+
+    utils::bot::respond("You have cleared your local chat.", std::move(user), std::move(channel), true);
+    return true;
 }
-
-std::string shiro::native::process_info::get_executable_location() {
-    char buffer[MAX_PATH];
-    HMODULE handle = GetModuleHandle(nullptr);
-
-    if (handle == nullptr)
-        return "shiro"; // Fallback to our generic executable name
-
-    GetModuleFileName(handle, buffer, sizeof(buffer));
-
-    return buffer;
-}
-
-#endif
