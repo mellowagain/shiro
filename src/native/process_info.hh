@@ -20,10 +20,13 @@
 #define SHIRO_PROCESS_INFO_HH
 
 #include <cstdint>
+#include <string>
 
 namespace shiro::native::process_info {
 
     int32_t get_pid();
+
+    std::string get_executable_location();
 
 }
 

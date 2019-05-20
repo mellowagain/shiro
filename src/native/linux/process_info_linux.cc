@@ -21,10 +21,15 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include "../../utils/filesystem.hh"
 #include "../process_info.hh"
 
 int32_t shiro::native::process_info::get_pid() {
     return getpid();
+}
+
+std::string shiro::native::process_info::get_executable_location() {
+    return fs::read_symlink("/proc/self/exe").u8string();
 }
 
 #endif

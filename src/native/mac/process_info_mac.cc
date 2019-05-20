@@ -18,12 +18,29 @@
 
 #if defined(__APPLE__)
 
+#include <sys/syslimits.h>
 #include <unistd.h>
 
+#include "../../utils/filesystem.hh"
 #include "../process_info.hh"
 
 int32_t shiro::native::process_info::get_pid() {
     return getpid();
+}
+
+std::string shiro::native::process_info::get_executable_location() {
+    char buffer[PATH_MAX + 1];
+
+    #ifdef ARCH_darwin_14_i86
+        uint32_t size = sizeof(buffer);
+
+        if (_NSGetExecutablePath(buffer, &size) != 0)
+            return "shiro"; // Fallback to our generic executable name
+    #else
+        return fs::read_symlink("/proc/self/exe").u8string();
+    #endif
+
+    return buffer;
 }
 
 #endif
