@@ -280,7 +280,7 @@ void shiro::beatmaps::beatmap::update_play_metadata() {
 }
 
 std::string shiro::beatmaps::beatmap::get_url() {
-    static std::string url = config::ipc::beatmap_url + std::to_string(this->beatmap_id);
+    std::string url = config::ipc::beatmap_url + std::to_string(this->beatmap_id);
     return url;
 }
 
