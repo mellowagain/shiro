@@ -71,5 +71,7 @@ void shiro::config::direct::parse() {
             ABORT_F("Invalid direct mode provided in direct.toml: %i", provider);
     }
 
+    LOG_F(INFO, "Successfully parsed direct.toml.");
+
     // CLI is currently not supported as these values are related to each other.
 }
