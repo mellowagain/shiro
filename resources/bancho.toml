@@ -1,4 +1,4 @@
-# Bancho configuration file for shiro
+# Bancho configuration file for Shiro
 
 [server]
 host = "127.0.0.1"
@@ -16,18 +16,9 @@ key = "osu!Bancho token"
 
 [motd]
 alert = "Welcome to Shiro"
+# The image needs to be on the host "i.ppy.sh"
 title_image = "https://i.ppy.sh/motd.png"
 title_url = "https://shiro.host"
-
-[direct]
-# Shiro is a reverse proxy for using other beatmap mirrors. It does not provide it's own interface.
-# mode 0 = Compatibility mode with Shirogane made by Shiro
-# mode 1 = Compatibility mode with Cheesegull made by Ripple
-# Shiro will always send your unique server id with each direct proxy pass. It will also additionally
-# omit all user credentials in the url parameters (username and md5sum of password) to prevent data leaks.
-mode = 0
-base_url = "https://shiro.host"
-mirror_url = "https://mirror.shiro.host"
 
 [integrations]
 sentry = true
