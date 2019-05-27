@@ -32,7 +32,7 @@ std::tuple<bool, std::string> shiro::direct::emulation::search(std::unordered_ma
     std::string url = config::direct::base_url + "/web/osu-search.php?";
 
     for (const auto &[key, value] : parameters) {
-        url.append(key).append("=").append(value).append("&");
+        url.append(key).append("=").append(utils::curl::escape_url(value)).append("&");
     }
 
     // Remove the last char (which will be a &)
