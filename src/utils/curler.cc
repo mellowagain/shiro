@@ -18,7 +18,7 @@
 
 #include <curl/curl.h>
 
-#include "../config/bancho_file.hh"
+#include "../config/direct_file.hh"
 #include "../logger/sentry_logger.hh"
 #include "../thirdparty/loguru.hh"
 #include "curler.hh"
@@ -31,23 +31,71 @@ std::tuple<bool, std::string> shiro::utils::curl::get(const std::string &url) {
         return { false, "Unable to acquire curl handle." };
 
     std::string output;
-    bool is_direct_proxy_pass = url.find(config::bancho::direct_base_url) != std::string::npos ||
-                                url.find(config::bancho::direct_mirror_url) != std::string::npos;
 
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, internal_callback);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &output);
     curl_easy_setopt(curl, CURLOPT_USERAGENT, "shiro (https://github.com/Marc3842h/shiro)");
     curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
 
-    // osu! mirrors use self signed certificates that don't pass SSL peer certificate check
-    // Disable the peer and verification checks for this one request
-    if (is_direct_proxy_pass) {
-        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
-        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0);
+    status_code = curl_easy_perform(curl);
+    curl_easy_cleanup(curl);
 
-        struct curl_slist *chunk = nullptr;
-        chunk = curl_slist_append(chunk, "cho-server: shiro (https://github.com/Marc3842h/shiro)");
-        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
+    if (status_code == CURLE_OK) {
+        logging::sentry::http_request_out(url, "GET", status_code, url.find("/osu/") == std::string::npos ? output : "");
+        return { true, output };
+    }
+
+    output = curl_easy_strerror(status_code);
+
+    logging::sentry::http_request_out(url, "GET", status_code, output);
+    return { false, output };
+}
+
+std::tuple<bool, std::string> shiro::utils::curl::get_direct(const std::string &url) {
+    CURL *curl = curl_easy_init();
+    CURLcode status_code;
+
+    if (curl == nullptr)
+        return { false, "Unable to acquire curl handle." };
+
+    std::string output;
+
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, internal_callback);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &output);
+    curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+
+    switch (config::direct::provider) {
+        case 0: {
+            // Never happens as this provider uses a shared memory region
+            break;
+        }
+        case 1: {
+            curl_easy_setopt(curl, CURLOPT_USERAGENT, "osu!");
+
+            // osu! mirrors use self signed certificates that don't pass SSL peer certificate check
+            // Disable the peer and verification checks for this one request
+            curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
+            curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0);
+
+            break;
+        }
+        case 2: {
+            curl_easy_setopt(curl, CURLOPT_USERAGENT, "shiro (https://github.com/Marc3842h/shiro)");
+
+            static std::string header = "Token: " + config::direct::api_key;
+            struct curl_slist *chunk = nullptr;
+
+            chunk = curl_slist_append(chunk, "cho-server: shiro (https://github.com/Marc3842h/shiro)");
+            chunk = curl_slist_append(chunk, "Content-Type: application/json");
+            chunk = curl_slist_append(chunk, header.c_str());
+
+            curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
+            break;
+        }
+        default: {
+            // All valid cases are covered above
+            break;
+        }
     }
 
     status_code = curl_easy_perform(curl);
@@ -62,6 +110,16 @@ std::tuple<bool, std::string> shiro::utils::curl::get(const std::string &url) {
 
     logging::sentry::http_request_out(url, "GET", status_code, output);
     return { false, output };
+}
+
+std::string shiro::utils::curl::escape_url(const std::string &raw) {
+    CURL *curl = curl_easy_init();
+    char *curl_result = curl_easy_escape(curl, raw.c_str(), 0);
+    std::string result = curl_result;
+
+    curl_free(curl_result);
+    curl_easy_cleanup(curl);
+    return result;
 }
 
 size_t shiro::utils::curl::internal_callback(void *raw_data, size_t size, size_t memory, std::string *ptr) {

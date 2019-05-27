@@ -16,27 +16,22 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef SHIRO_OPPAI_WRAPPER_HH
-#define SHIRO_OPPAI_WRAPPER_HH
+#ifndef SHIRO_EMULATION_HH
+#define SHIRO_EMULATION_HH
 
-#include "../../thirdparty/oppai.hh"
-#include "../../beatmaps/beatmap.hh"
-#include "../../scores/score.hh"
+#include "../direct_provider.hh"
 
-namespace shiro::pp {
+namespace shiro::direct {
 
-    class oppai_wrapper {
-    private:
-        ezpp_t ez = nullptr;
-
+    class emulation : public direct_provider {
     public:
-        oppai_wrapper(beatmaps::beatmap beatmap, scores::score score);
-        ~oppai_wrapper();
+        std::tuple<bool, std::string> search(std::unordered_map<std::string, std::string> parameters) override;
+        std::tuple<bool, std::string> download(int32_t beatmap_id, bool no_video) override;
 
-        float calculate();
+        const std::string name() const override;
 
     };
 
 }
 
-#endif //SHIRO_OPPAI_WRAPPER_HH
+#endif //SHIRO_EMULATION_HH

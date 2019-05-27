@@ -16,15 +16,29 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef SHIRO_SEARCH_SET_ROUTE_HH
-#define SHIRO_SEARCH_SET_ROUTE_HH
+#ifndef SHIRO_DIRECT_FILE_HH
+#define SHIRO_DIRECT_FILE_HH
 
-#include "../../../thirdparty/crow.hh"
+#include <cstdint>
+#include <string>
 
-namespace shiro::routes::direct::search_set {
+namespace shiro::config::direct {
 
-    void handle(const crow::request &request, crow::response &response);
+    extern bool enabled;
+    extern int32_t provider;
+
+    // Provider 0: Shirogane
+    extern uint64_t shm;
+
+    // Provider 1: Emulation
+    extern std::string base_url;
+    extern std::string mirror_url;
+
+    // Provider 2: Beatconnect
+    extern std::string api_key;
+
+    void parse();
 
 }
 
-#endif //SHIRO_SEARCH_SET_ROUTE_HH
+#endif //SHIRO_DIRECT_FILE_HH
