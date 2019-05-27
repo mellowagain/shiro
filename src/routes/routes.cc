@@ -24,7 +24,6 @@
 #include "impl/api/ci_trigger_route.hh"
 #include "impl/direct/download_route.hh"
 #include "impl/direct/search_route.hh"
-#include "impl/direct/search_set_route.hh"
 #include "impl/web/bancho_connect_route.hh"
 #include "impl/web/get_replay_route.hh"
 #include "impl/web/get_scores_route.hh"
@@ -65,7 +64,6 @@ void shiro::routes::init_routes() {
 
     // osu!direct routes
     CROW_ROUTE(server, "/web/osu-search.php").methods("GET"_method)(shiro_route(direct::search::handle));
-    CROW_ROUTE(server, "/web/osu-search-set.php").methods("GET"_method)(shiro_route(direct::search_set::handle));
     CROW_ROUTE(server, "/d/<string>").methods("GET"_method)(shiro_route_parameterized(direct::download::handle, std::string, args));
     CROW_ROUTE(server, "/s/<string>").methods("GET"_method)(shiro_route_parameterized(direct::download::handle, std::string, args));
 
