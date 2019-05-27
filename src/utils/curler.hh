@@ -27,6 +27,11 @@ namespace shiro::utils::curl {
     // Returns a boolean indicating if the request was successful and the response as a string if it was successful.
     std::tuple<bool, std::string> get(const std::string &url);
 
+    // Same as get(url) but with support for direct modes (Emulation & Beatconnect)
+    std::tuple<bool, std::string> get_direct(const std::string &url);
+
+    std::string escape_url(const std::string &raw);
+
     size_t internal_callback(void *raw_data, size_t size, size_t memory, std::string *ptr);
 
 }

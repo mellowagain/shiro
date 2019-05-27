@@ -18,16 +18,16 @@
 
 #include "play_mode.hh"
 
-std::string shiro::utils::play_mode_to_string(shiro::utils::play_mode mode) {
+std::string shiro::utils::play_mode_to_string(shiro::utils::play_mode mode, bool long_name) {
     switch (mode) {
         case play_mode::taiko:
-            return "osu!taiko";
+            return long_name ? "osu!taiko" : "taiko";
         case play_mode::fruits:
-            return "osu!catch";
+            return long_name ? "osu!catch" : "ctb";
         case play_mode::mania:
-            return "osu!mania";
+            return long_name ? "osu!mania" : "mania";
         case play_mode::standard:
         default:
-            return "osu!";
+            return long_name ? "osu!" : "std";
     }
 }

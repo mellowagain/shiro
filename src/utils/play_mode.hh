@@ -32,7 +32,7 @@ namespace shiro::utils {
 
     };
 
-    std::string play_mode_to_string(play_mode mode);
+    std::string play_mode_to_string(play_mode mode, bool long_name = true);
 
 }
 
