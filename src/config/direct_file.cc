@@ -49,7 +49,7 @@ void shiro::config::direct::parse() {
         ABORT_F("Failed to parse direct.toml file: %s.", ex.what());
     }
 
-    enabled = config_file->get_qualified_as<bool>("direct.enabled").value_or(false);
+    enabled = config_file->get_qualified_as<bool>("direct.enabled").value_or(true);
 
     if (!enabled)
         return;

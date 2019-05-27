@@ -184,7 +184,7 @@ void shiro::direct::beatconnect::sanitize_mode(std::string &value) {
 }
 
 void shiro::direct::beatconnect::sanitize_status(std::string &value) {
-    static std::unordered_map<std::string, std::string> mapping = {
+    static std::unordered_map<std::string, std::string> ranked_status_mapping = {
             { "0", "ranked" },
             { "1", "ranked" },
             { "2", "loved" },
@@ -193,8 +193,8 @@ void shiro::direct::beatconnect::sanitize_status(std::string &value) {
             { "5", "unranked" }
     };
 
-    if (mapping.find(value) != mapping.end()) {
-        value = mapping.at(value);
+    if (ranked_status_mapping.find(value) != ranked_status_mapping.end()) {
+        value = ranked_status_mapping.at(value);
         return;
     }
 
