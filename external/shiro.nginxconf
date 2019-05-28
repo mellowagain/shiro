@@ -1,0 +1,51 @@
+# Example nginx configuration file for usage with Shiro
+
+# Bancho
+server {
+    listen 80;
+    listen 443 ssl;
+
+    server_name c.ppy.sh ce.ppy.sh c1.ppy.sh c3.ppy.sh c4.ppy.sh c5.ppy.sh c6.ppy.sh c7.ppy.sh c.shiro.host;
+    client_max_body_size 10m;
+
+    add_header Strict-Transport-Security "max-age=31536000" always;
+
+    # This needs to be a self signed certificate matching the host names above (*.ppy.sh recommended)
+    ssl_certificate /home/certs/cert.pem;
+    ssl_certificate_key /home/certs/key.pem;
+
+    location / {
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto https;
+        proxy_set_header Host $http_host;
+
+        proxy_redirect off;
+        proxy_pass http://127.0.0.1:8080; # Change the address to your Shiro instance
+    }
+}
+
+# Web
+server {
+    listen 80;
+    listen 443 ssl;
+
+    server_name osu.ppy.sh shiro.host;
+    client_max_body_size 10m;
+
+    add_header Strict-Transport-Security "max-age=31536000" always;
+
+    # This needs to be a self signed certificate matching the host names above (*.ppy.sh recommended)
+    ssl_certificate /home/certs/cert.pem;
+    ssl_certificate_key /home/certs/key.pem;
+
+    location ~ ^/(web|d)/ {
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto https;
+        proxy_set_header Host $http_host;
+
+        proxy_redirect off;
+        proxy_pass http://127.0.0.1:8080; # Change the address to your Shiro instance
+    }
+}
