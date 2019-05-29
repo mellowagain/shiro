@@ -88,7 +88,7 @@ static const char header_field_chars[256] = {
     'x',    'y',    'z',    0,      '|',     0,     '~',    0
 };
 
-#if defined(__GNUC__)
+#if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wstringop-truncation"
 #endif
@@ -103,7 +103,7 @@ void multipartparser_init(multipartparser* parser, const char* boundary)
     parser->state = s_preamble;
 }
 
-#if defined(__GNUC__)
+#if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic pop
 
 #pragma GCC diagnostic push
@@ -115,7 +115,7 @@ void multipartparser_callbacks_init(multipartparser_callbacks* callbacks)
     memset(callbacks, 0, sizeof(*callbacks));
 }
 
-#if defined(__GNUC__)
+#if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic pop
 #endif
 
