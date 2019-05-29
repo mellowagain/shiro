@@ -14,34 +14,39 @@ if (NOT CMAKE_BUILD_TYPE)
 endif()
 
 if (NOT CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++17")
-endif()
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter")
 
-if (NOT CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wextra -Wno-unused-variable -Wno-unused-parameter")
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D_DEBUG")
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${CMAKE_CXX_FLAGS} -O0 -g3 -ggdb")
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${CMAKE_CXX_FLAGS} -O3 -DNDEBUG=1")
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g3 -ggdb3")
+
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -DNDEBUG=1")
 endif()
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wl,--no-undefined")
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -rdynamic")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -s")
 endif()
 
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-command-line-argument")
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wl,--export-dynamic")
+endif()
+
 if (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
-    # these should already be setup from the "windows_setup_build" script
+    # These should already be setup from the "windows_setup_build" script
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /DNOMINMAX /UIN")
     include_directories("external/sqlpp11/include")
     include_directories("external/sqlpp11-connector-mysql/include")
-    
+
     find_path(MYSQL_INCLUDE_DIR NAMES mysql.h PATH_SUFFIXES mysql)
     include_directories("${MYSQL_INCLUDE_DIR}")
 
     find_path(MYSQL_LIB_DIR NAMES libmysql.lib PATH_SUFFIXES lib)
     link_directories("${MYSQL_LIB_DIR}")
 
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS} /DNDEBUG=1 /MP")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /DNDEBUG=1 /MP")
 endif()
 
 # Disable use of avx2 in cppcrypto algorithms
@@ -77,18 +82,6 @@ find_package(HinnantDate REQUIRED)
 # Tcmalloc
 find_package(Tcmalloc)
 
-# libosu
-#find_package(osu) -- Currently not done in libosu, manually search path below
-set(LIBOSU_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/libosu/include/")
-set(LIBOSU_LIBRARIES "")
-
-# libakame
-#find_package(akame) -- Currently not done in libakame, manually search path below
-set(AKAME_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/libakame/include/")
-set(AKAME_LIBRARIES "")
-
-set(CMAKE_LINK_LIBS ${CMAKE_LINK_LIBS} maxminddb)
-
 if (Tcmalloc_FOUND)
     set(CMAKE_LINK_LIBS ${CMAKE_LINK_LIBS} ${Tcmalloc_LIBRARIES})
 
@@ -106,8 +99,13 @@ file(GLOB_RECURSE RESOURCES ${CMAKE_CURRENT_SOURCE_DIR}/resources/*)
 
 foreach (RESOURCE ${RESOURCES})
     get_filename_component(RESOURCE_BASENAME ${RESOURCE} NAME)
-    configure_file("${RESOURCE}" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${RESOURCE_BASENAME}" COPYONLY)
+
+    if (NOT EXISTS ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${RESOURCE_BASENAME})
+        configure_file("${RESOURCE}" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${RESOURCE_BASENAME}" COPYONLY)
+    endif()
 endforeach()
+
+set(CMAKE_LINK_LIBS ${CMAKE_LINK_LIBS} maxminddb)
 
 if (WIN32)
     set(CMAKE_LINK_LIBS libmysql pdh OpenSSL::Crypto ${CMAKE_LINK_LIBS})
@@ -115,14 +113,12 @@ if (WIN32)
     link_directories("external/sqlpp11-connector-mysql/build/src")
     set(CMAKE_LINK_LIBS optimized "Release/sqlpp-mysql" ${CMAKE_LINK_LIBS})
     set(CMAKE_LINK_LIBS debug "Debug/sqlpp-mysql" ${CMAKE_LINK_LIBS})
-
-    # message(WARNING "${CURL_LIBRARIES}")
 elseif (APPLE)
     set(CMAKE_LINK_LIBS dl sqlpp-mysql mysqlclient crypto stdc++fs ${CMAKE_LINK_LIBS})
 elseif (UNIX) # Linux
     set(CMAKE_LINK_LIBS dl sqlpp-mysql mysqlclient crypto stdc++fs ${CMAKE_LINK_LIBS})
 endif()
 
-include_directories(${CURL_INCLUDE_DIRS} ${OPENSSL_INCLUDE_DIR} ${HinnantDate_INCLUDE_DIR} ${ZLIB_INCLUDE_DIRS} ${LIBLZMA_INCLUDE_DIRS} ${LIBOSU_INCLUDE_DIRS} ${AKAME_INCLUDE_DIRS})
+include_directories(${CURL_INCLUDE_DIRS} ${OPENSSL_INCLUDE_DIR} ${HinnantDate_INCLUDE_DIR} ${ZLIB_INCLUDE_DIRS} ${LIBLZMA_INCLUDE_DIRS})
 add_executable(shiro ${SRC})
-target_link_libraries(shiro general Threads::Threads ${CURL_LIBRARIES} ${Boost_LIBRARIES} ${ZLIB_LIBRARIES} ${LIBLZMA_LIBRARIES} ${LIBOSU_LIBRARIES} ${AKAME_LIBRARIES} ${CMAKE_LINK_LIBS})
+target_link_libraries(shiro general Threads::Threads ${CURL_LIBRARIES} ${Boost_LIBRARIES} ${ZLIB_LIBRARIES} ${LIBLZMA_LIBRARIES} ${CMAKE_LINK_LIBS})
