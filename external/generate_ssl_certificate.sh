@@ -1,9 +1,9 @@
-printf "What's the name of your server? \n"
-read server_name
+#!/bin/bash
+
+read -p "What's the name of your server?" server_name
 server_name=${server_name=Shiro}
 
-printf "What country are you based in? (i.e DE = Germany) \n"
-read country_name
+read -p "What country are you based in? (i.e DE = Germany)" country_name
 country_name=${country_name=GB}
 
 args="/CN=*.ppy.sh/O=$server_name/C=$country_name"
