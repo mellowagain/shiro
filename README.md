@@ -1,6 +1,6 @@
 <img width="180" align="left" style="float: left; margin: 0 10px 0 0;" alt="Shiro" src="https://i.imgur.com/NuDj76W.png">
 
-# Shiro [![Circle CI](https://img.shields.io/circleci/token/2f51bb1a72234696bbc4644894b40dd3687253dd/project/github/Marc3842h/shiro/master.svg?logo=circleci)][0]
+# Shiro [![Circle CI](https://circleci.com/gh/Marc3842h/shiro/tree/master.svg?style=svg&circle-token=0fa5a9831ee745859ebeda892af66705bb0443b9)][0]
 
 Shiro is a server-side implementation of the osu! cho protocol.
 It delivers unmatched performance and features an accurate implementation
