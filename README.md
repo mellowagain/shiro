@@ -73,9 +73,9 @@ trademark law. Fair use applies.
 
 
 [0]: https://circleci.com/gh/Marc3842h/shiro
-[1]: https://osushiro.readthedocs.io/
+[1]: https://github.com/Marc3842h/shiro/wiki
 [2]: https://hub.docker.com/r/marc3842h/shiro/
-[3]: https://osushiro.readthedocs.io/en/latest/docker.html
+[3]: https://github.com/Marc3842h/shiro/wiki/Docker
 [4]: https://github.com/Marc3842h/shiro/issues/new
 [5]: https://github.com/Marc3842h/shiro/compare
 [6]: https://github.com/Marc3842h/shiro/blob/master/LICENSE.txt
