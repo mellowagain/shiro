@@ -30,13 +30,13 @@ void shiro::handler::spectating::start::handle(shiro::io::osu_packet &in, shiro:
 
     shiro::spectating::manager::start_spectating(user, target_user);
 
-    if (user->hidden)
-        return;
-
     io::osu_writer host_writer;
-    host_writer.spectator_join_host(user->user_id);
+    host_writer.spectator_join_host(user->hidden ? 1 : user->user_id);
 
     target_user->queue.enqueue(host_writer);
+
+    if (user->hidden)
+        return;
 
     io::osu_writer user_writer;
     user_writer.spectator_join_user(user->user_id);
