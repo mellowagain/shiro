@@ -1,5 +1,8 @@
 # Bors configuration file for Shiro
 timeout_sec = 900
-status = [
-    "ci/circleci"
+delete_merged_branches = true
+status = [ "ci/circleci" ]
+block_labels = [
+    "status: blocked",
+    "status: do not merge"
 ]
