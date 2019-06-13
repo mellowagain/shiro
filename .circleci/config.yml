@@ -4,6 +4,11 @@ jobs:
     working_directory: ~/shiro
     docker:
       - image: marc3842h/shiro:ci
+    branches:
+      only:
+        - staging
+        - trying
+        - master
     steps:
       - checkout
       - run:
@@ -20,9 +25,11 @@ jobs:
       - deploy:
           name: Deploy to development server
           command: |
-            curl -X POST                                                                      \
-                 -H "User-Agent: CircleCI $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME"  \
-                 -F "token=$SHIRO_DEPLOY_TOKEN"                                               \
-                 -F "commit=$CIRCLE_SHA1"                                                     \
-                 -F "file=@$HOME/shiro/bin/shiro"                                             \
-                 https://c.shiro.host/api/ci_trigger
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              curl -X POST                                                                      \
+                   -H "User-Agent: CircleCI $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME"  \
+                   -F "token=$SHIRO_DEPLOY_TOKEN"                                               \
+                   -F "commit=$CIRCLE_SHA1"                                                     \
+                   -F "file=@$HOME/shiro/bin/shiro"                                             \
+                   https://c.shiro.host/api/ci_trigger
+            fi
