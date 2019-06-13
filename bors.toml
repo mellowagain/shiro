@@ -1,0 +1,5 @@
+# Bors configuration file for Shiro
+timeout_sec = 900
+status = [
+    "ci/circleci"
+]
