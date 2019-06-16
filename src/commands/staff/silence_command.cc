@@ -27,7 +27,7 @@
 
 bool shiro::commands::silence(std::deque<std::string> &args, std::shared_ptr<shiro::users::user> user, std::string channel) {
     if (args.size() < 2) {
-        utils::bot::respond("Usage: !silence <user> <duration>[s,min,h,d,w,m] <reason>", user, channel, true);
+        utils::bot::respond("Usage: !silence <user> <duration>[s,min,h,d,w,m] [reason]", user, channel, true);
         return false;
     }
 
