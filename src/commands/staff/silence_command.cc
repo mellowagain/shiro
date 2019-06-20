@@ -26,8 +26,8 @@
 #include "silence_command.hh"
 
 bool shiro::commands::silence(std::deque<std::string> &args, std::shared_ptr<shiro::users::user> user, std::string channel) {
-    if (args.size() < 3) {
-        utils::bot::respond("Usage: !silence <user> <duration>[s,min,h,d,w,m] <reason>", user, channel, true);
+    if (args.size() < 2) {
+        utils::bot::respond("Usage: !silence <user> <duration>[s,min,h,d,w,m] [reason]", user, channel, true);
         return false;
     }
 
@@ -38,7 +38,7 @@ bool shiro::commands::silence(std::deque<std::string> &args, std::shared_ptr<shi
 
     int32_t target = users::manager::get_id_by_username(args.at(0));
     std::string target_username = args.at(0);
-    std::stringstream stream;
+    std::string reason = "You have been silenced";
 
     if (target == -1) {
         utils::bot::respond(target_username + " could not be found.", user, channel, true);
@@ -63,12 +63,16 @@ bool shiro::commands::silence(std::deque<std::string> &args, std::shared_ptr<shi
     args.pop_front();
     args.pop_front();
 
-    for (const std::string &arg : args) {
-        stream << arg << " ";
-    }
+    if (!args.empty()) {
+        std::stringstream stream;
 
-    std::string reason = stream.str();
-    reason.pop_back();
+        for (const std::string &arg : args) {
+            stream << arg << " ";
+        }
+
+        reason = stream.str();
+        reason.pop_back();
+    }
 
     users::punishments::silence(target, user->user_id, time, reason);
     utils::bot::respond(target_username + " has been silenced for " + std::to_string(time) + " seconds.", user, channel, true);
