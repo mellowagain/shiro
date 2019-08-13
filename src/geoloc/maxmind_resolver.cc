@@ -26,7 +26,7 @@
 static MMDB_s mmdb;
 
 void shiro::geoloc::maxmind::init() {
-    int code = MMDB_open("geolite2_city.mmdb", MMDB_MODE_MMAP, &mmdb);
+    int32_t code = MMDB_open("geolite2_city.mmdb", MMDB_MODE_MMAP, &mmdb);
 
     if (code == MMDB_SUCCESS)
         return;
@@ -38,9 +38,9 @@ void shiro::geoloc::maxmind::destroy() {
     MMDB_close(&mmdb);
 }
 
-std::tuple<std::string, int, int> shiro::geoloc::maxmind::locate(const std::string &ip_address) {
-    int gai_error = 0;
-    int mmdb_error = 0;
+std::tuple<std::string, int32_t, int32_t> shiro::geoloc::maxmind::locate(const std::string &ip_address) {
+    int32_t gai_error = 0;
+    int32_t mmdb_error = 0;
 
     MMDB_lookup_result_s result = MMDB_lookup_string(&mmdb, ip_address.c_str(), &gai_error, &mmdb_error);
 
