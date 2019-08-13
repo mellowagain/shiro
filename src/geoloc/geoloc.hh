@@ -26,6 +26,10 @@
 
 namespace shiro::geoloc {
 
+    extern std::string localhost_ip;
+
+    void init();
+
     std::optional<location_info> get_location(std::string ip_address);
 
 }

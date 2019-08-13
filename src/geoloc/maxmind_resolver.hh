@@ -28,7 +28,7 @@ namespace shiro::geoloc::maxmind {
 
     void destroy();
 
-    std::tuple<std::string, int, int> locate(const std::string &ip_address);
+    std::tuple<std::string, int32_t, int32_t> locate(const std::string &ip_address);
 
 }
 

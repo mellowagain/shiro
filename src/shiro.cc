@@ -33,6 +33,7 @@
 #include "config/ipc_file.hh"
 #include "config/score_submission_file.hh"
 #include "direct/direct_provider.hh"
+#include "geoloc/geoloc.hh"
 #include "geoloc/maxmind_resolver.hh"
 #include "logger/logger.hh"
 #include "logger/sentry_logger.hh"
@@ -79,7 +80,7 @@ int shiro::init(int argc, char **argv) {
 
     beatmaps::helper::init();
     direct::init();
-    geoloc::maxmind::init();
+    geoloc::init();
 
     db_connection = std::make_shared<database>(
             config::database::address, config::database::port, config::database::database,
