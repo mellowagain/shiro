@@ -385,8 +385,12 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
     if (overwrite)
         user->stats.ranked_score += score.total_score;
 
-    user->stats.recalculate_pp();
-    user->stats.recalculate_accuracy();
+    std::vector<scores::score> top_scores = scores::helper::fetch_top100_user(
+            (utils::play_mode) user->stats.play_mode, user->user_id
+    );
+
+    user->stats.recalculate_pp(top_scores);
+    user->stats.recalculate_accuracy(top_scores);
 
     user->save_stats();
 
