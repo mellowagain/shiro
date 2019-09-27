@@ -11,7 +11,7 @@ if "%VCPKG_ROOT%"=="" (
 echo === VCPKG_ROOT is %VCPKG_ROOT% ===
 
 REM install 64bit packages that we need
-vcpkg install --triplet x64-windows "boost" "curl" "cryptopp" "zlib" "liblzma" "date" "libmysql"
+vcpkg install --triplet x64-windows "boost" "curl" "cryptopp" "zlib" "liblzma" "date" "libmysql" "libmaxminddb"
 
 pushd "%~dp0"
     pushd external

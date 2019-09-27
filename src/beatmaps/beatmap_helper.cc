@@ -56,7 +56,7 @@ std::optional<std::string> shiro::beatmaps::helper::get_location(int32_t beatmap
     fs::path filename = dir / std::string(beatmap_id_str + ".osu");
 
     if (fs::exists(filename))
-        return filename;
+        return filename.u8string();
 
     if (!download)
         return std::nullopt;
@@ -71,5 +71,5 @@ std::optional<std::string> shiro::beatmaps::helper::get_location(int32_t beatmap
     std::ofstream stream(filename);
     stream << output;
 
-    return filename;
+    return filename.u8string();
 }

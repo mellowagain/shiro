@@ -21,16 +21,12 @@
 
 #include <filesystem>
 
-#if defined(_WIN32)
-    // Workaround for Windows: https://docs.microsoft.com/en-us/cpp/standard-library/filesystem
-    namespace fs = std::experimental::filesystem::v1;
-#else
-    namespace fs = std::filesystem;
-#endif
+// Being so close to C++20, almost all major compilers support C++17 filesystem now
+namespace fs = std::filesystem;
 
 namespace shiro::utils::filesystem {
 
-    // Fix for MSVC's stl prefering wchar_t over char
+    // Fix for MSVC's stl preferring wchar_t over char
     inline constexpr char preferred_separator = (char) fs::path::preferred_separator;
 
     inline std::string combine(const std::string &a, const std::string &b) {

@@ -28,7 +28,7 @@ bool handle_signal(unsigned int signal) {
     switch (signal) {
         case CTRL_C_EVENT:
             LOG_F(INFO, "Shutting down...");
-            std::exit(EXIT_SUCCESS);
+            exit(EXIT_SUCCESS);
         case CTRL_CLOSE_EVENT:
             return true;
         default:

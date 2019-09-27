@@ -16,6 +16,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <stdexcept>
+
 #include "../config/direct_file.hh"
 #include "../thirdparty/loguru.hh"
 #include "providers/beatconnect.hh"

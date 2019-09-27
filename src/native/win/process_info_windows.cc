@@ -18,8 +18,9 @@
 
 #if defined(_WIN32)
 
-#include <processthreadsapi.h>
+// windows.h needs to be included before processthreadsapi.h because of WinAPI weirdness
 #include <windows.h>
+#include <processthreadsapi.h>
 
 #include "../process_info.hh"
 

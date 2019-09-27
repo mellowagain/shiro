@@ -16,8 +16,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+// Give the MSVC linker a hint that we need libmaxminddb linked for this file
+#if defined(_WIN32)
+    #pragma comment(lib, "libmaxminddb.lib")
+#endif
+
+#if __has_include(<maxminddb/maxminddb.h>)
+    #include <maxminddb/maxminddb.h>
+#else
+    #include <maxminddb.h>
+#endif
+
 #include <cstring>
-#include <maxminddb.h>
 
 #include "../thirdparty/loguru.hh"
 #include "../utils/curler.hh"
