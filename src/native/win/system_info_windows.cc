@@ -36,7 +36,7 @@ std::string shiro::native::system_info::get_architecture() {
 
 std::string shiro::native::system_info::get_host_name() {
     char buffer[32767];
-    unsigned int char_count = 32767;
+    unsigned long char_count = 32767;
 
     if (!GetComputerName(buffer, &char_count))
         return "";
@@ -49,7 +49,7 @@ std::string shiro::native::system_info::get_hw_model() {
 }
 
 std::string shiro::native::system_info::get_os_version() {
-    OSVERSIONINFOEX info;
+    OSVERSIONINFO info;
     std::memset(&info, 0, sizeof(OSVERSIONINFOEX));
     info.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
 
@@ -59,7 +59,7 @@ std::string shiro::native::system_info::get_os_version() {
 }
 
 std::string shiro::native::system_info::get_os_build() {
-    OSVERSIONINFOEX info;
+    OSVERSIONINFO info;
     std::memset(&info, 0, sizeof(OSVERSIONINFOEX));
     info.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
 

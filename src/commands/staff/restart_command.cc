@@ -16,9 +16,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#if defined(__linux__) || defined(__APPLE__)
+    #include <unistd.h>
+#endif
+
 #include <cerrno>
 #include <cstring>
-#include <unistd.h>
 
 #include "../../config/cli_args.hh"
 #include "../../native/process_info.hh"
@@ -35,10 +38,15 @@ bool shiro::commands::restart(std::deque<std::string> &args, std::shared_ptr<shi
 
     auto [_, argv] = config::cli::get_args();
 
-    // Close all file descriptors except stdin (0), stdout (1) and stderr (2)
-    for (int64_t i = 3; i < sysconf(_SC_OPEN_MAX); i++) {
-        close(i);
-    }
+    // If we're on Mac or Linux, close all file descriptors except stdin (0), stdout (1) and stderr (2)
+    // This is because a call to execve retains the open file descriptors, which includes our binding ports
+    // for Shiro, thus not allowing us to re-bind to them.
+    #if defined(__linux__) || defined(__APPLE__)
+        // Close all file descriptors except stdin (0), stdout (1) and stderr (2)
+        for (int64_t i = 3; i < sysconf(_SC_OPEN_MAX); i++) {
+            close(i);
+        }
+    #endif
 
     execve(native::process_info::get_executable_location().c_str(), argv, nullptr);
 
