@@ -65,6 +65,10 @@ std::tuple<bool, std::string> shiro::direct::beatconnect::search(std::unordered_
 
     for (auto &map_json : json_result["beatmaps"]) {
         std::string beatmap_id = std::to_string((int32_t) map_json["id"]);
+        std::string last_updated = "-";
+
+        if (map_json["last_updated"].is_string())
+            last_updated = map_json["last_updated"];
 
         out << beatmap_id << ".osz" << "|"; // Filename
         out << (std::string) map_json["artist"] << "|"; // Artist
@@ -72,7 +76,7 @@ std::tuple<bool, std::string> shiro::direct::beatconnect::search(std::unordered_
         out << (std::string) map_json["creator"] << "|"; // Mapper
         out << 1 << "|"; // ?
         out << 0.0 << "|"; // Average Rating
-        out << (std::string) map_json["last_updated"] << "|"; // Last updated
+        out << last_updated << "|"; // Last updated
         out << beatmap_id << "|"; // Beatmap id
         out << beatmap_id << "|"; // Beatmap id?
         out << 0 << "|"; // ?
