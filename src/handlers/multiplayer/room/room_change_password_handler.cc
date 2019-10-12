@@ -29,12 +29,12 @@ void shiro::handler::multiplayer::room::change_password::handle(shiro::io::osu_p
         if (global_match.game_password == match.game_password)
             return;
 
-        auto iterator = std::find(match.multi_slot_id.begin(), match.multi_slot_id.end(), user->user_id);
+        auto iterator = std::find(global_match.multi_slot_id.begin(), global_match.multi_slot_id.end(), user->user_id);
 
-        if (iterator == match.multi_slot_id.end())
+        if (iterator == global_match.multi_slot_id.end())
             return;
 
-        if (match.host_id != user->user_id)
+        if (global_match.host_id != user->user_id)
             return;
 
         global_match.game_password = match.game_password;
