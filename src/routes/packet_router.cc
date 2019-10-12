@@ -23,6 +23,7 @@
 #include "../handlers/multiplayer/room/room_create_handler.hh"
 #include "../handlers/multiplayer/room/room_join_handler.hh"
 #include "../handlers/multiplayer/room/room_leave_handler.hh"
+#include "../handlers/multiplayer/room/room_lock_slot_handler.hh"
 #include "../handlers/chat/leave_channel_handler.hh"
 #include "../handlers/chat/join_channel_handler.hh"
 #include "../handlers/chat/private_chat_handler.hh"
@@ -93,7 +94,9 @@ void shiro::routes::route(shiro::io::packet_id packet_id, shiro::io::osu_packet 
             break;
         case io::packet_id::in_match_change_slot:break;
         case io::packet_id::in_match_ready:break;
-        case io::packet_id::in_match_lock:break;
+        case io::packet_id::in_match_lock:
+            handler::multiplayer::room::lock_slot::handle(in, out, user);
+            break;
         case io::packet_id::in_match_change_settings:break;
         case io::packet_id::in_match_start:break;
         case io::packet_id::in_match_score_update:break;
