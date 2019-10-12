@@ -55,6 +55,8 @@ namespace shiro::io::layouts {
         int32_t random_seed = 0;
         std::string game_password = "";
 
+        void send_update(bool global);
+
         buffer marshal() override;
         void unmarshal(shiro::io::buffer &buffer) override;
 
