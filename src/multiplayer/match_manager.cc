@@ -109,32 +109,7 @@ std::optional<shiro::io::layouts::multiplayer_match> shiro::multiplayer::match_m
         match.multi_slot_mods.at(index) = match.active_mods;
 
         // Broadcast to the everyone that we now have a new player
-        io::osu_writer writer;
-        writer.match_update(match);
-
-        io::osu_writer global_writer;
-        global_writer.match_update(match, true);
-
-        lobby_manager::iterate([match, &global_writer](std::shared_ptr<users::user> user) {
-            auto iterator = std::find(match.multi_slot_id.begin(), match.multi_slot_id.end(), user->user_id);
-
-            if (iterator != match.multi_slot_id.end())
-                return;
-
-            user->queue.enqueue(global_writer);
-        });
-
-        for (int32_t id : match.multi_slot_id) {
-            if (id == -1)
-                continue;
-
-            std::shared_ptr<users::user> user = users::manager::get_user_by_id(id);
-
-            if (user == nullptr)
-                continue;
-
-            user->queue.enqueue(writer);
-        }
+        match.send_update(true);
     }
 
     // Unlock now to prevent a deadlock which would occur if we're calling into the return method below
@@ -222,32 +197,7 @@ bool shiro::multiplayer::match_manager::leave_match(std::shared_ptr<shiro::users
     }
 
     // Broadcast to everyone that we now have one less player
-    io::osu_writer writer;
-    writer.match_update(match);
-
-    io::osu_writer global_writer;
-    writer.match_update(match, true);
-
-    lobby_manager::iterate([match, &global_writer](std::shared_ptr<users::user> user) {
-        auto iterator = std::find(match.multi_slot_id.begin(), match.multi_slot_id.end(), user->user_id);
-
-        if (iterator != match.multi_slot_id.end())
-            return;
-
-        user->queue.enqueue(global_writer);
-    });
-
-    for (int32_t id : match.multi_slot_id) {
-        if (id == -1)
-            continue;
-
-        std::shared_ptr<users::user> user = users::manager::get_user_by_id(id);
-
-        if (user == nullptr)
-            continue;
-
-        user->queue.enqueue(writer);
-    }
+    match.send_update(true);
 
     return true;
 }
@@ -298,11 +248,11 @@ std::optional<shiro::io::layouts::multiplayer_match> shiro::multiplayer::match_m
     return std::nullopt;
 }
 
-void shiro::multiplayer::match_manager::iterate(const std::function<void(io::layouts::multiplayer_match)> &callback) {
+void shiro::multiplayer::match_manager::iterate(const std::function<void(io::layouts::multiplayer_match &)> &callback) {
     // Disallow other threads from writing (but not from reading)
     std::shared_lock<std::shared_timed_mutex> lock(mutex);
 
-    for (const io::layouts::multiplayer_match &match : matches) {
+    for (io::layouts::multiplayer_match &match : matches) {
         callback(match);
     }
 }

@@ -16,17 +16,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "../../../multiplayer/lobby_manager.hh"
-#include "../../../multiplayer/match_manager.hh"
-#include "lobby_join_handler.hh"
+#ifndef SHIRO_ROOM_CHANGE_PASSWORD_HANDLER_HH
+#define SHIRO_ROOM_CHANGE_PASSWORD_HANDLER_HH
 
-void shiro::handler::multiplayer::lobby::join::handle(shiro::io::osu_packet &in, shiro::io::osu_writer &out, std::shared_ptr<shiro::users::user> user) {
-    if (shiro::multiplayer::lobby_manager::in_lobby(user))
-        return;
+#include "../../../io/osu_packet.hh"
+#include "../../../io/osu_writer.hh"
+#include "../../../users/user.hh"
 
-    shiro::multiplayer::lobby_manager::add_user(user);
+namespace shiro::handler::multiplayer::room::change_password {
 
-    shiro::multiplayer::match_manager::iterate([&out, user](io::layouts::multiplayer_match &match) {
-        out.match_new(match, match.host_id != user->user_id);
-    });
+    void handle(io::osu_packet &in, io::osu_writer &out, std::shared_ptr<users::user> user);
+
 }
+
+#endif //SHIRO_ROOM_CHANGE_PASSWORD_HANDLER_HH

@@ -46,7 +46,9 @@ namespace shiro::multiplayer::match_manager {
     std::optional<io::layouts::multiplayer_match> get_match(uint16_t match_id);
     std::optional<io::layouts::multiplayer_match> get_match(std::shared_ptr<users::user> user);
 
-    void iterate(const std::function<void(io::layouts::multiplayer_match)> &callback);
+    // This iterate function takes a reference and thus allows persistent modification within the callback function
+    // Be careful as this can have unintended side effects (other iterate methods in this project don't do this)
+    void iterate(const std::function<void(io::layouts::multiplayer_match&)> &callback);
 
 }
 
