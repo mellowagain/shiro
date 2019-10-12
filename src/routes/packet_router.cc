@@ -18,6 +18,7 @@
 
 #include "../handlers/multiplayer/lobby/lobby_leave_handler.hh"
 #include "../handlers/multiplayer/lobby/lobby_join_handler.hh"
+#include "../handlers/multiplayer/room/room_change_host_handler.hh"
 #include "../handlers/multiplayer/room/room_change_password_handler.hh"
 #include "../handlers/multiplayer/room/room_create_handler.hh"
 #include "../handlers/multiplayer/room/room_join_handler.hh"
@@ -108,7 +109,9 @@ void shiro::routes::route(shiro::io::packet_id packet_id, shiro::io::osu_packet 
             handler::chat::join::handle(in, out, user);
             break;
         case io::packet_id::in_beatmap_info_request:break;
-        case io::packet_id::in_match_transfer_host:break;
+        case io::packet_id::in_match_transfer_host:
+            handler::multiplayer::room::change_host::handle(in, out, user);
+            break;
         case io::packet_id::in_friend_add:
             handler::friends::add::handle(in, out, user);
             break;
