@@ -139,9 +139,13 @@ bool shiro::multiplayer::match_manager::leave_match(std::shared_ptr<shiro::users
         match_id = match.match_id;
 
         match.multi_slot_id.at(index) = -1;
-        match.multi_slot_status.at(index) = (uint8_t) utils::slot_status::open;
         match.multi_slot_team.at(index) = 0;
         match.multi_slot_mods.at(index) = 0;
+
+        uint8_t &slot_status = match.multi_slot_status.at(index);
+
+        if (slot_status != (uint8_t) utils::slot_status::locked)
+            slot_status = (uint8_t) utils::slot_status::open;
 
         // If the parting player is the host, assign the first player which has the ability to be host
         if (match.host_id == user->user_id) {
