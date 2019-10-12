@@ -50,7 +50,7 @@ namespace shiro::io::layouts {
         uint8_t game_mode = 0;
         uint8_t multi_win_condition = 0;
         uint8_t multi_team_type = 0;
-        uint8_t multi_special_modes = 0;
+        uint8_t multi_special_modes = 0; // 1 = Free Mod
 
         int32_t random_seed = 0;
         std::string game_password = "";

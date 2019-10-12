@@ -19,6 +19,7 @@
 #include "../handlers/multiplayer/lobby/lobby_leave_handler.hh"
 #include "../handlers/multiplayer/lobby/lobby_join_handler.hh"
 #include "../handlers/multiplayer/room/room_change_host_handler.hh"
+#include "../handlers/multiplayer/room/room_change_mods_handler.hh"
 #include "../handlers/multiplayer/room/room_change_password_handler.hh"
 #include "../handlers/multiplayer/room/room_change_settings_handler.hh"
 #include "../handlers/multiplayer/room/room_create_handler.hh"
@@ -104,7 +105,9 @@ void shiro::routes::route(shiro::io::packet_id packet_id, shiro::io::osu_packet 
         case io::packet_id::in_match_start:break;
         case io::packet_id::in_match_score_update:break;
         case io::packet_id::in_match_complete:break;
-        case io::packet_id::in_match_change_mods:break;
+        case io::packet_id::in_match_change_mods:
+            handler::multiplayer::room::change_mods::handle(in, out, user);
+            break;
         case io::packet_id::in_match_load_complete:break;
         case io::packet_id::in_match_no_beatmap:break;
         case io::packet_id::in_match_not_ready:break;
