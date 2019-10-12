@@ -66,7 +66,7 @@ void shiro::multiplayer::match_manager::create_match(shiro::io::layouts::multipl
     if (host == nullptr)
         return;
 
-    LOG_F(INFO, "New multiplayer room (id %i) was initialized by %s.", match.match_id, host->presence.username.c_str());
+    LOG_F(INFO, "New multiplayer room (\"%s\" id %i) was initialized by %s.", match.game_name.c_str(), match.match_id, host->presence.username.c_str());
 }
 
 std::optional<shiro::io::layouts::multiplayer_match> shiro::multiplayer::match_manager::join_match(io::layouts::multiplayer_join request, std::shared_ptr<shiro::users::user> user) {
@@ -115,16 +115,26 @@ std::optional<shiro::io::layouts::multiplayer_match> shiro::multiplayer::match_m
         io::osu_writer global_writer;
         global_writer.match_update(match, true);
 
-        lobby_manager::iterate([match, &writer, &global_writer](std::shared_ptr<users::user> user) {
+        lobby_manager::iterate([match, &global_writer](std::shared_ptr<users::user> user) {
             auto iterator = std::find(match.multi_slot_id.begin(), match.multi_slot_id.end(), user->user_id);
 
-            if (iterator == match.multi_slot_id.end()) {
-                user->queue.enqueue(global_writer);
+            if (iterator != match.multi_slot_id.end())
                 return;
-            }
+
+            user->queue.enqueue(global_writer);
+        });
+
+        for (int32_t id : match.multi_slot_id) {
+            if (id == -1)
+                continue;
+
+            std::shared_ptr<users::user> user = users::manager::get_user_by_id(id);
+
+            if (user == nullptr)
+                continue;
 
             user->queue.enqueue(writer);
-        });
+        }
     }
 
     // Unlock now to prevent a deadlock which would occur if we're calling into the return method below
@@ -157,6 +167,27 @@ bool shiro::multiplayer::match_manager::leave_match(std::shared_ptr<shiro::users
         match.multi_slot_status.at(index) = (uint8_t) utils::slot_status::open;
         match.multi_slot_team.at(index) = 0;
         match.multi_slot_mods.at(index) = 0;
+
+        // If the parting player is the host, assign the first player which has the ability to be host
+        if (match.host_id == user->user_id) {
+            for (int32_t id : match.multi_slot_id) {
+                if (id == -1)
+                    continue;
+
+                match.host_id = id;
+
+                std::shared_ptr<users::user> host = users::manager::get_user_by_id(id);
+
+                if (host == nullptr)
+                    break;
+
+                io::osu_writer host_writer;
+                host_writer.match_transfer_host();
+
+                host->queue.enqueue(host_writer);
+                break;
+            }
+        }
     }
 
     if (match_id == -1)
@@ -197,16 +228,26 @@ bool shiro::multiplayer::match_manager::leave_match(std::shared_ptr<shiro::users
     io::osu_writer global_writer;
     writer.match_update(match, true);
 
-    lobby_manager::iterate([match, &writer, &global_writer](std::shared_ptr<users::user> user) {
+    lobby_manager::iterate([match, &global_writer](std::shared_ptr<users::user> user) {
         auto iterator = std::find(match.multi_slot_id.begin(), match.multi_slot_id.end(), user->user_id);
 
-        if (iterator == match.multi_slot_id.end()) {
-            user->queue.enqueue(global_writer);
+        if (iterator != match.multi_slot_id.end())
             return;
-        }
+
+        user->queue.enqueue(global_writer);
+    });
+
+    for (int32_t id : match.multi_slot_id) {
+        if (id == -1)
+            continue;
+
+        std::shared_ptr<users::user> user = users::manager::get_user_by_id(id);
+
+        if (user == nullptr)
+            continue;
 
         user->queue.enqueue(writer);
-    });
+    }
 
     return true;
 }

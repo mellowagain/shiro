@@ -106,12 +106,7 @@ std::vector<int32_t> shiro::io::buffer::read_array() {
 }
 
 std::string shiro::io::buffer::serialize() {
-    std::stringstream stream;
-
-    for (size_t i = 0; i < this->written_size; i++)
-        stream << std::hex << this->bytes.at(i);
-
-    return stream.str();
+    return std::string(this->bytes.begin(), this->bytes.end());
 }
 
 bool shiro::io::buffer::can_read(size_t amount) {
