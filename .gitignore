@@ -1,6 +1,7 @@
 # Created by https://www.gitignore.io/api/c++,xcode,linux,macos,cmake,windows,jetbrains,visualstudio
 
 bin/
+backup/
 
 ### C++ ###
 # Prerequisites

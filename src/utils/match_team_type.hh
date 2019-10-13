@@ -16,32 +16,25 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "../multiplayer/match_manager.hh"
-#include "../users/user_manager.hh"
-#include "logout_handler.hh"
+#ifndef SHIRO_MATCH_TEAM_TYPE_HH
+#define SHIRO_MATCH_TEAM_TYPE_HH
 
-void shiro::handler::logout::handle(shiro::io::osu_packet &in, shiro::io::osu_writer &out, std::shared_ptr<shiro::users::user> user) {
-    if (!users::manager::is_online(user))
-        return;
+#include <cstdint>
 
-    shiro::multiplayer::match_manager::leave_match(user);
-    users::manager::logout_user(user);
+namespace shiro::utils {
 
-    if (user->hidden)
-        return;
+    enum class match_team_type : uint8_t {
+        head_to_head = 0,
+        tag_coop = 1,
+        team_vs = 2,
+        tag_team_vs = 3
 
-    io::layouts::user_quit quit;
-    io::osu_writer writer;
+    };
 
-    quit.user_id = user->user_id;
-    quit.state = 0;
+    inline bool is_team(uint8_t type) {
+        return type == (uint8_t) match_team_type::team_vs || type == (uint8_t) match_team_type::tag_team_vs;
+    }
 
-    writer.user_quit(quit);
-
-    users::manager::iterate([user, &writer](std::shared_ptr<users::user> online_user) {
-        if (online_user->user_id == user->user_id)
-            return;
-
-        online_user->queue.enqueue(writer);
-    }, true);
 }
+
+#endif  // SHIRO_MATCH_TEAM_TYPE_HH

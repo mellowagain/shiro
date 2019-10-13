@@ -16,8 +16,42 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "../../../multiplayer/lobby_manager.hh"
+#include "../../../users/user_manager.hh"
 #include "../../../utils/osu_string.hh"
 #include "multiplayer_match.hh"
+
+void shiro::io::layouts::multiplayer_match::send_update(bool global) {
+    io::osu_writer writer;
+    writer.match_update(*this);
+
+    for (int32_t id : this->multi_slot_id) {
+        if (id == -1)
+            continue;
+
+        std::shared_ptr<users::user> user = users::manager::get_user_by_id(id);
+
+        if (user == nullptr)
+            continue;
+
+        user->queue.enqueue(writer);
+    }
+
+    if (!global)
+        return;
+
+    io::osu_writer global_writer;
+    global_writer.match_update(*this, true);
+
+    multiplayer::lobby_manager::iterate([this, &global_writer](std::shared_ptr<users::user> user) {
+        auto iterator = std::find(this->multi_slot_id.begin(), this->multi_slot_id.end(), user->user_id);
+
+        if (iterator != this->multi_slot_id.end())
+            return;
+
+        user->queue.enqueue(global_writer);
+    });
+}
 
 shiro::io::buffer shiro::io::layouts::multiplayer_match::marshal() {
     std::string game_name = utils::osu_string(this->game_name);

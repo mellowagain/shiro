@@ -16,32 +16,28 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "../multiplayer/match_manager.hh"
-#include "../users/user_manager.hh"
-#include "logout_handler.hh"
+#ifndef SHIRO_LOBBY_MANAGER_HH
+#define SHIRO_LOBBY_MANAGER_HH
 
-void shiro::handler::logout::handle(shiro::io::osu_packet &in, shiro::io::osu_writer &out, std::shared_ptr<shiro::users::user> user) {
-    if (!users::manager::is_online(user))
-        return;
+#include <memory>
+#include <shared_mutex>
+#include <vector>
 
-    shiro::multiplayer::match_manager::leave_match(user);
-    users::manager::logout_user(user);
+#include "../users/user.hh"
 
-    if (user->hidden)
-        return;
+namespace shiro::multiplayer::lobby_manager {
 
-    io::layouts::user_quit quit;
-    io::osu_writer writer;
+    extern std::vector<std::shared_ptr<users::user>> users;
+    extern std::shared_timed_mutex mutex;
 
-    quit.user_id = user->user_id;
-    quit.state = 0;
+    void add_user(std::shared_ptr<users::user> user);
 
-    writer.user_quit(quit);
+    void remove_user(std::shared_ptr<users::user> user);
 
-    users::manager::iterate([user, &writer](std::shared_ptr<users::user> online_user) {
-        if (online_user->user_id == user->user_id)
-            return;
+    bool in_lobby(std::shared_ptr<users::user> user);
 
-        online_user->queue.enqueue(writer);
-    }, true);
+    void iterate(const std::function<void(std::shared_ptr<users::user>)> &callback);
+
 }
+
+#endif //SHIRO_LOBBY_MANAGER_HH

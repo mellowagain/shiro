@@ -16,32 +16,34 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "../multiplayer/match_manager.hh"
-#include "../users/user_manager.hh"
-#include "logout_handler.hh"
+#ifndef SHIRO_SLOT_STATUS_HH
+#define SHIRO_SLOT_STATUS_HH
 
-void shiro::handler::logout::handle(shiro::io::osu_packet &in, shiro::io::osu_writer &out, std::shared_ptr<shiro::users::user> user) {
-    if (!users::manager::is_online(user))
-        return;
+#include <cstdint>
 
-    shiro::multiplayer::match_manager::leave_match(user);
-    users::manager::logout_user(user);
+namespace shiro::utils {
 
-    if (user->hidden)
-        return;
+    enum class slot_status : uint8_t {
+        open = 1 << 0,
+        locked = 1 << 1,
+        not_ready = 1 << 2,
+        ready = 1 << 3,
+        no_map = 1 << 4,
+        playing = 1 << 5,
+        complete = 1 << 6,
+        quit = 1 << 7
 
-    io::layouts::user_quit quit;
-    io::osu_writer writer;
+    };
 
-    quit.user_id = user->user_id;
-    quit.state = 0;
+    constexpr uint8_t has_player_status = (uint8_t) slot_status::not_ready |
+            (uint8_t) slot_status::ready |
+            (uint8_t) slot_status::no_map |
+            (uint8_t) slot_status::playing |
+            (uint8_t) slot_status::complete;
 
-    writer.user_quit(quit);
+    constexpr uint8_t has_playing_status = (uint8_t) slot_status::playing |
+                                          (uint8_t) slot_status::complete;
 
-    users::manager::iterate([user, &writer](std::shared_ptr<users::user> online_user) {
-        if (online_user->user_id == user->user_id)
-            return;
-
-        online_user->queue.enqueue(writer);
-    }, true);
 }
+
+#endif  // SHIRO_SLOT_STATUS_HH

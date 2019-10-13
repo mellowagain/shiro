@@ -16,32 +16,19 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "../multiplayer/match_manager.hh"
-#include "../users/user_manager.hh"
-#include "logout_handler.hh"
+#include "../../../multiplayer/match_manager.hh"
+#include "room_join_handler.hh"
 
-void shiro::handler::logout::handle(shiro::io::osu_packet &in, shiro::io::osu_writer &out, std::shared_ptr<shiro::users::user> user) {
-    if (!users::manager::is_online(user))
+void shiro::handler::multiplayer::room::join::handle(shiro::io::osu_packet &in, shiro::io::osu_writer &out, std::shared_ptr<shiro::users::user> user) {
+    io::layouts::multiplayer_join payload = in.unmarshal<io::layouts::multiplayer_join>();
+
+    std::optional<io::layouts::multiplayer_match> joined_match = shiro::multiplayer::match_manager::join_match(payload, std::move(user));
+
+    if (!joined_match.has_value()) {
+        out.match_join_fail();
         return;
+    }
 
-    shiro::multiplayer::match_manager::leave_match(user);
-    users::manager::logout_user(user);
-
-    if (user->hidden)
-        return;
-
-    io::layouts::user_quit quit;
-    io::osu_writer writer;
-
-    quit.user_id = user->user_id;
-    quit.state = 0;
-
-    writer.user_quit(quit);
-
-    users::manager::iterate([user, &writer](std::shared_ptr<users::user> online_user) {
-        if (online_user->user_id == user->user_id)
-            return;
-
-        online_user->queue.enqueue(writer);
-    }, true);
+    out.match_join_success(joined_match.value());
+    out.channel_join("#multiplayer");
 }

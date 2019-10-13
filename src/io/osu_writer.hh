@@ -96,14 +96,14 @@ namespace shiro::io {
         void spectator_cant_spectate(int32_t id);
         void spectate_frames(layouts::spectate_frames frames);
 
-        void match_new(layouts::multiplayer_match match);
-        void match_update(layouts::multiplayer_match match);
+        void match_new(layouts::multiplayer_match match, bool censor = false);
+        void match_update(layouts::multiplayer_match match, bool censor = false);
         void match_disband(int32_t match_id);
 
         void match_join_success(layouts::multiplayer_match match);
         void match_join_fail();
 
-        void match_start(layouts::multiplayer_match match);
+        void match_start(layouts::multiplayer_match match, bool censor = false);
         void match_score_update(layouts::score_frame score_frame);
 
         void match_transfer_host();
@@ -112,8 +112,9 @@ namespace shiro::io {
 
         void match_complete();
         void match_skip();
+        void match_abort();
 
-        void match_player_skipped(int32_t user_id);
+        void match_player_skipped(int32_t slot_id);
         void match_change_password(std::string password);
 
         std::string serialize();

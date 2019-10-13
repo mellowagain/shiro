@@ -16,32 +16,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "../multiplayer/match_manager.hh"
-#include "../users/user_manager.hh"
-#include "logout_handler.hh"
+#ifndef SHIRO_ROOM_CHANGE_HOST_HANDLER_HH
+#define SHIRO_ROOM_CHANGE_HOST_HANDLER_HH
 
-void shiro::handler::logout::handle(shiro::io::osu_packet &in, shiro::io::osu_writer &out, std::shared_ptr<shiro::users::user> user) {
-    if (!users::manager::is_online(user))
-        return;
+#include "../../../io/osu_packet.hh"
+#include "../../../io/osu_writer.hh"
+#include "../../../users/user.hh"
 
-    shiro::multiplayer::match_manager::leave_match(user);
-    users::manager::logout_user(user);
+namespace shiro::handler::multiplayer::room::change_host {
 
-    if (user->hidden)
-        return;
+    void handle(io::osu_packet &in, io::osu_writer &out, std::shared_ptr<users::user> user);
 
-    io::layouts::user_quit quit;
-    io::osu_writer writer;
-
-    quit.user_id = user->user_id;
-    quit.state = 0;
-
-    writer.user_quit(quit);
-
-    users::manager::iterate([user, &writer](std::shared_ptr<users::user> online_user) {
-        if (online_user->user_id == user->user_id)
-            return;
-
-        online_user->queue.enqueue(writer);
-    }, true);
 }
+
+#endif //SHIRO_ROOM_CHANGE_HOST_HANDLER_HH
