@@ -21,7 +21,6 @@
 #include <utility>
 #include <memory>
 
-#include "../commands/multiplayer/mp_command.hh"
 #include "../commands/public/help_command.hh"
 #include "../commands/public/localclear_command.hh"
 #include "../commands/public/roll_command.hh"
@@ -118,7 +117,6 @@ void shiro::bot::init_commands() {
     commands_map.insert(std::make_pair("help", commands::help));
     commands_map.insert(std::make_pair("kick", commands::kick));
     commands_map.insert(std::make_pair("localclear", commands::localclear));
-    commands_map.insert(std::make_pair("mp", commands::mp));
     commands_map.insert(std::make_pair("recalculate", commands::recalculate));
     commands_map.insert(std::make_pair("restart", commands::restart));
     commands_map.insert(std::make_pair("restrict", commands::restrict));
