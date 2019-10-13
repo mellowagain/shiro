@@ -17,8 +17,9 @@
  */
 
 #include "../../../multiplayer/match_manager.hh"
-#include "room_change_settings_handler.hh"
 #include "../../../utils/match_team_type.hh"
+#include "../../../utils/slot_status.hh"
+#include "room_change_settings_handler.hh"
 
 void shiro::handler::multiplayer::room::change_settings::handle(shiro::io::osu_packet &in, shiro::io::osu_writer &out, std::shared_ptr<users::user> user) {
     io::layouts::multiplayer_match match = in.unmarshal<io::layouts::multiplayer_match>();
@@ -29,6 +30,10 @@ void shiro::handler::multiplayer::room::change_settings::handle(shiro::io::osu_p
 
         if (global_match.host_id != user->user_id)
             return true;
+
+        bool changed_beatmap = global_match.beatmap_id != match.beatmap_id;
+        bool changed_win_condition = global_match.multi_win_condition != match.multi_win_condition;
+        bool changed_team_type = global_match.multi_team_type != match.multi_team_type;
 
         global_match.multi_team_type = match.multi_team_type;
         global_match.multi_win_condition = match.multi_win_condition;
@@ -62,6 +67,18 @@ void shiro::handler::multiplayer::room::change_settings::handle(shiro::io::osu_p
             }
         } else {
             std::fill(global_match.multi_slot_team.begin(), global_match.multi_slot_team.end(), 0);
+        }
+
+        if (changed_beatmap || changed_win_condition || changed_team_type) {
+            for (size_t i = 0; i < global_match.multi_slot_id.size(); i++) {
+                if (global_match.multi_slot_id.at(i) == -1)
+                    continue;
+
+                if (global_match.multi_slot_status.at(i) != (uint8_t) utils::slot_status::ready)
+                    continue;
+
+                global_match.multi_slot_status.at(i) = (uint8_t) utils::slot_status::not_ready;
+            }
         }
 
         global_match.send_update(true);
