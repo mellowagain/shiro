@@ -179,6 +179,10 @@ void shiro::io::osu_writer::match_skip() {
     this->write(packet_id::out_match_skip);
 }
 
+void shiro::io::osu_writer::match_abort() {
+    this->write(packet_id::out_match_abort);
+}
+
 void shiro::io::osu_writer::match_player_skipped(int32_t slot_id) {
     this->write(packet_id::out_match_player_skipped, serializable(slot_id));
 }

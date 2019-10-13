@@ -137,7 +137,9 @@ void shiro::routes::route(shiro::io::packet_id packet_id, shiro::io::osu_packet 
         case io::packet_id::in_match_not_ready:
             handler::multiplayer::room::ready::handle_unready(in, out, user);
             break;
-        case io::packet_id::in_match_failed:break;
+        case io::packet_id::in_match_failed:
+            // TODO: Handle failed players (if a whole team fails, the match gets aborted)
+            break;
         case io::packet_id::in_match_has_beatmap:
             handler::multiplayer::room::beatmap::handle_has_beatmap(in, out, user);
             break;
@@ -182,7 +184,6 @@ void shiro::routes::route(shiro::io::packet_id packet_id, shiro::io::osu_packet 
             handler::presence::request_all::handle(in, out, user);
             break;
         case io::packet_id::in_user_toggle_block_non_friend_pm:break;
-        case io::packet_id::in_match_abort:break; // 6
         case io::packet_id::in_special_join_match_channel:break;
         case io::packet_id::in_special_leave_match_channel:break;
         default:
