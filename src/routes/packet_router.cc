@@ -18,6 +18,7 @@
 
 #include "../handlers/multiplayer/lobby/lobby_leave_handler.hh"
 #include "../handlers/multiplayer/lobby/lobby_join_handler.hh"
+#include "../handlers/multiplayer/match/match_start_handler.hh"
 #include "../handlers/multiplayer/room/room_beatmap_handler.hh"
 #include "../handlers/multiplayer/room/room_change_host_handler.hh"
 #include "../handlers/multiplayer/room/room_change_mods_handler.hh"
@@ -111,13 +112,15 @@ void shiro::routes::route(shiro::io::packet_id packet_id, shiro::io::osu_packet 
         case io::packet_id::in_match_change_settings:
             handler::multiplayer::room::change_settings::handle(in, out, user);
             break;
-        case io::packet_id::in_match_start:break;
-        case io::packet_id::in_match_score_update:break;
-        case io::packet_id::in_match_complete:break;
+        case io::packet_id::in_match_start:
+            handler::multiplayer::match::start::handle(in, out, user);
+            break;
+        case io::packet_id::in_match_score_update:break; // 4
+        case io::packet_id::in_match_complete:break; // 5
         case io::packet_id::in_match_change_mods:
             handler::multiplayer::room::change_mods::handle(in, out, user);
             break;
-        case io::packet_id::in_match_load_complete:break;
+        case io::packet_id::in_match_load_complete:break; // 2
         case io::packet_id::in_match_no_beatmap:
             handler::multiplayer::room::beatmap::handle_no_beatmap(in, out, user);
             break;
@@ -128,7 +131,7 @@ void shiro::routes::route(shiro::io::packet_id packet_id, shiro::io::osu_packet 
         case io::packet_id::in_match_has_beatmap:
             handler::multiplayer::room::beatmap::handle_has_beatmap(in, out, user);
             break;
-        case io::packet_id::in_match_skip_request:break;
+        case io::packet_id::in_match_skip_request:break; // 3
         case io::packet_id::in_channel_join:
             handler::chat::join::handle(in, out, user);
             break;
@@ -167,7 +170,7 @@ void shiro::routes::route(shiro::io::packet_id packet_id, shiro::io::osu_packet 
             handler::presence::request_all::handle(in, out, user);
             break;
         case io::packet_id::in_user_toggle_block_non_friend_pm:break;
-        case io::packet_id::in_match_abort:break;
+        case io::packet_id::in_match_abort:break; // 6
         case io::packet_id::in_special_join_match_channel:break;
         case io::packet_id::in_special_leave_match_channel:break;
         default:
