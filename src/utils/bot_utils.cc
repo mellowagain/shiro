@@ -24,11 +24,11 @@
 #include "../bot/bot.hh"
 #include "../channels/channel_manager.hh"
 #include "../config/bot_file.hh"
+#include "../multiplayer/match_manager.hh"
 #include "../spectating/spectator_manager.hh"
+#include "../users/user_manager.hh"
 #include "bot_utils.hh"
 #include "string_utils.hh"
-#include "../multiplayer/match_manager.hh"
-#include "../users/user_manager.hh"
 
 void shiro::utils::bot::handle(shiro::io::layouts::message message, std::shared_ptr<users::user> user) {
     if (!boost::algorithm::starts_with(message.content, "!"))
