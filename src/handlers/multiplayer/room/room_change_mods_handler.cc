@@ -22,11 +22,11 @@
 void shiro::handler::multiplayer::room::change_mods::handle(shiro::io::osu_packet &in, shiro::io::osu_writer &out, std::shared_ptr<users::user> user) {
     uint32_t mods = in.data.read<uint32_t>();
 
-    shiro::multiplayer::match_manager::iterate([user, &mods](io::layouts::multiplayer_match &match) {
+    shiro::multiplayer::match_manager::iterate([user, &mods](io::layouts::multiplayer_match &match) -> bool {
         auto iterator = std::find(match.multi_slot_id.begin(), match.multi_slot_id.end(), user->user_id);
 
         if (iterator == match.multi_slot_id.end())
-            return;
+            return false;
 
         if (match.multi_special_modes == 1) { // Free Mod
             if (match.host_id == user->user_id) {
@@ -46,11 +46,12 @@ void shiro::handler::multiplayer::room::change_mods::handle(shiro::io::osu_packe
             match.multi_slot_mods.at(index) = (mods & utils::free_mods);
         } else if (match.multi_special_modes == 0) { // Host sets global mods
             if (match.host_id != user->user_id)
-                return;
+                return true;
 
             match.active_mods = mods;
         }
 
         match.send_update(true);
+        return true;
     });
 }

@@ -252,11 +252,12 @@ std::optional<shiro::io::layouts::multiplayer_match> shiro::multiplayer::match_m
     return std::nullopt;
 }
 
-void shiro::multiplayer::match_manager::iterate(const std::function<void(io::layouts::multiplayer_match &)> &callback) {
+void shiro::multiplayer::match_manager::iterate(const std::function<bool(io::layouts::multiplayer_match &)> &callback) {
     // Disallow other threads from writing (but not from reading)
     std::shared_lock<std::shared_timed_mutex> lock(mutex);
 
     for (io::layouts::multiplayer_match &match : matches) {
-        callback(match);
+        if (callback(match))
+            break;
     }
 }

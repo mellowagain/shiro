@@ -22,22 +22,23 @@
 void shiro::handler::multiplayer::room::change_password::handle(shiro::io::osu_packet &in, shiro::io::osu_writer &out, std::shared_ptr<users::user> user) {
     io::layouts::multiplayer_match match = in.unmarshal<io::layouts::multiplayer_match>();
 
-    shiro::multiplayer::match_manager::iterate([&user, match](io::layouts::multiplayer_match &global_match) {
+    shiro::multiplayer::match_manager::iterate([&user, match](io::layouts::multiplayer_match &global_match) -> bool {
         if (global_match.match_id != match.match_id)
-            return;
+            return false;
 
         if (global_match.game_password == match.game_password)
-            return;
+            return true;
 
         auto iterator = std::find(global_match.multi_slot_id.begin(), global_match.multi_slot_id.end(), user->user_id);
 
         if (iterator == global_match.multi_slot_id.end())
-            return;
+            return true;
 
         if (global_match.host_id != user->user_id)
-            return;
+            return true;
 
         global_match.game_password = match.game_password;
         global_match.send_update(true);
+        return true;
     });
 }

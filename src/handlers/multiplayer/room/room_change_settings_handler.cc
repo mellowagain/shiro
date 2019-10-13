@@ -23,12 +23,12 @@
 void shiro::handler::multiplayer::room::change_settings::handle(shiro::io::osu_packet &in, shiro::io::osu_writer &out, std::shared_ptr<users::user> user) {
     io::layouts::multiplayer_match match = in.unmarshal<io::layouts::multiplayer_match>();
 
-    shiro::multiplayer::match_manager::iterate([&user, match](io::layouts::multiplayer_match &global_match) {
+    shiro::multiplayer::match_manager::iterate([&user, match](io::layouts::multiplayer_match &global_match) -> bool {
         if (match.match_id != global_match.match_id)
-            return;
+            return false;
 
         if (global_match.host_id != user->user_id)
-            return;
+            return true;
 
         global_match.multi_team_type = match.multi_team_type;
         global_match.multi_win_condition = match.multi_win_condition;
@@ -65,5 +65,6 @@ void shiro::handler::multiplayer::room::change_settings::handle(shiro::io::osu_p
         }
 
         global_match.send_update(true);
+        return true;
     });
 }
