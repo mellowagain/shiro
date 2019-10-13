@@ -23,6 +23,7 @@
 #include "../handlers/multiplayer/room/room_change_password_handler.hh"
 #include "../handlers/multiplayer/room/room_change_settings_handler.hh"
 #include "../handlers/multiplayer/room/room_change_slot_handler.hh"
+#include "../handlers/multiplayer/room/room_change_team_handler.hh"
 #include "../handlers/multiplayer/room/room_create_handler.hh"
 #include "../handlers/multiplayer/room/room_join_handler.hh"
 #include "../handlers/multiplayer/room/room_leave_handler.hh"
@@ -135,7 +136,9 @@ void shiro::routes::route(shiro::io::packet_id packet_id, shiro::io::osu_packet 
         case io::packet_id::in_friend_remove:
             handler::friends::remove::handle(in, out, user);
             break;
-        case io::packet_id::in_match_change_team:break;
+        case io::packet_id::in_match_change_team:
+            handler::multiplayer::room::change_team::handle(in, out, user);
+            break;
         case io::packet_id::in_channel_leave:
             handler::chat::leave::handle(in, out, user);
             break;
