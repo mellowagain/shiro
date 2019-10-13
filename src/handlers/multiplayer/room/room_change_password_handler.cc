@@ -17,12 +17,13 @@
  */
 
 #include "../../../multiplayer/match_manager.hh"
+#include "../../../users/user_manager.hh"
 #include "room_change_password_handler.hh"
 
 void shiro::handler::multiplayer::room::change_password::handle(shiro::io::osu_packet &in, shiro::io::osu_writer &out, std::shared_ptr<users::user> user) {
     io::layouts::multiplayer_match match = in.unmarshal<io::layouts::multiplayer_match>();
 
-    shiro::multiplayer::match_manager::iterate([&user, match](io::layouts::multiplayer_match &global_match) -> bool {
+    shiro::multiplayer::match_manager::iterate([&user, &out, match](io::layouts::multiplayer_match &global_match) -> bool {
         if (global_match.match_id != match.match_id)
             return false;
 
@@ -39,6 +40,22 @@ void shiro::handler::multiplayer::room::change_password::handle(shiro::io::osu_p
 
         global_match.game_password = match.game_password;
         global_match.send_update(true);
+
+        io::osu_writer writer;
+        writer.match_change_password(match.game_password);
+
+        for (int32_t id : global_match.multi_slot_id) {
+            if (id == -1)
+                continue;
+
+            std::shared_ptr<users::user> lobby_user = users::manager::get_user_by_id(id);
+
+            if (lobby_user == nullptr)
+                continue;
+
+            lobby_user->queue.enqueue(writer);
+        }
+
         return true;
     });
 }
