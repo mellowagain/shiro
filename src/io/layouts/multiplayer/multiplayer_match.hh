@@ -39,6 +39,8 @@ namespace shiro::io::layouts {
         std::array<uint8_t, 16> multi_slot_team {};
         std::array<int32_t, 16> multi_slot_mods {};
 
+        std::array<bool, 16> loaded_players {};
+
         std::string beatmap_name = "";
         std::string beatmap_checksum = "";
         int32_t beatmap_id = 0;
