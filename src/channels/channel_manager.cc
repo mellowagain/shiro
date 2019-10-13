@@ -239,5 +239,5 @@ bool shiro::channels::manager::is_read_only(std::string channel_name) {
         return channel.read_only;
     }
 
-    return true;
+    return false;
 }

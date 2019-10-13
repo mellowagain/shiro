@@ -27,6 +27,8 @@
 #include "../spectating/spectator_manager.hh"
 #include "bot_utils.hh"
 #include "string_utils.hh"
+#include "../multiplayer/match_manager.hh"
+#include "../users/user_manager.hh"
 
 void shiro::utils::bot::handle(shiro::io::layouts::message message, std::shared_ptr<users::user> user) {
     if (!boost::algorithm::starts_with(message.content, "!"))
@@ -86,6 +88,29 @@ void shiro::utils::bot::respond(std::string message, std::shared_ptr<shiro::user
             return;
 
         host->queue.enqueue(buffer);
+        return;
+    }
+
+    if (channel == "#multiplayer") {
+        std::optional<io::layouts::multiplayer_match> multi_match = multiplayer::match_manager::get_match(user);
+
+        if (!multi_match.has_value())
+            return;
+
+        io::layouts::multiplayer_match match = multi_match.value();
+
+        for (int32_t user_id : match.multi_slot_id) {
+            if (user_id == -1 || user_id == user->user_id)
+                continue;
+
+            std::shared_ptr<users::user> target_user = users::manager::get_user_by_id(user_id);
+
+            if (target_user == nullptr)
+                continue;
+
+            target_user->queue.enqueue(buffer);
+        }
+
         return;
     }
 
