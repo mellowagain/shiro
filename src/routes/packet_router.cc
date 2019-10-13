@@ -18,6 +18,7 @@
 
 #include "../handlers/multiplayer/lobby/lobby_leave_handler.hh"
 #include "../handlers/multiplayer/lobby/lobby_join_handler.hh"
+#include "../handlers/multiplayer/room/room_beatmap_handler.hh"
 #include "../handlers/multiplayer/room/room_change_host_handler.hh"
 #include "../handlers/multiplayer/room/room_change_mods_handler.hh"
 #include "../handlers/multiplayer/room/room_change_password_handler.hh"
@@ -117,12 +118,16 @@ void shiro::routes::route(shiro::io::packet_id packet_id, shiro::io::osu_packet 
             handler::multiplayer::room::change_mods::handle(in, out, user);
             break;
         case io::packet_id::in_match_load_complete:break;
-        case io::packet_id::in_match_no_beatmap:break;
+        case io::packet_id::in_match_no_beatmap:
+            handler::multiplayer::room::beatmap::handle_no_beatmap(in, out, user);
+            break;
         case io::packet_id::in_match_not_ready:
             handler::multiplayer::room::ready::handle_unready(in, out, user);
             break;
         case io::packet_id::in_match_failed:break;
-        case io::packet_id::in_match_has_beatmap:break;
+        case io::packet_id::in_match_has_beatmap:
+            handler::multiplayer::room::beatmap::handle_has_beatmap(in, out, user);
+            break;
         case io::packet_id::in_match_skip_request:break;
         case io::packet_id::in_channel_join:
             handler::chat::join::handle(in, out, user);
