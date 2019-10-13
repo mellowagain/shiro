@@ -20,6 +20,11 @@
 #include "room_create_handler.hh"
 
 void shiro::handler::multiplayer::room::create::handle(shiro::io::osu_packet &in, shiro::io::osu_writer &out, std::shared_ptr<shiro::users::user> user) {
+    if (user->hidden) {
+        out.match_join_fail();
+        return;
+    }
+
     io::layouts::multiplayer_match match = in.unmarshal<io::layouts::multiplayer_match>();
     match.host_id = user->user_id;
 

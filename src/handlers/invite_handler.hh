@@ -16,25 +16,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef SHIRO_CURLER_HH
-#define SHIRO_CURLER_HH
+#ifndef SHIRO_INVITE_HANDLER_HH
+#define SHIRO_INVITE_HANDLER_HH
 
-#include <tuple>
-#include <string>
+#include "../io/osu_packet.hh"
+#include "../io/osu_writer.hh"
+#include "../users/user.hh"
 
-namespace shiro::utils::curl {
+namespace shiro::handler::invite {
 
-    // Returns a boolean indicating if the request was successful and the response as a string if it was successful.
-    std::tuple<bool, std::string> get(const std::string &url);
-
-    // Same as get(url) but with support for direct modes (Emulation & Beatconnect)
-    std::tuple<bool, std::string> get_direct(const std::string &url);
-
-    std::string escape_url(const std::string &raw);
-    std::string unescape_url(const std::string &raw);
-
-    size_t internal_callback(void *raw_data, size_t size, size_t memory, std::string *ptr);
+    void handle(io::osu_packet &in, io::osu_writer &out, std::shared_ptr<users::user> user);
 
 }
 
-#endif //SHIRO_CURLER_HH
+#endif //SHIRO_INVITE_HANDLER_HH

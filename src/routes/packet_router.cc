@@ -42,6 +42,7 @@
 #include "../handlers/spectating/stop_spectating_handler.hh"
 #include "../handlers/spectating/spectator_frames_handler.hh"
 #include "../handlers/spectating/cant_spectate_handler.hh"
+#include "../handlers/invite_handler.hh"
 #include "../handlers/logout_handler.hh"
 #include "../handlers/ping_handler.hh"
 #include "../handlers/request_status_update_handler.hh"
@@ -147,7 +148,9 @@ void shiro::routes::route(shiro::io::packet_id packet_id, shiro::io::osu_packet 
         case io::packet_id::in_user_stats_request:
             handler::stats::request_all::handle(in, out, user);
             break;
-        case io::packet_id::in_invite:break;
+        case io::packet_id::in_invite:
+            handler::invite::handle(in, out, user);
+            break;
         case io::packet_id::in_match_change_password:
             handler::multiplayer::room::change_password::handle(in, out, user);
             break;
