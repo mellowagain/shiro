@@ -179,8 +179,8 @@ void shiro::io::osu_writer::match_skip() {
     this->write(packet_id::out_match_skip);
 }
 
-void shiro::io::osu_writer::match_player_skipped(int32_t user_id) {
-    this->write(packet_id::out_match_player_skipped, serializable(user_id));
+void shiro::io::osu_writer::match_player_skipped(int32_t slot_id) {
+    this->write(packet_id::out_match_player_skipped, serializable(slot_id));
 }
 
 void shiro::io::osu_writer::match_change_password(std::string password) {
