@@ -41,6 +41,7 @@ namespace shiro::io::layouts {
 
         std::array<bool, 16> loaded_players {};
         std::array<bool, 16> skipped_players {};
+        std::array<bool, 16> finished_players {};
 
         std::string beatmap_name = "";
         std::string beatmap_checksum = "";

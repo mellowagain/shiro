@@ -16,34 +16,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef SHIRO_SLOT_STATUS_HH
-#define SHIRO_SLOT_STATUS_HH
+#ifndef SHIRO_MATCH_COMPLETE_HANDLER_HH
+#define SHIRO_MATCH_COMPLETE_HANDLER_HH
 
-#include <cstdint>
+#include "../../../io/osu_packet.hh"
+#include "../../../io/osu_writer.hh"
+#include "../../../users/user.hh"
 
-namespace shiro::utils {
+namespace shiro::handler::multiplayer::match::complete {
 
-    enum class slot_status : uint8_t {
-        open = 1 << 0,
-        locked = 1 << 1,
-        not_ready = 1 << 2,
-        ready = 1 << 3,
-        no_map = 1 << 4,
-        playing = 1 << 5,
-        complete = 1 << 6,
-        quit = 1 << 7
-
-    };
-
-    constexpr uint8_t has_player_status = (uint8_t) slot_status::not_ready |
-            (uint8_t) slot_status::ready |
-            (uint8_t) slot_status::no_map |
-            (uint8_t) slot_status::playing |
-            (uint8_t) slot_status::complete;
-
-    constexpr uint8_t has_playing_status = (uint8_t) slot_status::playing |
-                                          (uint8_t) slot_status::complete;
+    void handle(io::osu_packet &in, io::osu_writer &out, std::shared_ptr<users::user> user);
 
 }
 
-#endif  // SHIRO_SLOT_STATUS_HH
+#endif //SHIRO_MATCH_COMPLETE_HANDLER_HH
