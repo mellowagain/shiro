@@ -105,7 +105,7 @@ foreach (RESOURCE ${RESOURCES})
     endif()
 endforeach()
 
-set(CMAKE_LINK_LIBS ${CMAKE_LINK_LIBS})
+set(CMAKE_LINK_LIBS ${CMAKE_LINK_LIBS} cpp_redis tacopie)
 
 if (WIN32)
     set(CMAKE_LINK_LIBS libmysql pdh OpenSSL::Crypto ${CMAKE_LINK_LIBS})
