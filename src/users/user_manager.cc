@@ -20,6 +20,7 @@
 
 #include "../database/tables/user_table.hh"
 #include "../thirdparty/loguru.hh"
+#include "../utils/osu_client.hh"
 #include "user_manager.hh"
 
 std::vector<std::shared_ptr<shiro::users::user>> shiro::users::manager::online_users;
@@ -38,6 +39,9 @@ void shiro::users::manager::login_user(std::shared_ptr<shiro::users::user> user)
     online_users.emplace_back(user);
 
     LOG_F(INFO, "User %s logged in successfully.", user->presence.username.c_str());
+
+    if (user->client_type != +utils::clients::osu_client::aschente && !user->hidden)
+        redis_connection->get()->incr("shiro.online_users", nullptr).commit();
 }
 
 void shiro::users::manager::logout_user(std::shared_ptr<shiro::users::user> user) {
@@ -55,6 +59,9 @@ void shiro::users::manager::logout_user(std::shared_ptr<shiro::users::user> user
     online_users.erase(iterator);
 
     LOG_F(INFO, "User %s logged out successfully.", user->presence.username.c_str());
+
+    if (user->client_type != +utils::clients::osu_client::aschente && !user->hidden)
+        redis_connection->get()->decr("shiro.online_users", nullptr).commit();
 }
 
 void shiro::users::manager::logout_user(int32_t user_id) {
