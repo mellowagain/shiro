@@ -30,6 +30,10 @@ std::string shiro::config::database::database = "shiro";
 std::string shiro::config::database::username = "root";
 std::string shiro::config::database::password = "hunter2";
 
+std::string shiro::config::database::redis_address = "127.0.0.1";
+uint32_t shiro::config::database::redis_port = 6379;
+std::string shiro::config::database::redis_password = "";
+
 void shiro::config::database::parse() {
     if (config_file != nullptr)
         LOG_F(INFO, "Re-parsing database.toml file...");
@@ -47,6 +51,10 @@ void shiro::config::database::parse() {
     username = config_file->get_qualified_as<std::string>("database.username").value_or("root");
     password = config_file->get_qualified_as<std::string>("database.password").value_or("hunter2");
 
+    redis_address = config_file->get_qualified_as<std::string>("redis.address").value_or("127.0.0.1");
+    redis_port = config_file->get_qualified_as<uint32_t>("redis.port").value_or(6379);
+    redis_password = config_file->get_qualified_as<std::string>("redis.password").value_or("");
+
     LOG_F(INFO, "Successfully parsed database.toml.");
 
     cli::cli_app.add_option("--db-address", address, "Address of MySQL server to connect to");
@@ -54,4 +62,8 @@ void shiro::config::database::parse() {
     cli::cli_app.add_option("--db-database", database, "Database in MySQL server to put data into");
     cli::cli_app.add_option("--db-username", username, "Username used to authenticate with MySQL server");
     cli::cli_app.add_option("--db-password", password, "Password used to authenticate with MySQL server");
+
+    cli::cli_app.add_option("--redis-address", redis_address, "Address of Redis server to connect to");
+    cli::cli_app.add_option("--redis-port", redis_port, "Port of Redis server to connect to");
+    cli::cli_app.add_option("--redis-password", redis_password, "Password used to authenticate with Redis server");
 }

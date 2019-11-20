@@ -52,6 +52,7 @@
 #include "shiro.hh"
 
 std::shared_ptr<shiro::database> shiro::db_connection = nullptr;
+std::shared_ptr<shiro::redis> shiro::redis_connection = nullptr;
 tsc::TaskScheduler shiro::scheduler;
 std::time_t shiro::start_time = std::time(nullptr);
 std::string shiro::commit = "78f8303";
@@ -89,6 +90,14 @@ int shiro::init(int argc, char **argv) {
     db_connection->connect();
     db_connection->setup();
 
+    redis_connection = std::make_shared<redis>(
+            config::database::redis_address,
+            config::database::port,
+            config::database::redis_password
+    );
+    redis_connection->connect();
+    redis_connection->setup();
+
     std::thread scheduler_updater([]() {
         while (true) {
             std::this_thread::sleep_for(1ms);
@@ -124,6 +133,8 @@ int shiro::init(int argc, char **argv) {
 }
 
 void shiro::destroy() {
+    redis_connection->disconnect();
+
     curl_global_cleanup();
 
     geoloc::maxmind::destroy();

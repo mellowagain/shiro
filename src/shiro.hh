@@ -25,11 +25,13 @@
 #include <string>
 
 #include "database/database.hh"
+#include "redis/redis.hh"
 #include "thirdparty/taskscheduler.hh"
 
 namespace shiro {
 
     extern std::shared_ptr<database> db_connection;
+    extern std::shared_ptr<redis> redis_connection;
 
     using namespace std::chrono_literals;
     extern tsc::TaskScheduler scheduler;

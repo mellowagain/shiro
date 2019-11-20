@@ -29,6 +29,10 @@ namespace shiro::config::database {
     extern std::string username;
     extern std::string password;
 
+    extern std::string redis_address;
+    extern uint32_t redis_port;
+    extern std::string redis_password;
+
     void parse();
 
 }
