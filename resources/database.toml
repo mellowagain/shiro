@@ -6,3 +6,8 @@ port = 3306
 database = "shiro"
 username = "root"
 password = "hunter2"
+
+[redis]
+address = "127.0.0.1"
+port = 6379
+password = ""
