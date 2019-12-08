@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.12)
 project(shiro C CXX)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -7,6 +7,17 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/")
 
 file(GLOB_RECURSE SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cc ${CMAKE_CURRENT_SOURCE_DIR}/src/*.hh)
+
+option(SEPARATE_RX_LEADERBOARDS "Relax scores should be separated from regular leaderboards" OFF)
+option(SEPARATE_AP_LEADERBOARDS "Auto Pilot scores should be separated from regular leaderboards" OFF)
+
+if (SEPARATE_RX_LEADERBOARDS)
+    add_compile_definitions(SEPARATE_RX_LEADERBOARDS)
+endif()
+
+if (SEPARATE_AP_LEADERBOARDS)
+    add_compile_definitions(SEPARATE_AP_LEADERBOARDS)
+endif()
 
 if (NOT CMAKE_BUILD_TYPE)
     message(WARNING "No build type has been selected, defaulting to Release.")
