@@ -19,13 +19,13 @@
 #include "../config/cli_args.hh"
 #include "../logger/sentry_logger.hh"
 #include "../thirdparty/loguru.hh"
-#include "../shiro.hh"
 #include "tables/beatmap_table.hh"
 #include "tables/channel_table.hh"
 #include "tables/punishments_table.hh"
 #include "tables/relationship_table.hh"
 #include "tables/roles_table.hh"
 #include "tables/score_table.hh"
+#include "tables/user_stats_table.hh"
 #include "tables/user_table.hh"
 #include "database.hh"
 
@@ -68,6 +68,7 @@ void shiro::database::setup() {
     tables::migrations::relationships::create(db);
     tables::migrations::roles::create(db);
     tables::migrations::scores::create(db);
+    tables::migrations::user_stats::create(db);
     tables::migrations::users::create(db);
 
     LOG_F(INFO, "Successfully connected and structured MySQL database.");

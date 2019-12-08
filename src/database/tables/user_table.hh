@@ -41,34 +41,6 @@ namespace shiro::tables {
         object_struct(followers, sqlpp::integer);
         object_struct(roles, sqlpp::integer_unsigned);
         object_struct(user_page, sqlpp::text);
-        object_struct(pp_std, sqlpp::floating_point);
-        object_struct(pp_taiko, sqlpp::floating_point);
-        object_struct(pp_ctb, sqlpp::floating_point);
-        object_struct(pp_mania, sqlpp::floating_point);
-        object_struct(rank_std, sqlpp::integer);
-        object_struct(rank_taiko, sqlpp::integer);
-        object_struct(rank_ctb, sqlpp::integer);
-        object_struct(rank_mania, sqlpp::integer);
-        object_struct(score_std, sqlpp::integer);
-        object_struct(score_taiko, sqlpp::integer);
-        object_struct(score_ctb, sqlpp::integer);
-        object_struct(score_mania, sqlpp::integer);
-        object_struct(ranked_score_std, sqlpp::integer);
-        object_struct(ranked_score_taiko, sqlpp::integer);
-        object_struct(ranked_score_ctb, sqlpp::integer);
-        object_struct(ranked_score_mania, sqlpp::integer);
-        object_struct(accuracy_std, sqlpp::floating_point);
-        object_struct(accuracy_taiko, sqlpp::floating_point);
-        object_struct(accuracy_ctb, sqlpp::floating_point);
-        object_struct(accuracy_mania, sqlpp::floating_point);
-        object_struct(max_combo_std, sqlpp::integer);
-        object_struct(max_combo_taiko, sqlpp::integer);
-        object_struct(max_combo_ctb, sqlpp::integer);
-        object_struct(max_combo_mania, sqlpp::integer);
-        object_struct(play_count_std, sqlpp::integer);
-        object_struct(play_count_taiko, sqlpp::integer);
-        object_struct(play_count_ctb, sqlpp::integer);
-        object_struct(play_count_mania, sqlpp::integer);
         object_struct(country, sqlpp::varchar);
     };
 
@@ -85,34 +57,6 @@ namespace shiro::tables {
             users_objects::followers,
             users_objects::roles,
             users_objects::user_page,
-            users_objects::pp_std,
-            users_objects::pp_taiko,
-            users_objects::pp_ctb,
-            users_objects::pp_mania,
-            users_objects::rank_std,
-            users_objects::rank_taiko,
-            users_objects::rank_ctb,
-            users_objects::rank_mania,
-            users_objects::score_std,
-            users_objects::score_taiko,
-            users_objects::score_ctb,
-            users_objects::score_mania,
-            users_objects::ranked_score_std,
-            users_objects::ranked_score_taiko,
-            users_objects::ranked_score_ctb,
-            users_objects::ranked_score_mania,
-            users_objects::accuracy_std,
-            users_objects::accuracy_taiko,
-            users_objects::accuracy_ctb,
-            users_objects::accuracy_mania,
-            users_objects::max_combo_std,
-            users_objects::max_combo_taiko,
-            users_objects::max_combo_ctb,
-            users_objects::max_combo_mania,
-            users_objects::play_count_std,
-            users_objects::play_count_taiko,
-            users_objects::play_count_ctb,
-            users_objects::play_count_mania,
             users_objects::country
     );
 
