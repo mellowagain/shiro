@@ -166,4 +166,16 @@ void shiro::config::score_submission::parse() {
     // Not passing them results in getting them set to false
     // To not overwrite anything, we don't add support for CLI yet.
     // Needs fixing in the future.
+
+    #if defined(SEPARATE_RX_LEADERBOARDS)
+        if (!relax_ranked)
+            LOG_F(WARNING, "Shiro was compiled with separate Relax leaderboard support but Relax is not ranked. "
+                           "Performance may suffer as a consequence. Please consider recompiling without RX support.");
+    #endif
+
+    #if defined(SEPARATE_AP_LEADERBOARDS)
+        if (!auto_pilot_ranked)
+            LOG_F(WARNING, "Shiro was compiled with separate Auto Pilot leaderboard support but Auto Pilot is not ranked. "
+                           "Performance may suffer as a consequence. Please consider recompiling without AP support.");
+    #endif
 }

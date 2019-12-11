@@ -51,6 +51,7 @@ void shiro::database::connect() {
     this->config->password = this->password;
     this->config->auto_reconnect = true;
 
+#define SHIRO_NO_SQL_DEBUG
     #if defined(_DEBUG) && !defined(SHIRO_NO_SQL_DEBUG)
         this->config->debug = true;
     #endif

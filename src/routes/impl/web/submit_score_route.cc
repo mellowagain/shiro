@@ -390,8 +390,25 @@ void shiro::routes::web::submit_score::handle(const crow::request &request, crow
 
     user->save_stats();
 
-    if (overwrite && !user->hidden)
+    if (overwrite && !user->hidden) {
+        #if defined(SEPARATE_RX_LEADERBOARDS)
+            if (user->is_relax()) {
+                ranking::helper::recalculate_ranks_rx((utils::play_mode) score.play_mode);
+                response.end(display->build());
+                return;
+            }
+        #endif
+
+        #if defined(SEPARATE_AP_LEADERBOARDS)
+            if (user->is_auto_pilot()) {
+                ranking::helper::recalculate_ranks_ap((utils::play_mode) score.play_mode);
+                response.end(display->build());
+                return;
+            }
+        #endif
+
         ranking::helper::recalculate_ranks((utils::play_mode) score.play_mode);
+    }
 
     response.end(display->build());
 }

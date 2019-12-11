@@ -58,7 +58,7 @@ void shiro::pp::recalculator::begin(shiro::utils::play_mode mode, uint32_t threa
 
         int32_t play_count = 0;
 
-        switch (mode) {
+        /*switch (mode) {
             case utils::play_mode::standard:
                 play_count = (int32_t) row.play_count_std;
                 break;
@@ -71,7 +71,7 @@ void shiro::pp::recalculator::begin(shiro::utils::play_mode mode, uint32_t threa
             case utils::play_mode::mania:
                 play_count = (int32_t) row.play_count_mania;
                 break;
-        }
+        }*/
 
         // No need to recalculate users that don't have any scores
         if (play_count <= 0)
@@ -173,28 +173,28 @@ void shiro::pp::recalculator::end(shiro::utils::play_mode mode) {
 
         switch (mode) {
             case utils::play_mode::standard:
-                db(update(user_table).set(user_table.pp_std = pp).where(user_table.id == row.id));
+                //db(update(user_table).set(user_table.pp_std = pp).where(user_table.id == row.id));
 
                 if (user != nullptr && user->stats.play_mode == (uint8_t) utils::play_mode::standard)
                     user->stats.pp = pp;
 
                 break;
             case utils::play_mode::taiko:
-                db(update(user_table).set(user_table.pp_taiko = pp).where(user_table.id == row.id));
+                //db(update(user_table).set(user_table.pp_taiko = pp).where(user_table.id == row.id));
 
                 if (user != nullptr && user->stats.play_mode == (uint8_t) utils::play_mode::taiko)
                     user->stats.pp = pp;
 
                 break;
             case utils::play_mode::fruits:
-                db(update(user_table).set(user_table.pp_ctb = pp).where(user_table.id == row.id));
+                //db(update(user_table).set(user_table.pp_ctb = pp).where(user_table.id == row.id));
 
                 if (user != nullptr && user->stats.play_mode == (uint8_t) utils::play_mode::fruits)
                     user->stats.pp = pp;
 
                 break;
             case utils::play_mode::mania:
-                db(update(user_table).set(user_table.pp_mania = pp).where(user_table.id == row.id));
+                //db(update(user_table).set(user_table.pp_mania = pp).where(user_table.id == row.id));
 
                 if (user != nullptr && user->stats.play_mode == (uint8_t) utils::play_mode::mania)
                     user->stats.pp = pp;

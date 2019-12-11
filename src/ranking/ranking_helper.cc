@@ -16,121 +16,43 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "../database/tables/user_table.hh"
+#include "../database/tables/user_stats_table.hh"
 #include "../pp/pp_recalculator.hh"
-#include "../users/user_activity.hh"
 #include "../users/user_manager.hh"
-#include "../users/user_punishments.hh"
-#include "../utils/play_mode.hh"
 #include "ranking_helper.hh"
 
-int32_t shiro::ranking::helper::get_leaderboard_position(uint8_t mode, std::string username) {
-    if (username.empty())
-        return 0;
-
-    sqlpp::mysql::connection db(db_connection->get_config());
-    const tables::users user_table {};
-
-    auto result = db(select(all_of(user_table)).from(user_table).unconditionally());
-
-    if (result.empty())
-        return 0;
-
-    std::vector<std::pair<std::string, float>> users;
-
-    for (const auto &row : result) {
-        if ((int32_t) row.id == 1)
-            continue;
-
-        if (!users::punishments::has_scores(row.id))
-            continue;
-
-        switch (mode) {
-            case (uint8_t) utils::play_mode::standard:
-                users.emplace_back(std::make_pair(row.username, row.pp_std));
-                break;
-            case (uint8_t) utils::play_mode::taiko:
-                users.emplace_back(std::make_pair(row.username, row.pp_taiko));
-                break;
-            case (uint8_t) utils::play_mode::fruits:
-                users.emplace_back(std::make_pair(row.username, row.pp_ctb));
-                break;
-            case (uint8_t) utils::play_mode::mania:
-                users.emplace_back(std::make_pair(row.username, row.pp_mania));
-                break;
-        }
-    }
-
-    std::sort(users.begin(), users.end(), [](const std::pair<std::string, float> &s_left, const std::pair<std::string, float> &s_right) {
-        return s_left.second > s_right.second;
-    });
-
-    for (size_t i = 0; i < users.size(); i++) {
-        const auto &[name, _] = users.at(i);
-
-        if (username == name)
-            return i + 1;
-    }
-
-    return 0;
-}
+// This file and it's header is the definition of [code bloat].
+// I'm hoping to eliminate this file completely in the future by specific
+// implementations and not just a file with general purpose functions.
 
 std::string shiro::ranking::helper::get_leaderboard_user(uint8_t mode, int32_t pos) {
     if (pos < 1)
         return "";
 
     sqlpp::mysql::connection db(db_connection->get_config());
-    const tables::users user_table {};
+    const tables::user_stats user_table {};
 
     auto result = db(select(all_of(user_table)).from(user_table).unconditionally());
 
     if (result.empty())
         return "";
 
-    std::vector<std::pair<std::string, float>> users;
-
-    for (const auto &row : result) {
-        if ((int32_t) row.id == 1)
-            continue;
-
-        if (!users::punishments::has_scores(row.id))
-            continue;
-
-        switch (mode) {
-            case (uint8_t) utils::play_mode::standard:
-                users.emplace_back(std::make_pair(row.username, row.pp_std));
-                break;
-            case (uint8_t) utils::play_mode::taiko:
-                users.emplace_back(std::make_pair(row.username, row.pp_taiko));
-                break;
-            case (uint8_t) utils::play_mode::fruits:
-                users.emplace_back(std::make_pair(row.username, row.pp_ctb));
-                break;
-            case (uint8_t) utils::play_mode::mania:
-                users.emplace_back(std::make_pair(row.username, row.pp_mania));
-                break;
-        }
-    }
-
-    std::sort(users.begin(), users.end(), [](const std::pair<std::string, float> &s_left, const std::pair<std::string, float> &s_right) {
-        return s_left.second > s_right.second;
-    });
-
-    try {
-        return users.at(pos - 1).first;
-    } catch (const std::out_of_range &ex) {
-        return "";
-    }
+    return get_user_at_leaderboard_pos<decltype(result)>(std::move(result), mode, pos);
 }
 
 int16_t shiro::ranking::helper::get_pp_for_user(uint8_t mode, std::string username) {
     if (username.empty())
         return 0;
 
-    sqlpp::mysql::connection db(db_connection->get_config());
-    const tables::users user_table {};
+    int32_t user_id = users::manager::get_id_by_username(username);
 
-    auto result = db(select(all_of(user_table)).from(user_table).where(user_table.username == username).limit(1u));
+    if (user_id == -1)
+        return 0;
+
+    sqlpp::mysql::connection db(db_connection->get_config());
+    const tables::user_stats user_table {};
+
+    auto result = db(select(all_of(user_table)).from(user_table).where(user_table.id == user_id).limit(1u));
 
     if (result.empty())
         return 0;
@@ -138,6 +60,7 @@ int16_t shiro::ranking::helper::get_pp_for_user(uint8_t mode, std::string userna
     const auto &row = result.front();
 
     switch (mode) {
+        default:
         case (uint8_t) utils::play_mode::standard:
             return row.pp_std;
         case (uint8_t) utils::play_mode::taiko:
@@ -147,8 +70,6 @@ int16_t shiro::ranking::helper::get_pp_for_user(uint8_t mode, std::string userna
         case (uint8_t) utils::play_mode::mania:
             return row.pp_mania;
     }
-
-    return 0;
 }
 
 void shiro::ranking::helper::recalculate_ranks(const shiro::utils::play_mode &mode) {
@@ -157,7 +78,7 @@ void shiro::ranking::helper::recalculate_ranks(const shiro::utils::play_mode &mo
         return;
 
     sqlpp::mysql::connection db(db_connection->get_config());
-    const tables::users user_table {};
+    const tables::user_stats user_table {};
 
     auto result = db(select(all_of(user_table)).from(user_table).unconditionally());
 
@@ -214,7 +135,7 @@ void shiro::ranking::helper::recalculate_ranks(const shiro::utils::play_mode &mo
     // At this point, the users array is sorted by rank, this means the 0th element is rank #1
 
     for (size_t i = 0; i < users.size(); i++) {
-        auto [user_id, pp] = users.at(i);
+        auto [user_id, _] = users.at(i);
         int32_t rank = (int32_t) i + 1;
 
         std::shared_ptr<users::user> user = users::manager::get_user_by_id(user_id);
@@ -279,3 +200,109 @@ void shiro::ranking::helper::recalculate_ranks(const shiro::utils::play_mode &mo
         online_user->queue.enqueue(writer);
     }, true);
 }
+
+#if defined(SEPARATE_RX_LEADERBOARDS)
+    std::string shiro::ranking::helper::get_leaderboard_user_rx(uint8_t mode, int32_t pos) {
+        if (pos < 1)
+            return "";
+
+        sqlpp::mysql::connection db(db_connection->get_config());
+        const tables::user_stats_rx user_table {};
+
+        auto result = db(select(all_of(user_table)).from(user_table).unconditionally());
+
+        if (result.empty())
+            return "";
+
+        return get_user_at_leaderboard_pos<decltype(result)>(std::move(result), mode, pos);
+    }
+
+    int16_t shiro::ranking::helper::get_pp_for_user_rx(uint8_t mode, std::string username) {
+        if (username.empty())
+            return 0;
+
+        int32_t user_id = users::manager::get_id_by_username(username);
+
+        if (user_id == -1)
+            return 0;
+
+        sqlpp::mysql::connection db(db_connection->get_config());
+        const tables::user_stats_rx user_table {};
+
+        auto result = db(select(all_of(user_table)).from(user_table).where(user_table.id == user_id).limit(1u));
+
+        if (result.empty())
+            return 0;
+
+        const auto &row = result.front();
+
+        switch (mode) {
+            default:
+            case (uint8_t) utils::play_mode::standard:
+                return row.pp_std;
+            case (uint8_t) utils::play_mode::taiko:
+                return row.pp_taiko;
+            case (uint8_t) utils::play_mode::fruits:
+                return row.pp_ctb;
+            case (uint8_t) utils::play_mode::mania:
+                return row.pp_mania;
+        }
+    }
+
+    void shiro::ranking::helper::recalculate_ranks_rx(const shiro::utils::play_mode &mode) {
+        throw std::runtime_error("Manual pp recalculation for RX is currently not implemented.");
+    }
+#endif
+
+#if defined(SEPARATE_AP_LEADERBOARDS)
+    std::string shiro::ranking::helper::get_leaderboard_user_ap(uint8_t mode, int32_t pos) {
+        if (pos < 1)
+            return "";
+
+        sqlpp::mysql::connection db(db_connection->get_config());
+        const tables::user_stats_ap user_table {};
+
+        auto result = db(select(all_of(user_table)).from(user_table).unconditionally());
+
+        if (result.empty())
+            return "";
+
+        return get_user_at_leaderboard_pos<decltype(result)>(std::move(result), mode, pos);
+    }
+
+    int16_t shiro::ranking::helper::get_pp_for_user_ap(uint8_t mode, std::string username) {
+        if (username.empty())
+            return 0;
+
+        int32_t user_id = users::manager::get_id_by_username(username);
+
+        if (user_id == -1)
+            return 0;
+
+        sqlpp::mysql::connection db(db_connection->get_config());
+        const tables::user_stats_ap user_table {};
+
+        auto result = db(select(all_of(user_table)).from(user_table).where(user_table.id == user_id).limit(1u));
+
+        if (result.empty())
+            return 0;
+
+        const auto &row = result.front();
+
+        switch (mode) {
+            default:
+            case (uint8_t) utils::play_mode::standard:
+                return row.pp_std;
+            case (uint8_t) utils::play_mode::taiko:
+                return row.pp_taiko;
+            case (uint8_t) utils::play_mode::fruits:
+                return row.pp_ctb;
+            case (uint8_t) utils::play_mode::mania:
+                return row.pp_mania;
+        }
+    }
+
+    void shiro::ranking::helper::recalculate_ranks_ap(const shiro::utils::play_mode &mode) {
+        throw std::runtime_error("Manual pp recalculation for AP is currently not implemented.");
+    }
+#endif

@@ -26,6 +26,7 @@
 #include "../io/layouts/user/user_stats.hh"
 #include "../io/layouts/user/user_status.hh"
 #include "../io/queue.hh"
+#include "../utils/play_mode.hh"
 #include "../shiro.hh"
 
 namespace shiro::users {
@@ -63,12 +64,61 @@ namespace shiro::users {
         void update();
         void save_stats();
 
+        #if defined(SEPARATE_RX_LEADERBOARDS)
+            bool is_relax();
+        #endif
+
+        #if defined(SEPARATE_AP_LEADERBOARDS)
+            bool is_auto_pilot();
+        #endif
+
         std::string get_url();
+
+        bool check_password(const std::string &password);
 
         // Re-sends presence and stats to the user to refresh on client-side
         void refresh_stats();
 
-        bool check_password(const std::string &password);
+        template <typename t>
+        inline void fill_local_stats(t remote_stats) {
+            if (this->status.play_mode == (uint8_t) utils::play_mode::standard) {
+                this->stats.pp = remote_stats.pp_std;
+                this->stats.total_score = remote_stats.score_std;
+                this->stats.ranked_score = remote_stats.ranked_score_std;
+                this->stats.play_count = remote_stats.play_count_std;
+                this->stats.rank = remote_stats.rank_std;
+                this->presence.rank = remote_stats.rank_std;
+                this->stats.max_combo = remote_stats.max_combo_std;
+                this->stats.accuracy = remote_stats.accuracy_std;
+            } else if (this->status.play_mode == (uint8_t) utils::play_mode::taiko) {
+                this->stats.pp = remote_stats.pp_taiko;
+                this->stats.total_score = remote_stats.score_taiko;
+                this->stats.ranked_score = remote_stats.ranked_score_taiko;
+                this->stats.play_count = remote_stats.play_count_taiko;
+                this->stats.rank = remote_stats.rank_taiko;
+                this->presence.rank = remote_stats.rank_taiko;
+                this->stats.max_combo = remote_stats.max_combo_taiko;
+                this->stats.accuracy = remote_stats.accuracy_taiko;
+            } else if (this->status.play_mode == (uint8_t) utils::play_mode::fruits) {
+                this->stats.pp = remote_stats.pp_ctb;
+                this->stats.total_score = remote_stats.score_ctb;
+                this->stats.ranked_score = remote_stats.ranked_score_ctb;
+                this->stats.play_count = remote_stats.play_count_ctb;
+                this->stats.rank = remote_stats.rank_ctb;
+                this->presence.rank = remote_stats.rank_ctb;
+                this->stats.max_combo = remote_stats.max_combo_ctb;
+                this->stats.accuracy = remote_stats.accuracy_ctb;
+            } else if (this->status.play_mode == (uint8_t) utils::play_mode::mania) {
+                this->stats.pp = remote_stats.pp_mania;
+                this->stats.total_score = remote_stats.score_mania;
+                this->stats.ranked_score = remote_stats.ranked_score_mania;
+                this->stats.play_count = remote_stats.play_count_mania;
+                this->stats.rank = remote_stats.rank_mania;
+                this->presence.rank = remote_stats.rank_mania;
+                this->stats.max_combo = remote_stats.max_combo_mania;
+                this->stats.accuracy = remote_stats.accuracy_mania;
+            }
+        }
 
     };
 

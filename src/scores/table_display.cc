@@ -108,8 +108,28 @@ std::string shiro::scores::table_display::build_legacy() {
     push("beatmapPasscount", this->beatmap.pass_count);
     push("approvedDate", std::put_time(tm, "%F %X"), true);
 
-    std::string user_above = ranking::helper::get_leaderboard_user(this->user->stats.play_mode, this->user->stats.rank - 1);
-    int16_t user_above_pp = ranking::helper::get_pp_for_user(this->user->stats.play_mode, user_above);
+    std::string user_above;
+    int16_t user_above_pp = 0;
+
+    #if defined(SEPARATE_RX_LEADERBOARDS)
+        if (this->user->is_relax()) {
+            user_above = ranking::helper::get_leaderboard_user_rx(this->user->stats.play_mode, this->user->stats.rank - 1);
+            user_above_pp = ranking::helper::get_pp_for_user_rx(this->user->stats.play_mode, user_above);
+        }
+    #endif
+
+    #if defined(SEPARATE_AP_LEADERBOARDS)
+        if (this->user->is_auto_pilot()) {
+            user_above = ranking::helper::get_leaderboard_user_ap(this->user->stats.play_mode, this->user->stats.rank - 1);
+            user_above_pp = ranking::helper::get_pp_for_user_ap(this->user->stats.play_mode, user_above);
+        }
+    #endif
+
+    // Integer comparision is usually faster than String comparision
+    if (user_above_pp != 0) {
+        user_above = ranking::helper::get_leaderboard_user(this->user->stats.play_mode, this->user->stats.rank - 1);
+        user_above_pp = ranking::helper::get_pp_for_user(this->user->stats.play_mode, user_above);
+    }
 
     int32_t to_next_rank = user_above_pp - this->user->stats.pp;
 

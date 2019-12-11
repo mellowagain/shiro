@@ -8,16 +8,18 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/")
 
 file(GLOB_RECURSE SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cc ${CMAKE_CURRENT_SOURCE_DIR}/src/*.hh)
 
-option(SEPARATE_RX_LEADERBOARDS "Relax scores should be separated from regular leaderboards" OFF)
-option(SEPARATE_AP_LEADERBOARDS "Auto Pilot scores should be separated from regular leaderboards" OFF)
+option(SEPARATE_RX_LEADERBOARDS "Relax scores should be separated from regular leaderboards" ON)
+option(SEPARATE_AP_LEADERBOARDS "Auto Pilot scores should be separated from regular leaderboards" ON)
 
-if (SEPARATE_RX_LEADERBOARDS)
+#if (SEPARATE_RX_LEADERBOARDS)
     add_compile_definitions(SEPARATE_RX_LEADERBOARDS)
-endif()
+    message(STATUS "Shiro will be compiled with separate Relax leaderboard support")
+#endif()
 
-if (SEPARATE_AP_LEADERBOARDS)
+#if (SEPARATE_AP_LEADERBOARDS)
     add_compile_definitions(SEPARATE_AP_LEADERBOARDS)
-endif()
+    message(STATUS "Shiro will be compiled with separate Auto Pilot leaderboard support")
+#endif()
 
 if (NOT CMAKE_BUILD_TYPE)
     message(WARNING "No build type has been selected, defaulting to Release.")

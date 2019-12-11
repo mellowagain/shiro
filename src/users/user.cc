@@ -16,16 +16,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <cstring>
-
 #include "../config/ipc_file.hh"
 #include "../database/tables/relationship_table.hh"
+#include "../database/tables/user_stats_table.hh"
 #include "../database/tables/user_table.hh"
 #include "../permissions/role_manager.hh"
 #include "../thirdparty/loguru.hh"
 #include "../utils/crypto.hh"
-#include "../utils/play_mode.hh"
-#include "../shiro.hh"
 #include "user.hh"
 #include "user_punishments.hh"
 
@@ -57,15 +54,9 @@ bool shiro::users::user::init() {
     this->salt = row.salt;
     this->roles = row.roles;
     this->presence.permissions = roles::manager::get_chat_color(this->roles);
-    this->stats.pp = row.pp_std;
-    this->stats.max_combo = row.max_combo_std;
-    this->stats.accuracy = row.accuracy_std;
-    this->stats.total_score = row.score_std;
-    this->stats.ranked_score = row.ranked_score_std;
-    this->stats.play_count = row.play_count_std;
-    this->stats.rank = row.rank_std;
-    this->presence.rank = row.rank_std;
     this->country = row.country;
+
+    this->update();
 
     auto relationship_result = db(select(all_of(relationships_table)).from(relationships_table).where(relationships_table.origin == this->user_id and relationships_table.blocked == false));
 
@@ -81,105 +72,138 @@ bool shiro::users::user::init() {
 
 void shiro::users::user::update() {
     sqlpp::mysql::connection db(db_connection->get_config());
-    const tables::users user_table {};
 
-    auto result = db(select(all_of(user_table)).from(user_table).where(user_table.id == this->user_id).limit(1u));
+    #if defined(SEPARATE_RX_LEADERBOARDS)
+        if (this->is_relax()) {
+            const tables::user_stats_rx stats_table {};
+            auto result = db(select(all_of(stats_table)).from(stats_table).where(
+                    stats_table.id == this->user_id
+            ).limit(1u));
+
+            if (result.empty())
+                return;
+
+            const auto &row = result.front();
+            this->fill_local_stats<decltype(row)>(row);
+            return;
+        }
+    #endif
+
+    #if defined(SEPARATE_AP_LEADERBOARDS)
+        if (this->is_auto_pilot()) {
+            const tables::user_stats_ap stats_table {};
+            auto result = db(select(all_of(stats_table)).from(stats_table).where(
+                    stats_table.id == this->user_id
+            ).limit(1u));
+
+            if (result.empty())
+                return;
+
+            const auto &row = result.front();
+            this->fill_local_stats<decltype(row)>(row);
+            return;
+        }
+    #endif
+
+    const tables::user_stats stats_table {};
+    auto result = db(select(all_of(stats_table)).from(stats_table).where(
+            stats_table.id == this->user_id
+    ).limit(1u));
 
     if (result.empty())
         return;
 
     const auto &row = result.front();
-
-    if (this->status.play_mode == (uint8_t) utils::play_mode::standard) {
-        this->stats.pp = row.pp_std;
-        this->stats.total_score = row.score_std;
-        this->stats.ranked_score = row.ranked_score_std;
-        this->stats.play_count = row.play_count_std;
-        this->stats.rank = row.rank_std;
-        this->presence.rank = row.rank_std;
-        this->stats.max_combo = row.max_combo_std;
-        this->stats.accuracy = row.accuracy_std;
-    } else if (this->status.play_mode == (uint8_t) utils::play_mode::taiko) {
-        this->stats.pp = row.pp_taiko;
-        this->stats.total_score = row.score_taiko;
-        this->stats.ranked_score = row.ranked_score_taiko;
-        this->stats.play_count = row.play_count_taiko;
-        this->stats.rank = row.rank_taiko;
-        this->presence.rank = row.rank_taiko;
-        this->stats.max_combo = row.max_combo_taiko;
-        this->stats.accuracy = row.accuracy_taiko;
-    } else if (this->status.play_mode == (uint8_t) utils::play_mode::fruits) {
-        this->stats.pp = row.pp_ctb;
-        this->stats.total_score = row.score_ctb;
-        this->stats.ranked_score = row.ranked_score_ctb;
-        this->stats.play_count = row.play_count_ctb;
-        this->stats.rank = row.rank_ctb;
-        this->presence.rank = row.rank_ctb;
-        this->stats.max_combo = row.max_combo_ctb;
-        this->stats.accuracy = row.accuracy_ctb;
-    } else if (this->status.play_mode == (uint8_t) utils::play_mode::mania) {
-        this->stats.pp = row.pp_mania;
-        this->stats.total_score = row.score_mania;
-        this->stats.ranked_score = row.ranked_score_mania;
-        this->stats.play_count = row.play_count_mania;
-        this->stats.rank = row.rank_mania;
-        this->presence.rank = row.rank_mania;
-        this->stats.max_combo = row.max_combo_mania;
-        this->stats.accuracy = row.accuracy_mania;
-    }
+    this->fill_local_stats<decltype(row)>(row);
 }
 
 void shiro::users::user::save_stats() {
-    sqlpp::mysql::connection db(db_connection->get_config());
-    const tables::users user_table {};
+    #define play_mode_switch(table)                                                 \
+        switch (this->stats.play_mode) {                                            \
+            case (uint8_t) utils::play_mode::standard:                              \
+                db(sqlpp::update(stats_table).set(                                  \
+                    stats_table.pp_std = this->stats.pp,                            \
+                    stats_table.score_std = this->stats.total_score,                \
+                    stats_table.ranked_score_std = this->stats.ranked_score,        \
+                    stats_table.play_count_std = this->stats.play_count,            \
+                    stats_table.rank_std = this->stats.rank,                        \
+                    stats_table.max_combo_std = this->stats.max_combo,              \
+                    stats_table.accuracy_std = this->stats.accuracy                 \
+                ).where(stats_table.id == this->user_id));                          \
+                break;                                                              \
+            case (uint8_t) utils::play_mode::taiko:                                 \
+                db(sqlpp::update(stats_table).set(                                  \
+                    stats_table.pp_taiko = this->stats.pp,                          \
+                    stats_table.score_taiko = this->stats.total_score,              \
+                    stats_table.ranked_score_taiko = this->stats.ranked_score,      \
+                    stats_table.play_count_taiko = this->stats.play_count,          \
+                    stats_table.rank_taiko = this->stats.rank,                      \
+                    stats_table.max_combo_taiko = this->stats.max_combo,            \
+                    stats_table.accuracy_taiko = this->stats.accuracy               \
+                ).where(stats_table.id == this->user_id));                          \
+                break;                                                              \
+            case (uint8_t) utils::play_mode::fruits:                                \
+                db(sqlpp::update(stats_table).set(                                  \
+                    stats_table.pp_ctb = this->stats.pp,                            \
+                    stats_table.score_ctb = this->stats.total_score,                \
+                    stats_table.ranked_score_ctb = this->stats.ranked_score,        \
+                    stats_table.play_count_ctb = this->stats.play_count,            \
+                    stats_table.rank_ctb = this->stats.rank,                        \
+                    stats_table.max_combo_ctb = this->stats.max_combo,              \
+                    stats_table.accuracy_ctb = this->stats.accuracy                 \
+                ).where(stats_table.id == this->user_id));                          \
+                break;                                                              \
+            case (uint8_t) utils::play_mode::mania:                                 \
+                db(sqlpp::update(stats_table).set(                                  \
+                    stats_table.pp_mania = this->stats.pp,                          \
+                    stats_table.score_mania = this->stats.total_score,              \
+                    stats_table.ranked_score_mania = this->stats.ranked_score,      \
+                    stats_table.play_count_mania = this->stats.play_count,          \
+                    stats_table.rank_mania = this->stats.rank,                      \
+                    stats_table.max_combo_mania = this->stats.max_combo,            \
+                    stats_table.accuracy_mania = this->stats.accuracy               \
+                ).where(stats_table.id == this->user_id));                          \
+                break;                                                              \
+        }
 
-    switch (this->stats.play_mode) {
-        case (uint8_t) utils::play_mode::standard:
-            db(sqlpp::update(user_table).set(
-                user_table.pp_std = this->stats.pp,
-                user_table.score_std = this->stats.total_score,
-                user_table.ranked_score_std = this->stats.ranked_score,
-                user_table.play_count_std = this->stats.play_count,
-                user_table.rank_std = this->stats.rank,
-                user_table.max_combo_std = this->stats.max_combo,
-                user_table.accuracy_std = this->stats.accuracy
-            ).where(user_table.id == this->user_id));
-            break;
-        case (uint8_t) utils::play_mode::taiko:
-            db(sqlpp::update(user_table).set(
-                    user_table.pp_taiko = this->stats.pp,
-                    user_table.score_taiko = this->stats.total_score,
-                    user_table.ranked_score_taiko = this->stats.ranked_score,
-                    user_table.play_count_taiko = this->stats.play_count,
-                    user_table.rank_taiko = this->stats.rank,
-                    user_table.max_combo_taiko = this->stats.max_combo,
-                    user_table.accuracy_taiko = this->stats.accuracy
-            ).where(user_table.id == this->user_id));
-            break;
-        case (uint8_t) utils::play_mode::fruits:
-            db(sqlpp::update(user_table).set(
-                    user_table.pp_ctb = this->stats.pp,
-                    user_table.score_ctb = this->stats.total_score,
-                    user_table.ranked_score_ctb = this->stats.ranked_score,
-                    user_table.play_count_ctb = this->stats.play_count,
-                    user_table.rank_ctb = this->stats.rank,
-                    user_table.max_combo_ctb = this->stats.max_combo,
-                    user_table.accuracy_ctb = this->stats.accuracy
-            ).where(user_table.id == this->user_id));
-            break;
-        case (uint8_t) utils::play_mode::mania:
-            db(sqlpp::update(user_table).set(
-                    user_table.pp_mania = this->stats.pp,
-                    user_table.score_mania = this->stats.total_score,
-                    user_table.ranked_score_mania = this->stats.ranked_score,
-                    user_table.play_count_mania = this->stats.play_count,
-                    user_table.rank_mania = this->stats.rank,
-                    user_table.max_combo_mania = this->stats.max_combo,
-                    user_table.accuracy_mania = this->stats.accuracy
-            ).where(user_table.id == this->user_id));
-            break;
-    }
+    sqlpp::mysql::connection db(db_connection->get_config());
+
+    #if defined(SEPARATE_RX_LEADERBOARDS)
+        if (this->is_relax()) {
+            const tables::user_stats_rx stats_table {};
+
+            play_mode_switch(stats_table)
+            return;
+        }
+    #endif
+
+    #if defined(SEPARATE_AP_LEADERBOARDS)
+        if (this->is_auto_pilot()) {
+            const tables::user_stats_ap stats_table {};
+
+            play_mode_switch(stats_table)
+            return;
+        }
+    #endif
+
+    const tables::user_stats stats_table {};
+
+    play_mode_switch(stats_table)
+
+    #undef play_mode_switch
 }
+
+#if defined(SEPARATE_RX_LEADERBOARDS)
+    bool shiro::users::user::is_relax() {
+        return this->stats.current_mods & (uint32_t) utils::mods::relax;
+    }
+#endif
+
+#if defined(SEPARATE_AP_LEADERBOARDS)
+    bool shiro::users::user::is_auto_pilot() {
+        return this->stats.current_mods & (uint32_t) utils::mods::auto_pilot;
+    }
+#endif
 
 std::string shiro::users::user::get_url() {
     static std::string url = config::ipc::frontend_url + "u/" + std::to_string(this->user_id);
