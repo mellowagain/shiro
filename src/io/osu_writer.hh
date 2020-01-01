@@ -112,8 +112,9 @@ namespace shiro::io {
 
         void match_complete();
         void match_skip();
+        void match_abort();
 
-        void match_player_skipped(int32_t user_id);
+        void match_player_skipped(int32_t slot_id);
         void match_change_password(std::string password);
 
         std::string serialize();

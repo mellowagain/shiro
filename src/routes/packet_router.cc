@@ -18,13 +18,23 @@
 
 #include "../handlers/multiplayer/lobby/lobby_leave_handler.hh"
 #include "../handlers/multiplayer/lobby/lobby_join_handler.hh"
+#include "../handlers/multiplayer/match/match_complete_handler.hh"
+#include "../handlers/multiplayer/match/match_load_handler.hh"
+#include "../handlers/multiplayer/match/match_score_update_handler.hh"
+#include "../handlers/multiplayer/match/match_skip_request_handler.hh"
+#include "../handlers/multiplayer/match/match_start_handler.hh"
+#include "../handlers/multiplayer/room/room_beatmap_handler.hh"
 #include "../handlers/multiplayer/room/room_change_host_handler.hh"
+#include "../handlers/multiplayer/room/room_change_mods_handler.hh"
 #include "../handlers/multiplayer/room/room_change_password_handler.hh"
 #include "../handlers/multiplayer/room/room_change_settings_handler.hh"
+#include "../handlers/multiplayer/room/room_change_slot_handler.hh"
+#include "../handlers/multiplayer/room/room_change_team_handler.hh"
 #include "../handlers/multiplayer/room/room_create_handler.hh"
 #include "../handlers/multiplayer/room/room_join_handler.hh"
 #include "../handlers/multiplayer/room/room_leave_handler.hh"
 #include "../handlers/multiplayer/room/room_lock_slot_handler.hh"
+#include "../handlers/multiplayer/room/room_ready_handler.hh"
 #include "../handlers/chat/leave_channel_handler.hh"
 #include "../handlers/chat/join_channel_handler.hh"
 #include "../handlers/chat/private_chat_handler.hh"
@@ -38,6 +48,7 @@
 #include "../handlers/spectating/stop_spectating_handler.hh"
 #include "../handlers/spectating/spectator_frames_handler.hh"
 #include "../handlers/spectating/cant_spectate_handler.hh"
+#include "../handlers/invite_handler.hh"
 #include "../handlers/logout_handler.hh"
 #include "../handlers/ping_handler.hh"
 #include "../handlers/request_status_update_handler.hh"
@@ -93,24 +104,48 @@ void shiro::routes::route(shiro::io::packet_id packet_id, shiro::io::osu_packet 
         case io::packet_id::in_match_part:
             handler::multiplayer::room::leave::handle(in, out, user);
             break;
-        case io::packet_id::in_match_change_slot:break;
-        case io::packet_id::in_match_ready:break;
+        case io::packet_id::in_match_change_slot:
+            handler::multiplayer::room::change_slot::handle(in, out, user);
+            break;
+        case io::packet_id::in_match_ready:
+            handler::multiplayer::room::ready::handle_ready(in, out, user);
+            break;
         case io::packet_id::in_match_lock:
             handler::multiplayer::room::lock_slot::handle(in, out, user);
             break;
         case io::packet_id::in_match_change_settings:
             handler::multiplayer::room::change_settings::handle(in, out, user);
             break;
-        case io::packet_id::in_match_start:break;
-        case io::packet_id::in_match_score_update:break;
-        case io::packet_id::in_match_complete:break;
-        case io::packet_id::in_match_change_mods:break;
-        case io::packet_id::in_match_load_complete:break;
-        case io::packet_id::in_match_no_beatmap:break;
-        case io::packet_id::in_match_not_ready:break;
-        case io::packet_id::in_match_failed:break;
-        case io::packet_id::in_match_has_beatmap:break;
-        case io::packet_id::in_match_skip_request:break;
+        case io::packet_id::in_match_start:
+            handler::multiplayer::match::start::handle(in, out, user);
+            break;
+        case io::packet_id::in_match_score_update:
+            handler::multiplayer::match::score_update::handle(in, out, user);
+            break;
+        case io::packet_id::in_match_complete:
+            handler::multiplayer::match::complete::handle(in, out, user);
+            break;
+        case io::packet_id::in_match_change_mods:
+            handler::multiplayer::room::change_mods::handle(in, out, user);
+            break;
+        case io::packet_id::in_match_load_complete:
+            handler::multiplayer::match::load::handle(in, out, user);
+            break;
+        case io::packet_id::in_match_no_beatmap:
+            handler::multiplayer::room::beatmap::handle_no_beatmap(in, out, user);
+            break;
+        case io::packet_id::in_match_not_ready:
+            handler::multiplayer::room::ready::handle_unready(in, out, user);
+            break;
+        case io::packet_id::in_match_failed:
+            // TODO: Handle failed players (if a whole team fails, the match gets aborted)
+            break;
+        case io::packet_id::in_match_has_beatmap:
+            handler::multiplayer::room::beatmap::handle_has_beatmap(in, out, user);
+            break;
+        case io::packet_id::in_match_skip_request:
+            handler::multiplayer::match::skip_request::handle(in, out, user);
+            break;
         case io::packet_id::in_channel_join:
             handler::chat::join::handle(in, out, user);
             break;
@@ -124,7 +159,9 @@ void shiro::routes::route(shiro::io::packet_id packet_id, shiro::io::osu_packet 
         case io::packet_id::in_friend_remove:
             handler::friends::remove::handle(in, out, user);
             break;
-        case io::packet_id::in_match_change_team:break;
+        case io::packet_id::in_match_change_team:
+            handler::multiplayer::room::change_team::handle(in, out, user);
+            break;
         case io::packet_id::in_channel_leave:
             handler::chat::leave::handle(in, out, user);
             break;
@@ -133,7 +170,9 @@ void shiro::routes::route(shiro::io::packet_id packet_id, shiro::io::osu_packet 
         case io::packet_id::in_user_stats_request:
             handler::stats::request_all::handle(in, out, user);
             break;
-        case io::packet_id::in_invite:break;
+        case io::packet_id::in_invite:
+            handler::invite::handle(in, out, user);
+            break;
         case io::packet_id::in_match_change_password:
             handler::multiplayer::room::change_password::handle(in, out, user);
             break;
@@ -145,7 +184,6 @@ void shiro::routes::route(shiro::io::packet_id packet_id, shiro::io::osu_packet 
             handler::presence::request_all::handle(in, out, user);
             break;
         case io::packet_id::in_user_toggle_block_non_friend_pm:break;
-        case io::packet_id::in_match_abort:break;
         case io::packet_id::in_special_join_match_channel:break;
         case io::packet_id::in_special_leave_match_channel:break;
         default:

@@ -18,6 +18,7 @@
 
 #include "../thirdparty/loguru.hh"
 #include "../users/user_manager.hh"
+#include "../utils/curler.hh"
 #include "../utils/match_team_type.hh"
 #include "../utils/slot_status.hh"
 #include "lobby_manager.hh"
@@ -83,8 +84,12 @@ std::optional<shiro::io::layouts::multiplayer_match> shiro::multiplayer::match_m
         if (match.match_id != request.match_id)
             continue;
 
-        if (!match.game_password.empty() && match.game_password != request.password)
-            return std::nullopt;
+        if (!match.game_password.empty()) {
+            std::string password = utils::curl::unescape_url(request.password);
+
+            if (password != match.game_password)
+                return std::nullopt;
+        }
 
         size_t index = 0xBADCAFE;
 
@@ -110,6 +115,7 @@ std::optional<shiro::io::layouts::multiplayer_match> shiro::multiplayer::match_m
 
         // Broadcast to the everyone that we now have a new player
         match.send_update(true);
+        break;
     }
 
     // Unlock now to prevent a deadlock which would occur if we're calling into the return method below
@@ -167,6 +173,8 @@ bool shiro::multiplayer::match_manager::leave_match(std::shared_ptr<shiro::users
                 break;
             }
         }
+
+        break;
     }
 
     if (match_id == -1)
@@ -252,11 +260,12 @@ std::optional<shiro::io::layouts::multiplayer_match> shiro::multiplayer::match_m
     return std::nullopt;
 }
 
-void shiro::multiplayer::match_manager::iterate(const std::function<void(io::layouts::multiplayer_match &)> &callback) {
+void shiro::multiplayer::match_manager::iterate(const std::function<bool(io::layouts::multiplayer_match &)> &callback) {
     // Disallow other threads from writing (but not from reading)
     std::shared_lock<std::shared_timed_mutex> lock(mutex);
 
     for (io::layouts::multiplayer_match &match : matches) {
-        callback(match);
+        if (callback(match))
+            break;
     }
 }

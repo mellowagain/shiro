@@ -29,14 +29,14 @@ void shiro::handler::multiplayer::room::lock_slot::handle(shiro::io::osu_packet 
 
     std::shared_ptr<users::user> kicking_user = nullptr;
 
-    shiro::multiplayer::match_manager::iterate([&user, &kicking_user, slot_id](io::layouts::multiplayer_match &match) {
+    shiro::multiplayer::match_manager::iterate([&user, &kicking_user, slot_id](io::layouts::multiplayer_match &match) -> bool {
         auto iterator = std::find(match.multi_slot_id.begin(), match.multi_slot_id.end(), user->user_id);
 
         if (iterator == match.multi_slot_id.end())
-            return;
+            return false;
 
         if (match.host_id != user->user_id)
-            return;
+            return true;
 
         int32_t kicking_user_id = match.multi_slot_id.at(slot_id);
 
@@ -50,11 +50,13 @@ void shiro::handler::multiplayer::room::lock_slot::handle(shiro::io::osu_packet 
         slot_status = should_lock ? (uint8_t) utils::slot_status::locked : (uint8_t) utils::slot_status::open;
 
         match.send_update(true);
+        return true;
     });
 
     if (kicking_user == nullptr)
         return;
 
+    // Kick the player outside of #iterate to prevent dead lock
     shiro::multiplayer::match_manager::leave_match(kicking_user);
 
     io::osu_writer writer;

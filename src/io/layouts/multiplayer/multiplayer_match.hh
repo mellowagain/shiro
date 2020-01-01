@@ -39,6 +39,10 @@ namespace shiro::io::layouts {
         std::array<uint8_t, 16> multi_slot_team {};
         std::array<int32_t, 16> multi_slot_mods {};
 
+        std::array<bool, 16> loaded_players {};
+        std::array<bool, 16> skipped_players {};
+        std::array<bool, 16> finished_players {};
+
         std::string beatmap_name = "";
         std::string beatmap_checksum = "";
         int32_t beatmap_id = 0;
@@ -50,7 +54,7 @@ namespace shiro::io::layouts {
         uint8_t game_mode = 0;
         uint8_t multi_win_condition = 0;
         uint8_t multi_team_type = 0;
-        uint8_t multi_special_modes = 0;
+        uint8_t multi_special_modes = 0; // 1 = Free Mod
 
         int32_t random_seed = 0;
         std::string game_password = "";

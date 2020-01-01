@@ -122,6 +122,16 @@ std::string shiro::utils::curl::escape_url(const std::string &raw) {
     return result;
 }
 
+std::string shiro::utils::curl::unescape_url(const std::string &raw) {
+    CURL *curl = curl_easy_init();
+    char *curl_result = curl_easy_unescape(curl, raw.c_str(), 0, nullptr);
+    std::string result = curl_result;
+
+    curl_free(curl_result);
+    curl_easy_cleanup(curl);
+    return result;
+}
+
 size_t shiro::utils::curl::internal_callback(void *raw_data, size_t size, size_t memory, std::string *ptr) {
     size_t new_length = size * memory;
     size_t old_length = ptr->size();

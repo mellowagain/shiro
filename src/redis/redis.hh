@@ -16,32 +16,36 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "../multiplayer/match_manager.hh"
-#include "../users/user_manager.hh"
-#include "logout_handler.hh"
+#ifndef SHIRO_REDIS_HH
+#define SHIRO_REDIS_HH
 
-void shiro::handler::logout::handle(shiro::io::osu_packet &in, shiro::io::osu_writer &out, std::shared_ptr<shiro::users::user> user) {
-    if (!users::manager::is_online(user))
-        return;
+#include <cpp_redis/cpp_redis>
+#include <cstdint>
+#include <memory>
+#include <string>
 
-    shiro::multiplayer::match_manager::leave_match(user);
-    users::manager::logout_user(user);
+namespace shiro {
 
-    if (user->hidden)
-        return;
+    class redis {
+    private:
+        std::shared_ptr<cpp_redis::client> client = nullptr;
 
-    io::layouts::user_quit quit;
-    io::osu_writer writer;
+        std::string address;
+        uint32_t port;
+        std::string password;
 
-    quit.user_id = user->user_id;
-    quit.state = 0;
+    public:
+        redis(std::string address, uint32_t port, std::string password = "");
 
-    writer.user_quit(quit);
+        void connect();
+        void disconnect();
+        void setup();
 
-    users::manager::iterate([user, &writer](std::shared_ptr<users::user> online_user) {
-        if (online_user->user_id == user->user_id)
-            return;
+        bool is_connected();
+        std::shared_ptr<cpp_redis::client> get();
 
-        online_user->queue.enqueue(writer);
-    }, true);
+    };
+
 }
+
+#endif //SHIRO_REDIS_HH

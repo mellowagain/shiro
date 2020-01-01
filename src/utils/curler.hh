@@ -31,6 +31,7 @@ namespace shiro::utils::curl {
     std::tuple<bool, std::string> get_direct(const std::string &url);
 
     std::string escape_url(const std::string &raw);
+    std::string unescape_url(const std::string &raw);
 
     size_t internal_callback(void *raw_data, size_t size, size_t memory, std::string *ptr);
 

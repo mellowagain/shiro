@@ -26,7 +26,8 @@ void shiro::handler::multiplayer::lobby::join::handle(shiro::io::osu_packet &in,
 
     shiro::multiplayer::lobby_manager::add_user(user);
 
-    shiro::multiplayer::match_manager::iterate([&out, user](io::layouts::multiplayer_match &match) {
+    shiro::multiplayer::match_manager::iterate([&out, user](io::layouts::multiplayer_match &match) -> bool {
         out.match_new(match, match.host_id != user->user_id);
+        return false;
     });
 }

@@ -468,7 +468,7 @@ namespace loguru
 
     static void on_atexit()
     {
-        VLOG_F(g_internal_verbosity, "atexit");
+        //VLOG_F(g_internal_verbosity, "atexit");
         flush();
     }
 

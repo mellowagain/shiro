@@ -41,6 +41,9 @@ namespace shiro::utils {
             (uint8_t) slot_status::playing |
             (uint8_t) slot_status::complete;
 
+    constexpr uint8_t has_playing_status = (uint8_t) slot_status::playing |
+                                          (uint8_t) slot_status::complete;
+
 }
 
 #endif  // SHIRO_SLOT_STATUS_HH

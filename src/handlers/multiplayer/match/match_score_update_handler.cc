@@ -18,40 +18,34 @@
 
 #include "../../../multiplayer/match_manager.hh"
 #include "../../../users/user_manager.hh"
-#include "room_change_host_handler.hh"
+#include "../../../utils/slot_status.hh"
+#include "match_score_update_handler.hh"
 
-void shiro::handler::multiplayer::room::change_host::handle(shiro::io::osu_packet &in, shiro::io::osu_writer &out, std::shared_ptr<users::user> user) {
-    int32_t slot_id = in.data.read<int32_t>();
+void shiro::handler::multiplayer::match::score_update::handle(shiro::io::osu_packet &in, shiro::io::osu_writer &out, std::shared_ptr<users::user> user) {
+    io::layouts::score_frame score_frame = in.unmarshal<io::layouts::score_frame>();
+    io::osu_writer writer;
 
-    if (slot_id >= 16)
-        return;
-
-    shiro::multiplayer::match_manager::iterate([&user, slot_id](io::layouts::multiplayer_match &match) -> bool {
+    shiro::multiplayer::match_manager::iterate([user, &writer, &score_frame](io::layouts::multiplayer_match &match) -> bool {
         auto iterator = std::find(match.multi_slot_id.begin(), match.multi_slot_id.end(), user->user_id);
 
         if (iterator == match.multi_slot_id.end())
             return false;
 
-        if (match.host_id != user->user_id)
-            return true;
+        score_frame.id = std::distance(match.multi_slot_id.begin(), iterator);
+        writer.match_score_update(score_frame);
 
-        int32_t new_host_id = match.multi_slot_id.at(slot_id);
+        for (size_t i = 0; i < match.multi_slot_id.size(); i++) {
+            if (match.multi_slot_status.at(i) != (uint8_t) utils::slot_status::playing)
+                continue;
 
-        if (new_host_id == -1)
-            return true;
+            std::shared_ptr<users::user> lobby_user = users::manager::get_user_by_id(match.multi_slot_id.at(i));
 
-        match.host_id = new_host_id;
-        match.send_update(true);
+            if (lobby_user == nullptr)
+                continue;
 
-        std::shared_ptr<users::user> new_host = users::manager::get_user_by_id(new_host_id);
+            lobby_user->queue.enqueue(writer);
+        }
 
-        if (new_host == nullptr)
-            return true;
-
-        io::osu_writer writer;
-        writer.match_transfer_host();
-
-        new_host->queue.enqueue(writer);
         return true;
     });
 }
