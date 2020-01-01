@@ -56,9 +56,12 @@ add_definitions(-DNO_OPTIMIZED_VERSIONS)
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 
+# Python 3.8
+find_package(Python3 COMPONENTS Development REQUIRED)
+
 # Boost
 set(Boost_USE_MULTITHREADED ON)
-find_package(Boost REQUIRED COMPONENTS system iostreams date_time)
+find_package(Boost REQUIRED COMPONENTS system iostreams date_time python)
 
 # cURL
 find_package(CURL REQUIRED)
@@ -119,6 +122,6 @@ elseif (UNIX) # Linux
     set(CMAKE_LINK_LIBS dl sqlpp-mysql mysqlclient crypto stdc++fs maxminddb ${CMAKE_LINK_LIBS})
 endif()
 
-include_directories(${CURL_INCLUDE_DIRS} ${OPENSSL_INCLUDE_DIR} ${HinnantDate_INCLUDE_DIR} ${ZLIB_INCLUDE_DIRS} ${LIBLZMA_INCLUDE_DIRS})
+include_directories(${Python3_INCLUDE_DIRS} ${CURL_INCLUDE_DIRS} ${OPENSSL_INCLUDE_DIR} ${HinnantDate_INCLUDE_DIR} ${ZLIB_INCLUDE_DIRS} ${LIBLZMA_INCLUDE_DIRS})
 add_executable(shiro ${SRC})
-target_link_libraries(shiro general Threads::Threads ${CURL_LIBRARIES} ${Boost_LIBRARIES} ${ZLIB_LIBRARIES} ${LIBLZMA_LIBRARIES} ${CMAKE_LINK_LIBS})
+target_link_libraries(shiro general Threads::Threads ${Python3_LIBRARIES} ${CURL_LIBRARIES} ${Boost_LIBRARIES} ${ZLIB_LIBRARIES} ${LIBLZMA_LIBRARIES} ${CMAKE_LINK_LIBS})
