@@ -33,11 +33,15 @@ std::string shiro::native::process_info::get_executable_location() {
     HMODULE handle = GetModuleHandle(nullptr);
 
     if (handle == nullptr)
-        return "shiro"; // Fallback to our generic executable name
+        return "shiro.exe"; // Fallback to our generic executable name
 
     GetModuleFileName(handle, buffer, sizeof(buffer));
 
     return buffer;
+}
+
+void shiro::native::process_info::set_env(const std::string &key, const std::string &value) {
+    _putenv_s(key.c_str(), value.c_str());
 }
 
 #endif

@@ -28,6 +28,8 @@ namespace shiro::native::process_info {
 
     std::string get_executable_location();
 
+    void set_env(const std::string &key, const std::string &value);
+
 }
 
 #endif  // SHIRO_PROCESS_INFO_HH

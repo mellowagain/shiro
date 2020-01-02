@@ -32,4 +32,8 @@ std::string shiro::native::process_info::get_executable_location() {
     return fs::read_symlink("/proc/self/exe").u8string();
 }
 
+void shiro::native::process_info::set_env(const std::string &key, const std::string &value) {
+    setenv(key.c_str(), value.c_str(), 1);
+}
+
 #endif
