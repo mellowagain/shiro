@@ -24,6 +24,7 @@
 #include "bot/bot.hh"
 #include "channels/channel_manager.hh"
 #include "channels/console_osu_bridge.hh"
+#include "commands/command_manager.hh"
 #include "config/api_file.hh"
 #include "config/bancho_file.hh"
 #include "config/bot_file.hh"
@@ -109,6 +110,7 @@ int shiro::init(int argc, char **argv) {
     roles::manager::init();
 
     bot::init();
+    commands::manager::init(); // At some point in the future this call will replace bot::init_commands below
     bot::init_commands();
 
     channels::manager::init();

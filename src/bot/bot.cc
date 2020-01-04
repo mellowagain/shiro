@@ -23,7 +23,6 @@
 
 #include "../commands/public/help_command.hh"
 #include "../commands/public/localclear_command.hh"
-#include "../commands/public/roll_command.hh"
 #include "../commands/staff/announce_command.hh"
 #include "../commands/staff/ban_command.hh"
 #include "../commands/staff/clear_command.hh"
@@ -34,6 +33,7 @@
 #include "../commands/staff/restrict_command.hh"
 #include "../commands/staff/rtx_command.hh"
 #include "../commands/staff/silence_command.hh"
+#include "../commands/command_manager.hh"
 #include "../config/bot_file.hh"
 #include "../config/db_file.hh"
 #include "../database/tables/user_table.hh"
@@ -120,14 +120,17 @@ void shiro::bot::init_commands() {
     commands_map.insert(std::make_pair("recalculate", commands::recalculate));
     commands_map.insert(std::make_pair("restart", commands::restart));
     commands_map.insert(std::make_pair("restrict", commands::restrict));
-    commands_map.insert(std::make_pair("roll", commands::roll));
     commands_map.insert(std::make_pair("rtx", commands::rtx));
     commands_map.insert(std::make_pair("silence", commands::silence));
 
-    LOG_F(INFO, "Bot commands have been successfully loaded. %lu commands available.", commands_map.size());
+    LOG_F(INFO, "C++ bot commands have been successfully loaded. %lu commands available.", commands_map.size());
 }
 
 bool shiro::bot::handle(const std::string &command, std::deque<std::string> &args, std::shared_ptr<shiro::users::user> user, std::string channel) {
+    // Python commands have priority
+    if (commands::manager::execute(command, args, user, channel))
+        return true;
+
     try {
         return commands_map.at(command)(args, user, channel);
     } catch (const std::out_of_range &ex) {

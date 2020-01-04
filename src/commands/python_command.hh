@@ -16,19 +16,43 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef SHIRO_ROLL_COMMAND_HH
-#define SHIRO_ROLL_COMMAND_HH
+#ifndef SHIRO_PYTHON_COMMAND_HH
+#define SHIRO_PYTHON_COMMAND_HH
 
-#include <deque>
+#include <boost/python.hpp>
 #include <string>
+#include <vector>
 
-#include "../../users/user.hh"
+#include "../utils/filesystem.hh"
+#include "../users/user.hh"
 
 namespace shiro::commands {
 
-    bool roll(std::deque<std::string> &args, std::shared_ptr<users::user> user, std::string channel);
+    class python_command {
+    private:
+        fs::path path;
+        boost::python::object module;
+
+    public:
+        std::string command;
+        std::vector<std::string> aliases;
+        uint64_t permission = 0;
+        std::string syntax;
+        std::string description;
+
+    public:
+        explicit python_command(fs::path path);
+
+        void populate();
+        void execute(std::deque<std::string> &args, std::shared_ptr<users::user> user, std::string channel);
+
+        std::string module_name();
+        std::string get_syntax();
+
+        bool is_sane();
+
+    };
 
 }
 
-
-#endif //SHIRO_ROLL_COMMAND_HH
+#endif //SHIRO_PYTHON_COMMAND_HH
