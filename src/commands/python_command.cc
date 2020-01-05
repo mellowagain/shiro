@@ -22,6 +22,7 @@
 #include <fstream>
 #include <utility>
 
+#include "../permissions/role_manager.hh"
 #include "../thirdparty/loguru.hh"
 #include "../utils/bot_utils.hh"
 #include "../utils/python_utils.hh"
@@ -106,6 +107,11 @@ void shiro::commands::python_command::populate() {
 
 void shiro::commands::python_command::execute(std::deque<std::string> &args, std::shared_ptr<users::user> user, std::string channel) {
     namespace python = boost::python;
+
+    if (this->permission > 0 && !roles::manager::has_permission(user, this->permission)) {
+        utils::bot::respond("Permission denied. (" + std::to_string(this->permission) + ")", std::move(user), std::move(channel), true);
+        return;
+    }
 
     bool success = false;
     python::list python_args = utils::python::to_python_list(args);

@@ -38,14 +38,18 @@ void shiro::roles::manager::init() {
 }
 
 bool shiro::roles::manager::has_permission(std::shared_ptr<shiro::users::user> user, shiro::permissions::perms permissions) {
+    return has_permission(std::move(user), (uint64_t) permissions);
+}
+
+bool shiro::roles::manager::has_permission(std::shared_ptr<users::user> user, uint64_t permissions) {
     if (user == nullptr)
         return false;
 
-    for (permissions::role role : roles) {
+    for (const permissions::role &role : roles) {
         if (!(user->roles & role.id))
             continue;
 
-        if (!(role.permissions & (uint64_t) permissions))
+        if (!(role.permissions & permissions))
             continue;
 
         return true;
