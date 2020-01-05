@@ -50,4 +50,10 @@ namespace shiro::utils::python {
 
 }
 
+namespace boost::python {
+
+    object reload(boost::python::object object);
+
+}
+
 #endif //SHIRO_PYTHON_UTILS_HH

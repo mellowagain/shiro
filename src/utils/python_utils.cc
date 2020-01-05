@@ -130,3 +130,8 @@ void shiro::utils::python::init() {
         PyErr_Print();
     }
 }
+
+boost::python::object boost::python::reload(boost::python::object object) {
+    python::handle<> module(PyImport_ReloadModule(object.ptr()));
+    return python::object(module);
+}
