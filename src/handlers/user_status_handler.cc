@@ -23,14 +23,29 @@ void shiro::handler::user_status::handle(shiro::io::osu_packet &in, shiro::io::o
     io::layouts::user_status status = in.unmarshal<io::layouts::user_status>();
     bool changed_mode = user->stats.play_mode != status.play_mode;
 
+    #if defined(SEPARATE_RX_LEADERBOARDS)
+        bool changed_relax = ((status.current_mods & (uint32_t) utils::mods::relax) &&
+                !(user->stats.current_mods & (uint32_t) utils::mods::relax)) ||
+                (!(status.current_mods & (uint32_t) utils::mods::relax) &&
+                (user->stats.current_mods & (uint32_t) utils::mods::relax));
+
+        if (status.current_mods & (uint32_t) utils::mods::relax)
+            status.activity_desc.insert(0, "[Relax] ");
+    #endif
+
+    #if defined(SEPARATE_AP_LEADERBOARDS)
+        if (status.current_mods & (uint32_t) utils::mods::auto_pilot)
+            status.activity_desc.insert(0, "[Auto Pilot] ");
+    #endif
+
     user->status = status;
 
+    user->stats.current_mods = status.current_mods;
     user->stats.activity = status.activity;
     user->stats.activity_desc = status.activity_desc;
     user->stats.beatmap_id = status.beatmap_id;
     user->stats.beatmap_checksum = status.beatmap_checksum;
     user->stats.play_mode = status.play_mode;
-    user->stats.current_mods = status.current_mods;
 
     if (!changed_mode)
         return;

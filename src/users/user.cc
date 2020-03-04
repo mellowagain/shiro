@@ -80,8 +80,10 @@ void shiro::users::user::update() {
                     stats_table.id == this->user_id
             ).limit(1u));
 
-            if (result.empty())
+            if (result.empty()) {
+                db(insert_into(stats_table).set(stats_table.id = this->user_id));
                 return;
+            }
 
             const auto &row = result.front();
             this->fill_local_stats<decltype(row)>(row);
@@ -96,8 +98,10 @@ void shiro::users::user::update() {
                     stats_table.id == this->user_id
             ).limit(1u));
 
-            if (result.empty())
+            if (result.empty()) {
+                db(insert_into(stats_table).set(stats_table.id = this->user_id));
                 return;
+            }
 
             const auto &row = result.front();
             this->fill_local_stats<decltype(row)>(row);
@@ -110,8 +114,10 @@ void shiro::users::user::update() {
             stats_table.id == this->user_id
     ).limit(1u));
 
-    if (result.empty())
+    if (result.empty()) {
+        db(insert_into(stats_table).set(stats_table.id = this->user_id));
         return;
+    }
 
     const auto &row = result.front();
     this->fill_local_stats<decltype(row)>(row);
