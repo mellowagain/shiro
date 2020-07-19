@@ -64,13 +64,8 @@ licensed under a different, but AGPL-3.0 compatible
 license. Please visit the corresponding files and their
 associated license for more information.
 
-In the creation of this software, the leaked 2016
-source code of osu! and osu!Bancho as well as
-Ripple and HOPEless were used as reference.
-
 The branding `osu!` and `ppy` are protected by
 trademark law. Fair use applies.
-
 
 [0]: https://circleci.com/gh/Marc3842h/shiro
 [1]: https://github.com/Marc3842h/shiro/wiki
