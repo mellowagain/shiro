@@ -31,5 +31,5 @@ jobs:
                    -F "token=$SHIRO_DEPLOY_TOKEN"                                               \
                    -F "commit=$CIRCLE_SHA1"                                                     \
                    -F "file=@$HOME/shiro/bin/shiro"                                             \
-                   https://shiro.kanashii.moe/api/ci_trigger
+                   https://example.com/api/ci_trigger
             fi
